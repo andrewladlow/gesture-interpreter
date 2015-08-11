@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/LeapJava.jar"/>
+	<classpathentry kind="lib" path="lib/LeapJava.jar" sourcepath="LeapMotionDoc.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
