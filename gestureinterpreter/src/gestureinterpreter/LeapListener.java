@@ -1,8 +1,81 @@
 package gestureinterpreter;
 
-import com.leapmotion.leap.*;
+import com.leapmotion.leap.Arm;
+import com.leapmotion.leap.Bone;
+import com.leapmotion.leap.Controller;
+import com.leapmotion.leap.Finger;
+import com.leapmotion.leap.FingerList;
+import com.leapmotion.leap.Frame;
+import com.leapmotion.leap.Hand;
+import com.leapmotion.leap.HandList;
+import com.leapmotion.leap.Listener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-class LeapListener extends Listener {
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import com.leapmotion.leap.Controller;
+import com.leapmotion.leap.Frame;
+import com.leapmotion.leap.Hand;
+import com.leapmotion.leap.HandList;
+import com.leapmotion.leap.Listener;
+import com.leapmotion.leap.Screen;
+import com.leapmotion.leap.Vector;
+import java.util.UUID;
+import javafx.application.Platform;
+import javafx.geometry.Point2D;
+
+public class LeapListener extends Listener {
+
+	private Frame frame;
+	
+	private BooleanProperty frameReady = new SimpleBooleanProperty();
+	
+	public void onFrame(Controller controller) {
+		frameReady.set(false);;
+		if (!controller.frame().hands().isEmpty()) {
+			System.out.println("Debug 0  " + controller.frame().id());
+			frameReady.set(true);
+		}
+	}
+
+	public BooleanProperty frameReadyProperty() {
+		return frameReady;
+	}
+}
+
+/*public class LeapListener extends Listener {
+
+private final Driver app;	
+
+public LeapListener() {this.app=null;}
+
+public LeapListener(Driver main) {
+    this.app = main;
+}
+
+public void onFrame(Controller controller) {
+	Frame frame = controller.frame();
+	if (!frame.hands().isEmpty()) {
+		for (Hand hand : frame.hands()) {
+			float x = hand.palmPosition().getX();
+			float y = hand.palmPosition().getY();
+			float z = hand.palmPosition().getZ();
+			Platform.runLater(() -> {
+				app.centerX().set(x);
+				app.centerY().set(z);
+				app.radius().set(50. - y / 5);
+		});
+		}
+	}
+}
+}*/
+
+/*public class LeapListener extends Listener {
+	
 	public void onConnect(Controller controller) {
 		controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
 		System.out.println("Connected");
@@ -58,4 +131,5 @@ class LeapListener extends Listener {
 			System.out.println();
 		}
 	}
-}
+	
+}*/
