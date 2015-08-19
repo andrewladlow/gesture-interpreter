@@ -36,6 +36,7 @@ import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -56,7 +57,7 @@ public class Driver extends Application {
     // instead of recreating over and over
     // java gc not freeing them properly?
     
-/*    private Sphere[] palms = new Sphere[2];
+/*  private Sphere[] palms = new Sphere[2];
 	private Sphere[] fingers = new Sphere[10];
 	private Sphere[] metacarpals = new Sphere[10];
 	private Sphere[] proximals = new Sphere[10];
@@ -64,12 +65,10 @@ public class Driver extends Application {
 	private Sphere[] distals = new Sphere[10];
 	private Cylinder[] bones = new Cylinder[20];*/
 	
-
     // possible alternative solution - obtain data directly, no lists etc?
     // http://www.oracle.com/technetwork/articles/java/rich-client-leapmotion-2227139.html
     // private final ListPropertyBone> testBones = new SimpleListProperty<Bone>(); 
     
-    @Override
     public void start(Stage primaryStage) {
         listener = new LeapListener();
         controller = new Controller();
@@ -77,16 +76,17 @@ public class Driver extends Application {
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
         controller.addListener(listener);
         
-        Group root = new Group();
-        AnchorPane pane=new AnchorPane();
+        Group root2D = new Group();
+        //StackPane root = new StackPane();
+        //AnchorPane root = new AnchorPane();
+        //GridPane root = new GridPane();
         
-        Scene scene = new Scene(pane, 1280, 800);
+        Scene scene = new Scene(root2D, 1280, 800);
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
-        pane.getChildren().add(btn);
+        root2D.getChildren().add(btn);
         btn.setOnAction(new EventHandler<ActionEvent>() {
-        	 
-            @Override
+        	
             public void handle(ActionEvent event) {
                 System.out.println("Hello World!");
             }
@@ -97,13 +97,13 @@ public class Driver extends Application {
 		camera.setTranslateY(-600);
 		camera.setTranslateZ(300);
 		
-        Group root3D=new Group();
-        root3D.getChildren().addAll(camera, root);
-        SubScene subScene = new SubScene(root3D, 1280, 800, true,SceneAntialiasing.BALANCED);
+        Group root3D = new Group();
+        root3D.getChildren().addAll(camera);
+        SubScene subScene = new SubScene(root3D, 1280, 800, true, SceneAntialiasing.BALANCED);
         subScene.setCamera(camera);
-        pane.getChildren().addAll(subScene);
+        root2D.getChildren().addAll(subScene);
        
-/*        Group root = new Group();
+/*      Group root = new Group();
         Scene scene = new Scene(root, 1280, 800, true, SceneAntialiasing.BALANCED);
         
         PerspectiveCamera camera = new PerspectiveCamera();
@@ -118,14 +118,6 @@ public class Driver extends Application {
         primaryStage.setTitle("Test Tracking");
         primaryStage.setScene(scene);
         primaryStage.show();
-
-
-        
-/*        
-        StackPane pane = new StackPane();
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        pane.getChildren().add(btn);*/
         
         
 /*        for (int i = 0; i < palms.length; i++) {
@@ -157,12 +149,12 @@ public class Driver extends Application {
         			Platform.runLater(new Runnable() {
         				public void run() {			
         					System.out.println("Debug 2  " + frameCopy.id());
-        					root.getChildren().clear();
+        					root3D.getChildren().clear();
 
         					for (Hand hand : frameCopy.hands()) {
         						System.out.println("Debug 3");
         			
-        						Sphere handSphere = ShapeCreator.createSphere(root, 15, Color.GREEN, Color.LIGHTGREEN);
+        						Sphere handSphere = ShapeCreator.createSphere(root3D, 15, Color.GREEN, Color.LIGHTGREEN);
         						LeapToFX.move(handSphere, hand.palmPosition());
         						//LeapToFX.move(palms[hand.get(0)], hand.palmPosition());
         						
@@ -172,7 +164,7 @@ public class Driver extends Application {
         						for (Finger finger : hand.fingers()) {       							
         							System.out.println("Debug 4");
 	        						//Finger finger = hand.fingers().get(i);
-        							Sphere fingerSphere = ShapeCreator.createSphere(root, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
+        							Sphere fingerSphere = ShapeCreator.createSphere(root3D, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
         							LeapToFX.move(fingerSphere, finger.tipPosition());
         							
         							//fingers[i] = ShapeCreator.createSphere(root, 7.5, Color.DARKGREEN, Color.GREEN);
@@ -182,7 +174,7 @@ public class Driver extends Application {
         								System.out.println("Debug 5");
         								Bone bone = finger.bone(boneType);
 
-        								Sphere jointSphere = ShapeCreator.createSphere(root, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
+        								Sphere jointSphere = ShapeCreator.createSphere(root3D, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
         								LeapToFX.move(jointSphere, bone.prevJoint());
         								
         					        	// Move shapes instead of recreating? possible gc memory concern
@@ -192,7 +184,7 @@ public class Driver extends Application {
         								// y converted to -1, gety and getz negative due to inversion between leapmotion cartesian and javafx coordinates
         								// cross generates the axis that the shaep spins around to fit
         								// cross is the same as (-direction Z, 0, direction X) vector
-        								Cylinder boneCylinder = ShapeCreator.createCylinder(root, bone.width()/4, bone.length(), Color.LIGHTGREY, Color.WHITE);
+        								Cylinder boneCylinder = ShapeCreator.createCylinder(root3D, bone.width()/4, bone.length(), Color.LIGHTGREY, Color.WHITE);
         								
         	                            double angle = (new Vector(bone.direction().getX(), -bone.direction().getY(), -bone.direction().getZ())).angleTo(new Vector(0,-1,0));
         	                            Vector cross = (new Vector(bone.direction().getX(), -bone.direction().getY(), -bone.direction().getZ())).cross(new Vector(0,-1,0));
@@ -247,7 +239,7 @@ public class Driver extends Application {
         			Platform.runLater(new Runnable() {
         				public void run() {
         					System.out.println("Debug 6");
-        					root.getChildren().clear();
+        					root3D.getChildren().clear();
         				}
         			});
         		}
