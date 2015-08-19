@@ -24,7 +24,10 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
+import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -37,6 +40,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Sphere;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Rotate;
@@ -47,11 +51,6 @@ public class Driver extends Application {
     
     private LeapListener listener = null;
     private Controller controller = null;
-    private final Rotate cameraXRotate = new Rotate(0,0,0,0,Rotate.X_AXIS);
-    private final Rotate cameraYRotate = new Rotate(0,0,0,0,Rotate.Y_AXIS);
-    private final Translate cameraPosition = new Translate(-600, -600, 300);
-    private final Group root=new Group();
-    private double dragStartX, dragStartY, dragStartRotateX, dragStartRotateY;
     
     // possibly declare shapes around here and have runlater just modify them
     // instead of recreating over and over
@@ -77,21 +76,57 @@ public class Driver extends Application {
         //controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
         controller.addListener(listener);
+        
+        Group root = new Group();
         AnchorPane pane=new AnchorPane();
         
-        Scene scene = new Scene(pane, 1280, 800, Color.BEIGE);
-        
+        Scene scene = new Scene(pane, 1280, 800);
+        Button btn = new Button();
+        btn.setText("Say 'Hello World'");
+        pane.getChildren().add(btn);
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+        	 
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("Hello World!");
+            }
+        });
         final PerspectiveCamera camera = new PerspectiveCamera();
-        camera.setFieldOfView(40);
-		camera.setFarClip(1000);
-        camera.getTransforms().addAll(cameraXRotate,cameraYRotate,cameraPosition);
-        
+        camera.setFieldOfView(50);
+		camera.setTranslateX(-600);
+		camera.setTranslateY(-600);
+		camera.setTranslateZ(300);
+		
         Group root3D=new Group();
         root3D.getChildren().addAll(camera, root);
         SubScene subScene = new SubScene(root3D, 1280, 800, true,SceneAntialiasing.BALANCED);
         subScene.setCamera(camera);
-
         pane.getChildren().addAll(subScene);
+       
+/*        Group root = new Group();
+        Scene scene = new Scene(root, 1280, 800, true, SceneAntialiasing.BALANCED);
+        
+        PerspectiveCamera camera = new PerspectiveCamera();
+        camera.setFieldOfView(50);
+		camera.setTranslateX(-600);
+		camera.setTranslateY(-600);
+		camera.setTranslateZ(300);
+        scene.setCamera(camera);
+        */
+        
+        
+        primaryStage.setTitle("Test Tracking");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+
+        
+/*        
+        StackPane pane = new StackPane();
+        Button btn = new Button();
+        btn.setText("Say 'Hello World'");
+        pane.getChildren().add(btn);*/
+        
         
 /*        for (int i = 0; i < palms.length; i++) {
         	palms[i] = ShapeCreator.createSphere(root, 10, Color.GREEN, Color.LIGHTGREEN);
@@ -122,12 +157,12 @@ public class Driver extends Application {
         			Platform.runLater(new Runnable() {
         				public void run() {			
         					System.out.println("Debug 2  " + frameCopy.id());
-        					root3D.getChildren().clear();
+        					root.getChildren().clear();
 
         					for (Hand hand : frameCopy.hands()) {
         						System.out.println("Debug 3");
         			
-        						Sphere handSphere = ShapeCreator.createSphere(root3D, 15, Color.GREEN, Color.LIGHTGREEN);
+        						Sphere handSphere = ShapeCreator.createSphere(root, 15, Color.GREEN, Color.LIGHTGREEN);
         						LeapToFX.move(handSphere, hand.palmPosition());
         						//LeapToFX.move(palms[hand.get(0)], hand.palmPosition());
         						
@@ -137,7 +172,7 @@ public class Driver extends Application {
         						for (Finger finger : hand.fingers()) {       							
         							System.out.println("Debug 4");
 	        						//Finger finger = hand.fingers().get(i);
-        							Sphere fingerSphere = ShapeCreator.createSphere(root3D, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
+        							Sphere fingerSphere = ShapeCreator.createSphere(root, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
         							LeapToFX.move(fingerSphere, finger.tipPosition());
         							
         							//fingers[i] = ShapeCreator.createSphere(root, 7.5, Color.DARKGREEN, Color.GREEN);
@@ -147,7 +182,7 @@ public class Driver extends Application {
         								System.out.println("Debug 5");
         								Bone bone = finger.bone(boneType);
 
-        								Sphere jointSphere = ShapeCreator.createSphere(root3D, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
+        								Sphere jointSphere = ShapeCreator.createSphere(root, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
         								LeapToFX.move(jointSphere, bone.prevJoint());
         								
         					        	// Move shapes instead of recreating? possible gc memory concern
@@ -157,7 +192,7 @@ public class Driver extends Application {
         								// y converted to -1, gety and getz negative due to inversion between leapmotion cartesian and javafx coordinates
         								// cross generates the axis that the shaep spins around to fit
         								// cross is the same as (-direction Z, 0, direction X) vector
-        								Cylinder boneCylinder = ShapeCreator.createCylinder(root3D, bone.width()/4, bone.length(), Color.LIGHTGREY, Color.WHITE);
+        								Cylinder boneCylinder = ShapeCreator.createCylinder(root, bone.width()/4, bone.length(), Color.LIGHTGREY, Color.WHITE);
         								
         	                            double angle = (new Vector(bone.direction().getX(), -bone.direction().getY(), -bone.direction().getZ())).angleTo(new Vector(0,-1,0));
         	                            Vector cross = (new Vector(bone.direction().getX(), -bone.direction().getY(), -bone.direction().getZ())).cross(new Vector(0,-1,0));
@@ -212,22 +247,15 @@ public class Driver extends Application {
         			Platform.runLater(new Runnable() {
         				public void run() {
         					System.out.println("Debug 6");
-        					root3D.getChildren().clear();
+        					root.getChildren().clear();
         				}
         			});
         		}
         	}
         });
         
-     /*   Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        root3D.getChildren().add(btn);*/
-        
-        primaryStage.setTitle("Test Tracking");
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
-
+          
     public void stop(){
         controller.removeListener(listener);
     }
