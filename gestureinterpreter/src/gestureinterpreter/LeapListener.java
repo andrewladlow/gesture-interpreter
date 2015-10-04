@@ -9,6 +9,11 @@ import com.leapmotion.leap.Frame;
 import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.HandList;
 import com.leapmotion.leap.Listener;
+
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,26 +30,226 @@ import com.leapmotion.leap.Listener;
 import com.leapmotion.leap.Screen;
 import com.leapmotion.leap.Vector;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 
 public class LeapListener extends Listener {
-
-	private Frame frame;
 	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
+	
+	 Gesture gesture;
+     Boolean recording = false; 
+     int frameCount = 0;
+     int minGestureFrames = 5;	// The minimum number of recorded frames considered as possibly containing a recognisable gesture 
+     int minRecordingVelocity = 60; // The minimum velocity a frame needs to clock in at to trigger gesture recording, or below to stop gesture recording (by default)
+     int maxRecordingVelocity = 30;	// The maximum velocity a frame can measure at and still trigger pose recording, or above which to stop pose recording (by default)
+     Boolean stopRecording = false;  //says if recording should be stopped
+	
+	
+	
 	public void onFrame(Controller controller) {
-		frameReady.set(false);;
-		if (!controller.frame().hands().isEmpty()) {
-			System.out.println("Debug 0  " + controller.frame().id());
+		Frame frame = controller.frame();
+		//System.out.println("1");
+		frameReady.set(false);
+		if (!frame.hands().isEmpty()) {
+			//System.out.println("Debug 0  " + frame.id());
 			frameReady.set(true);
+		
+		//System.out.println("2");
+	       if (stopRecording){ return;}
+	        
+	        if (recordableFrame(frame, minRecordingVelocity)){
+	    		System.out.println("Debug 3");
+	            /*
+	             * If this is the first frame in a gesture, we clean up some running values and fire the 'started-recording' event.
+	             */
+	            if (!recording) {
+	                recording = true; 
+	                frameCount = 0;
+	            }
+	            
+	            
+	            System.out.println("in frame... " + Long.toString(frame.id()));
+	            recordFrame(frame);
+	            frameCount++;
+	            System.out.println("Recording Frame...");
+	        }else if(recording){
+	            /*
+	             * If the frame should not be recorded but recording was active, then we deactivate recording and check to see if enough 
+	             * frames have been recorded to qualify for gesture recognition.
+	             */
+	            recording = false;
+	            /*
+	             * As soon as we're no longer recording, we fire the 'stopped-recording' function.
+	             */
+	            stopRecording();
+	                
+	            if (frameCount >= minGestureFrames){
+	                try {
+	                    saveTrainingGesture(gesture);
+	                } catch (IOException ex) {
+	                    Logger.getLogger(LeapListener.class.getName()).log(Level.SEVERE, null, ex);
+	                }finally{
+	                    System.out.println("Gsture Saved");
+	                }
+	            }
+	        }
 		}
 	}
 
 	public BooleanProperty frameReadyProperty() {
 		return frameReady;
 	}
+	
+	
+    
+    /**
+     * This function is called for each frame during gesture recording, and it is responsible for adding values in frames using the provided 
+     * recordVector and recordValue functions (which accept a 3-value numeric array and a single numeric value respectively).
+     */
+    public void recordFrame(Frame frame) {
+        //HandList hands = frame.hands();
+        //gesture.hands = hands;
+        HandList hands = frame.hands();
+        int handCount = hands.count();
+
+        Hand hand; 
+        Finger finger; 
+        FingerList fingers; 
+        int fingerCount;
+               
+        int l = handCount;
+        for (int i = 0; i < l; i++) {   //for each hand in the frame
+            hand = hands.get(i);
+                   
+            recordPoint(hand.stabilizedPalmPosition());     //record the palm position
+            //System.out.println("Debug record");
+            fingers = hand.fingers();
+            fingerCount = fingers.count();
+		
+            int k = fingerCount;
+            for (int j = 0; j < k; j++) {   //for each finger in the hand
+                finger = fingers.get(j);
+                recordPoint(finger.stabilizedTipPosition());	//record the fingertip position.
+            }
+        }
+        
+        System.out.println("Recording Frame...");
+    }
+    
+    /**
+     * This function records a point to the gesture
+     * @param val 
+     */
+    public void recordPoint(Vector val){
+    	
+        double x,y,z;
+        //NaNs are replaced with 0.0, though they shouldn't occur!
+        if (Double.isNaN(val.getX())){
+            x=0.0;
+        }else{
+            x=val.getX();
+        }
+        
+        if (Double.isNaN(val.getY())){
+            y=0.0;
+        }else{
+            y=val.getY();
+        }
+        
+        if (Double.isNaN(val.getZ())){
+            z=0.0;
+        }else{
+            z=val.getZ();
+        }
+        
+        Point point = new Point(x, y, z);
+        System.out.println("Debug record 1");
+        gesture.add(point);
+        // TODO Why is 2 not being printed?
+        System.out.println("Debug record 2");
+        
+    }
+    
+    /**
+     * This function returns TRUE if the provided frame should trigger recording and FALSE if it should stop recording.  
+     * 
+     * Of course, if the system isn't already recording, returning FALSE does nothing, and vice versa.. So really it returns 
+     * whether or not a frame may possibly be part of a gesture.
+     * 
+     * By default this function makes its decision based on one or more hands or fingers in the frame moving faster than the 
+     * configured minRecordingVelocity, which is provided as a second parameter.
+     * 
+     * @param frame
+     * @param min
+     * @param max
+     * @returns {Boolean}
+     */
+    public Boolean recordableFrame(Frame frame, int min){
+        
+        HandList hands = frame.hands();
+        int j;
+        Hand hand;
+        FingerList fingers;
+        double palmVelocity;
+        double tipVelocity;
+        Boolean poseRecordable = false;
+            
+        int l=hands.count();
+        //System.out.println(l);
+        for(int i=0; i<l; i++){
+            hand= hands.get(i); 
+            Vector palmVelocitys = hand.palmVelocity();
+            palmVelocity = Math.max(Math.abs(palmVelocitys.getX()), Math.abs(palmVelocitys.getY()));
+            palmVelocity = Math.max(palmVelocity, Math.abs(palmVelocitys.getZ()));
+                
+            /*
+             * We return true if there is a hand moving above the minimum recording velocity
+             */
+             if (palmVelocity >= min){return true;}
+                
+             fingers = hand.fingers(); 
+             int k = fingers.count();
+             for (j=0; j<k; j++){
+                 Vector tipVelocitys = fingers.get(j).tipVelocity();
+                 tipVelocity = Math.max(Math.abs(tipVelocitys.getX()), Math.abs(tipVelocitys.getY()));
+                 tipVelocity = Math.max(tipVelocity, Math.abs(tipVelocitys.getZ()));
+                    
+                /*
+                 * Or if there's a finger tip moving above the minimum recording velocity
+                 */
+                if (tipVelocity >= min) { return true; }
+            }
+        }
+            
+            
+        return false;
+    }
+    
+    public void saveTrainingGesture(Gesture gestureIn) throws IOException{
+        String fileName= gestureIn.name;
+        ObjectOutputStream out = null;
+        
+        try{
+            System.out.println("Saving Gesture...");
+            out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
+            out.writeObject(gestureIn);
+        } catch (IOException ex) {
+            Logger.getLogger(LeapListener.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            out.close();
+        }
+    }
+    
+    public void stopRecording(){
+        stopRecording=true;
+    }	
+	
+	
 }
 
 /*public class LeapListener extends Listener {

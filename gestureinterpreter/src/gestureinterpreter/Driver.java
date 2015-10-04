@@ -81,7 +81,7 @@ public class Driver extends Application {
         //AnchorPane root = new AnchorPane();
         //GridPane root = new GridPane();
         
-        Scene scene = new Scene(root2D, 1280, 800);
+        Scene scene = new Scene(root2D, 1280, 600);
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
         root2D.getChildren().add(btn);
@@ -134,10 +134,16 @@ public class Driver extends Application {
         	bones[i] = ShapeCreator.createCylinder(root, 4, 4, Color.LIGHTGREY, Color.WHITE);
         }*/
         
+/*        Vector origVec = new Vector(2f,2f,0f);
+        Vector newVec = new Vector(4f,2f,0f);
+        
+        float result = origVec.dot(newVec);
+        System.out.println(result);*/
+        
 
         listener.frameReadyProperty().addListener(new ChangeListener<Boolean>() {
         	public void changed(ObservableValue<? extends Boolean> frameReady, Boolean oldVal, Boolean newVal) {
-        		System.out.println("Debug 1  " + frameReady + "  " + oldVal + "  " + newVal);
+        		//System.out.println("Debug 1  " + frameReady + "  " + oldVal + "  " + newVal);
         		if (newVal) {
         			Frame frameCopy = controller.frame();    
 					//List<Hand> handsCopy = listener.getHands();
@@ -146,13 +152,15 @@ public class Driver extends Application {
 					
 					//System.out.println(controller.frame().id());
 					//System.out.println(controller.frame(1).id());
+        			
+        			// Move to JavaFX thread? Required to avoid exceptions...
         			Platform.runLater(new Runnable() {
         				public void run() {			
-        					System.out.println("Debug 2  " + frameCopy.id());
+        					//System.out.println("Debug 2  " + frameCopy.id());
         					root3D.getChildren().clear();
 
         					for (Hand hand : frameCopy.hands()) {
-        						System.out.println("Debug 3");
+        						//System.out.println("Debug 3");
         			
         						Sphere handSphere = ShapeCreator.createSphere(root3D, 15, Color.GREEN, Color.LIGHTGREEN);
         						LeapToFX.move(handSphere, hand.palmPosition());
@@ -162,7 +170,7 @@ public class Driver extends Application {
         						//Hand hand = handsCopy.get(i);
         						
         						for (Finger finger : hand.fingers()) {       							
-        							System.out.println("Debug 4");
+        							//System.out.println("Debug 4");
 	        						//Finger finger = hand.fingers().get(i);
         							Sphere fingerSphere = ShapeCreator.createSphere(root3D, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
         							LeapToFX.move(fingerSphere, finger.tipPosition());
@@ -170,9 +178,33 @@ public class Driver extends Application {
         							//fingers[i] = ShapeCreator.createSphere(root, 7.5, Color.DARKGREEN, Color.GREEN);
         							//LeapToFX.move(fingers[i], finger.tipPosition());
         								
+        				/*			System.out.println("    " + finger.type() + ", id: " + finger.id()
+    								+ ", length: " + finger.length()
+    								+ "mm, width: " + finger.width() + "mm");*/
+        							
         							for (Bone.Type boneType : Bone.Type.values()) {
-        								System.out.println("Debug 5");
+        								//System.out.println("Debug 5");
         								Bone bone = finger.bone(boneType);
+        								
+        								// calculating similarity between a gesture and current hand frame
+        								// can do this by taking the direction of bones which are normalized (magnitude of 1)
+        								// comparison between 2 directions gives float between -1 and 1
+        								// range defined as -1 being nothing alike and 1 being perfect match
+        								// see http://xdpixel.com/dot-product-101/
+        								// see http://betterexplained.com/articles/vector-calculus-understanding-the-dot-product/
+        								
+        								Vector currentDir = bone.direction();
+        						        float result = currentDir.dot(new Vector(0f,0f,0f));
+        						      //  System.out.println(currentDir);
+        						       // System.out.println(result);
+        						        
+	        		/*						System.out.println("      " + bone.type()
+	    									+ " bone, start: " + bone.prevJoint()
+	    									+ ", end: " + bone.nextJoint()
+	    									+ ", direction: " + bone.direction());*/
+        						        
+    				
+        						        
 
         								Sphere jointSphere = ShapeCreator.createSphere(root3D, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
         								LeapToFX.move(jointSphere, bone.prevJoint());
@@ -182,7 +214,7 @@ public class Driver extends Application {
         								// this solution works - but inefficient?
         								// 0,1,0 because shape starts by pointing upwards
         								// y converted to -1, gety and getz negative due to inversion between leapmotion cartesian and javafx coordinates
-        								// cross generates the axis that the shaep spins around to fit
+        								// cross generates the axis that the shape spins around to fit
         								// cross is the same as (-direction Z, 0, direction X) vector
         								Cylinder boneCylinder = ShapeCreator.createCylinder(root3D, bone.width()/4, bone.length(), Color.LIGHTGREY, Color.WHITE);
         								
@@ -191,7 +223,7 @@ public class Driver extends Application {
         								
         								boneCylinder.getTransforms().add(new Rotate(-Math.toDegrees(angle), 
         																0, 0, 0,
-        																new Point3D(cross.getX(),-cross.getY(),cross.getZ())));       								
+        																new Point3D(cross.getX(),cross.getY(),cross.getZ())));       								
         			
         								LeapToFX.move(boneCylinder, bone.center());       					
         								
@@ -202,10 +234,11 @@ public class Driver extends Application {
         								System.out.println(bone.direction().getZ());
         								System.out.println(bone.direction());
 
-        								// this solution looks like it may work
+        								// this solution looks like it may work?
         								// however bones are reflected on x axis and rotated 180 around y
         								// also requires omission of leaptofx.move function
         								// memory usage seems much lower?
+        								// see ruzman.de leap motion articles
         								
         								Rotate rotation = new Rotate();
         								double dx = (float) (bone.prevJoint().getX() - bone.nextJoint().getX());
