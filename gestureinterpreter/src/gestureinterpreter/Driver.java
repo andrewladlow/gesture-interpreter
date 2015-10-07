@@ -83,7 +83,7 @@ public class Driver extends Application {
         
         Scene scene = new Scene(root2D, 1280, 600);
         Button btn = new Button();
-        btn.setText("Say 'Hello World'");
+        btn.setText("Hello world");
         root2D.getChildren().add(btn);
         btn.setOnAction(new EventHandler<ActionEvent>() {
         	

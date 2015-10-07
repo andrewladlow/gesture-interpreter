@@ -3,9 +3,10 @@ package gestureinterpreter;
 import com.leapmotion.leap.HandList;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 
-public class Gesture implements Serializable{
+public class Gesture implements Serializable {
     String name;
     ArrayList<Point> points = new ArrayList<Point>();
     HandList hands;
