@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 
-public class LeapListener extends Listener {
+public class TrainerListener extends Listener {
 	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
@@ -99,7 +99,7 @@ public class LeapListener extends Listener {
 	                    saveGesture();
 	                } catch (IOException ex) {
 	                    Logger.getLogger(LeapListener.class.getName()).log(Level.SEVERE, null, ex);
-	                } finally {
+	                } finally{
 	                    System.out.println("Debug save 2");
 	                }
 	            }
