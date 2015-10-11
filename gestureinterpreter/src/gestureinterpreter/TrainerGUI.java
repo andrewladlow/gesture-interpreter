@@ -1,5 +1,8 @@
 package gestureinterpreter;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.leapmotion.leap.Bone;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
@@ -13,7 +16,9 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,24 +41,46 @@ import javafx.util.Duration;
 
 public class TrainerGUI extends Application {
 	
-	private static final Integer STARTTIME = 5;
-    private LeapListener listener = null;
+    private LeapListener leapListener = null;
+	private TrainerListener trainerListener = null;
     private Controller controller = null;
-    private Label timerLabel = new Label();
-    private IntegerProperty timerSeconds = new SimpleIntegerProperty(STARTTIME);
-    private Timeline timeline;
+    
+    private IntegerProperty timerCount = new SimpleIntegerProperty();
+    
+    private BooleanProperty testProp = new SimpleBooleanProperty();
+    
+    //private Timeline timeline;
+    
+    public void gestureTimer(int time) {
+    	timerCount.set(time);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(time), 
+						new EventHandler<ActionEvent>() {
+							public void handle(ActionEvent event) {
+								System.out.println("Finished countdown");
+								testProp.set(true);
+							};
+						}, 
+						new KeyValue(timerCount, 0)));
+
+        //timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.playFromStart();
+
+        System.out.println("gesturetimer method end");        
+    }
+    
+	public BooleanProperty testPropProperty() {
+		return testProp;
+	}
+	
     
     public void start(Stage primaryStage) {
-    	timerLabel.textProperty().bind(timerSeconds.asString());
-    	timerLabel.setTranslateX(200);
-    	timerLabel.setTranslateY(200);
-
     	
-        listener = new LeapListener();
+    	leapListener = new LeapListener();
+        trainerListener = new TrainerListener();
         controller = new Controller();
         //controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
-        controller.addListener(listener);
+        controller.addListener(trainerListener);
         
         Group root2D = new Group();
         //StackPane root = new StackPane();
@@ -63,25 +90,95 @@ public class TrainerGUI extends Application {
         Scene scene = new Scene(root2D, 1280, 600);
         Button btn = new Button();
         btn.setText("Hello world");
-        root2D.getChildren().addAll(btn, timerLabel);
         btn.setOnAction(new EventHandler<ActionEvent>() {
         	
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");    
+                System.out.println("hello world");    
             }
         });
         
+    	Label timerLabel = new Label();
+    	timerLabel.textProperty().bind(timerCount.asString());
+    	timerLabel.setTranslateX(200);
+    	timerLabel.setTranslateY(200);
+
+        root2D.getChildren().addAll(btn, timerLabel);
         
-        if (timeline != null) {
-        	timeline.stop();
+/*        Timeline timeline = new Timeline();
+        KeyValue kv = new KeyValue(timerCount, 0);
+        EventHandler onFinished = new EventHandler<ActionEvent> () {
+        	public void handle(ActionEvent event) {
+        		System.out.println("Finished countdown");
+        	}
+        };
+        KeyFrame kf = new KeyFrame(Duration.seconds(3), onFinished, kv);
+        timeline.getKeyFrames().add(kf);*/
+        
+        //Timeline timeline = new Timeline();
+        
+        for (char c = 'A'; c <= 'B'; c++) {
+        	this.gestureTimer(3);
+        	System.out.println("gesture timer call end");
+/*        	new Timer().schedule(
+        				    new TimerTask() {
+
+        				        @Override
+        				        public void run() {
+        				            System.out.println("ping");
+        				        }
+        				    }, 0, 5000);*/
+        	
+        	//final char count = c;
+
+/*        	timerCount.set(3);
+        	final char count = c;
+            timeline = new Timeline(new KeyFrame(Duration.seconds(3), 
+    						new EventHandler<ActionEvent>() {
+    							public void handle(ActionEvent event) {
+    								System.out.println("Finished countdown #" + count);
+    								timerFlag = true;
+    									//char d = count++;
+    								
+    							};
+    						}, 
+    						new KeyValue(timerCount, 0)));
+
+            timeline.playFromStart();
+
+            System.out.println("test #" + c);   */
         }
-        timerSeconds.set(STARTTIME);
-        timeline = new Timeline();
-        timeline.getKeyFrames().add(
-        				new KeyFrame(Duration.seconds(STARTTIME+1),
-        				new KeyValue(timerSeconds, 0)));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.playFromStart();
+        	
+        this.testPropProperty().addListener(new ChangeListener<Boolean>() {
+        	public void changed(ObservableValue<? extends Boolean> testProp, Boolean oldVal, Boolean newVal) {
+        		if (newVal) {
+        			System.out.println("testprop set true");
+        			controller.removeListener(trainerListener);
+        			controller.addListener(leapListener);
+        			
+        		}
+        	}
+        });
+        	
+        	
+        	
+        	//this.gestureTimer(timeline, c, 3);
+/*        	timerFlag = false;
+        	timerCount.set(3);
+        
+			final char count = c;
+*/
+	    //}
+        
+        
+        
+    	//this.gestureTimer(timeline, 'C', 3);	        
+	        
+	        /*timeline.getKeyFrames().add(
+	        				new KeyFrame(Duration.seconds(STARTTIME+1),
+	        				new KeyValue(timerSeconds, 0)));*/
+	       // timeline.setCycleCount(Animation.INDEFINITE);
+	        
+	       // System.out.println("Finished countdown #" + i);
         
         
         final PerspectiveCamera camera = new PerspectiveCamera();
@@ -134,7 +231,7 @@ public class TrainerGUI extends Application {
         System.out.println(result);*/
         
 
-        listener.frameReadyProperty().addListener(new ChangeListener<Boolean>() {
+        trainerListener.frameReadyProperty().addListener(new ChangeListener<Boolean>() {
         	public void changed(ObservableValue<? extends Boolean> frameReady, Boolean oldVal, Boolean newVal) {
         		//System.out.println("Debug 1  " + frameReady + "  " + oldVal + "  " + newVal);
         		if (newVal) {
@@ -272,9 +369,10 @@ public class TrainerGUI extends Application {
         });
         
     }
-          
-    public void stop(){
-        controller.removeListener(listener);
+    
+
+    public void stop() {
+        controller.removeListener(trainerListener);
     }
     
 }

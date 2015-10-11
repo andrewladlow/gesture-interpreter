@@ -43,18 +43,34 @@ public class TrainerListener extends Listener {
 	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
-	Gesture gesture;
-    Boolean recording = false; 
-    int frameCount = 0;
-    int minGestureFrames = 5;	// The minimum number of recorded frames considered as possibly containing a recognisable gesture 
-    int minRecordingVelocity = 60; // The minimum velocity a frame needs to clock in at to trigger gesture recording, or below to stop gesture recording (by default)
-    int maxRecordingVelocity = 30;	// The maximum velocity a frame can measure at and still trigger pose recording, or above which to stop pose recording (by default)
-    Boolean stopRecording = false;  //says if recording should be stopped
+	private Gesture gesture;
+    private Boolean recording = false; 
+    private int frameCount = 0;
+    private int minGestureFrames = 5;
+    private int minRecordingVelocity = 60; 
+    private int maxRecordingVelocity = 30;	
+    private Boolean stopRecording = false;  
 	
     private List<byte[]> frameList = new ArrayList<byte[]>();
+    
+    public void onConnect(Controller controller) {
+    	System.out.println("connected trainer");
+    }
+    
+    public void onExit(Controller controller) {
+    	System.out.println("disconnected trainer");
+    }
 	
+    public void onFrame(Controller controller) {
+    	Frame frame = controller.frame();
+    	frameReady.set(false);
+    	if (!frame.hands().isEmpty()) {
+    		frameReady.set(true);
+    		
+    	}
+    }
 	
-	public void onFrame(Controller controller) {
+	/*public void onFrame(Controller controller) {
 		Frame frame = controller.frame();
 		//System.out.println("1");
 		frameReady.set(false);
@@ -69,9 +85,9 @@ public class TrainerListener extends Listener {
 	        
 	        if (recordableFrame(frame, minRecordingVelocity)){
 	    		System.out.println("Debug 3");
-	            /*
+	            
 	             * If this is the first frame in a gesture, we clean up some running values and fire the 'started-recording' event.
-	             */
+	             
 	            if (!recording) {
 	                recording = true; 
 	                frameCount = 0;
@@ -84,14 +100,14 @@ public class TrainerListener extends Listener {
 	            System.out.println("Debug record");
 	            
 	        } else if(recording) {
-	            /*
+	            
 	             * If the frame should not be recorded but recording was active, then we deactivate recording and check to see if enough 
 	             * frames have been recorded to qualify for gesture recognition.
-	             */
+	             
 	            recording = false;
-	            /*
+	            
 	             * As soon as we're no longer recording, we fire the 'stopped-recording' function.
-	             */
+	             
 	            stopRecording();
 	                
 	            if (frameCount >= minGestureFrames){
@@ -105,7 +121,7 @@ public class TrainerListener extends Listener {
 	            }
 	        }
 		}
-	}
+	}*/
 
 	public BooleanProperty frameReadyProperty() {
 		return frameReady;
@@ -390,7 +406,7 @@ public class TrainerListener extends Listener {
 //        Point point = new Point(x, y, z);
 //        System.out.println("Debug record 1");
 //        gesture.add(point);
-//        // TODO Why is 2 not being printed?
+//        
 //        System.out.println("Debug record 2");
 //        
 //    }
