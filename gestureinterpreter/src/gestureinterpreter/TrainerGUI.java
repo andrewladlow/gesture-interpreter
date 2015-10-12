@@ -35,6 +35,7 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -49,6 +50,8 @@ public class TrainerGUI extends Application {
     
     private BooleanProperty testProp = new SimpleBooleanProperty();
     
+    private Boolean doneFlag = false;
+    
     //private Timeline timeline;
     
     public void gestureTimer(int time) {
@@ -58,6 +61,7 @@ public class TrainerGUI extends Application {
 							public void handle(ActionEvent event) {
 								System.out.println("Finished countdown");
 								testProp.set(true);
+								doneFlag = true;
 							};
 						}, 
 						new KeyValue(timerCount, 0)));
@@ -101,6 +105,7 @@ public class TrainerGUI extends Application {
     	timerLabel.textProperty().bind(timerCount.asString());
     	timerLabel.setTranslateX(200);
     	timerLabel.setTranslateY(200);
+    	timerLabel.setFont(Font.font("Times New Roman", 24));
 
         root2D.getChildren().addAll(btn, timerLabel);
         
@@ -117,8 +122,37 @@ public class TrainerGUI extends Application {
         //Timeline timeline = new Timeline();
         
         for (char c = 'A'; c <= 'B'; c++) {
-        	this.gestureTimer(3);
+        	Thread t = new Thread() {
+        		public void run() {
+        			while (!doneFlag) {
+	        	    	int countDown = 3;
+	        	    	while (countDown>0) {
+	        	    		System.out.println("Recording in " + countDown);
+	        	    		countDown--;
+	        	    		try {
+	        	    			Thread.sleep(1000);
+	        	    		} catch (InterruptedException ie) {}
+	        	    	}
+	        	    	doneFlag = true;
+	
+	        	        System.out.println("gesturetimer method end");
+        			}
+        	        
+        		}
+        	};
+        	t.start();
+        	while (!doneFlag) {
+        		try {
+        			Thread.sleep(1);
+        		} catch (InterruptedException ie) {}
+        	}
+        	
         	System.out.println("gesture timer call end");
+        	doneFlag = false;
+        }
+        	
+        	
+        	
 /*        	new Timer().schedule(
         				    new TimerTask() {
 
@@ -146,7 +180,6 @@ public class TrainerGUI extends Application {
             timeline.playFromStart();
 
             System.out.println("test #" + c);   */
-        }
         	
         this.testPropProperty().addListener(new ChangeListener<Boolean>() {
         	public void changed(ObservableValue<? extends Boolean> testProp, Boolean oldVal, Boolean newVal) {
