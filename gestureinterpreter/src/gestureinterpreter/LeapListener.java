@@ -47,8 +47,8 @@ public class LeapListener extends Listener {
     private Boolean recording = false; 
     private int frameCount = 0;
     private int minGestureFrames = 5;	
-    private int minRecordingVelocity = 60; 
-    private int maxRecordingVelocity = 30;	
+    private int maxVelocity = 200;	
+    private int minVelocity = 30; 
     private Boolean stopRecording = false;  
 	
     private List<byte[]> frameList = new ArrayList<byte[]>();
@@ -74,7 +74,7 @@ public class LeapListener extends Listener {
 				return;
 			}
 	        
-	        if (recordableFrame(frame, minRecordingVelocity)){
+	        if (recordableFrame(frame, minVelocity, maxVelocity)){
 	    		System.out.println("Debug 3");
 
 	            if (!recording) {
@@ -120,40 +120,35 @@ public class LeapListener extends Listener {
     }
    
  
-    public Boolean recordableFrame(Frame frame, int min){
+    public Boolean recordableFrame(Frame frame, int min, int max){
         
-        HandList hands = frame.hands();
-        int j;
-        Hand hand;
         FingerList fingers;
-        double palmVelocity;
-        double tipVelocity;
         Boolean poseRecordable = false;
             
-        int l=hands.count();
-        //System.out.println(l);
-        for(int i=0; i<l; i++){
-            hand= hands.get(i); 
-            Vector palmVelocitys = hand.palmVelocity();
-            palmVelocity = Math.max(Math.abs(palmVelocitys.getX()), Math.abs(palmVelocitys.getY()));
-            palmVelocity = Math.max(palmVelocity, Math.abs(palmVelocitys.getZ()));
+        for(Hand hand : frame.hands()) {
+        	
+            Vector palmVelocityTemp = hand.palmVelocity();
+            int palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));
                 
             /*
              * We return true if there is a hand moving above the minimum recording velocity
              */
-             if (palmVelocity >= min){return true;}
+             if (palmVelocity >= min) {
+            	 return true;
+             }
                 
              fingers = hand.fingers(); 
-             int k = fingers.count();
-             for (j=0; j<k; j++){
-                 Vector tipVelocitys = fingers.get(j).tipVelocity();
-                 tipVelocity = Math.max(Math.abs(tipVelocitys.getX()), Math.abs(tipVelocitys.getY()));
+             
+             for (Finger finger : hand.fingers()) {
+                 Vector fingerVelocityTemp = finger.tipVelocity();
+                 tipVelocity = Math.max(Math.abs(tipVelocityTemp.getX()), Math.abs(tipVelocityTemp.getY()));
                  tipVelocity = Math.max(tipVelocity, Math.abs(tipVelocitys.getZ()));
                     
                 /*
                  * Or if there's a finger tip moving above the minimum recording velocity
                  */
                 if (tipVelocity >= min) { return true; }
+                //if (tipVelocity <= max) { poseRecordable = true; break; }
             }
         }
             

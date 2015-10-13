@@ -61,16 +61,16 @@ public class TrainerListener extends Listener {
     	System.out.println("disconnected trainer");
     }
 	
-    public void onFrame(Controller controller) {
+/*    public void onFrame(Controller controller) {
     	Frame frame = controller.frame();
     	frameReady.set(false);
     	if (!frame.hands().isEmpty()) {
     		frameReady.set(true);
     		
     	}
-    }
+    }*/
 	
-	/*public void onFrame(Controller controller) {
+	public void onFrame(Controller controller) {
 		Frame frame = controller.frame();
 		//System.out.println("1");
 		frameReady.set(false);
@@ -84,9 +84,7 @@ public class TrainerListener extends Listener {
 			}
 	        
 	        if (recordableFrame(frame, minRecordingVelocity)){
-	    		System.out.println("Debug 3");
-	            
-	             * If this is the first frame in a gesture, we clean up some running values and fire the 'started-recording' event.
+	    		System.out.println("Debug 3");	            
 	             
 	            if (!recording) {
 	                recording = true; 
@@ -101,13 +99,9 @@ public class TrainerListener extends Listener {
 	            
 	        } else if(recording) {
 	            
-	             * If the frame should not be recorded but recording was active, then we deactivate recording and check to see if enough 
-	             * frames have been recorded to qualify for gesture recognition.
 	             
 	            recording = false;
-	            
-	             * As soon as we're no longer recording, we fire the 'stopped-recording' function.
-	             
+	            	             
 	            stopRecording();
 	                
 	            if (frameCount >= minGestureFrames){
@@ -121,7 +115,7 @@ public class TrainerListener extends Listener {
 	            }
 	        }
 		}
-	}*/
+	}
 
 	public BooleanProperty frameReadyProperty() {
 		return frameReady;
@@ -136,20 +130,6 @@ public class TrainerListener extends Listener {
     }
    
     
-    /**
-     * This function returns TRUE if the provided frame should trigger recording and FALSE if it should stop recording.  
-     * 
-     * Of course, if the system isn't already recording, returning FALSE does nothing, and vice versa.. So really it returns 
-     * whether or not a frame may possibly be part of a gesture.
-     * 
-     * By default this function makes its decision based on one or more hands or fingers in the frame moving faster than the 
-     * configured minRecordingVelocity, which is provided as a second parameter.
-     * 
-     * @param frame
-     * @param min
-     * @param max
-     * @returns {Boolean}
-     */
     public Boolean recordableFrame(Frame frame, int min){
         
         HandList hands = frame.hands();
