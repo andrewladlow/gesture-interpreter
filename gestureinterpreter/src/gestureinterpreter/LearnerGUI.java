@@ -40,10 +40,10 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class TrainerGUI extends Application {
+public class LearnerGUI extends Application {
 	
     private LeapListener leapListener = null;
-	private TrainerListener trainerListener = null;
+	private LearnerListener learnerListener = null;
     private Controller controller = null;
     
     private IntegerProperty timerCount = new SimpleIntegerProperty();
@@ -80,11 +80,11 @@ public class TrainerGUI extends Application {
     public void start(Stage primaryStage) {
     	
     	leapListener = new LeapListener();
-        trainerListener = new TrainerListener();
+        learnerListener = new LearnerListener();
         controller = new Controller();
         //controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
-        controller.addListener(trainerListener);
+        controller.addListener(learnerListener);
         
         Group root2D = new Group();
         //StackPane root = new StackPane();
@@ -121,7 +121,9 @@ public class TrainerGUI extends Application {
         
         //Timeline timeline = new Timeline();
         
-        for (char c = 'A'; c <= 'B'; c++) {
+        // timer runs and then UI... need concurrency
+        
+       /* for (char c = 'A'; c <= 'B'; c++) {
         	Thread t = new Thread() {
         		public void run() {
         			while (!doneFlag) {
@@ -149,16 +151,15 @@ public class TrainerGUI extends Application {
         	
         	System.out.println("gesture timer call end");
         	doneFlag = false;
-        }
+        }*/
         	
         	
         	
 /*        	new Timer().schedule(
         				    new TimerTask() {
 
-        				        @Override
         				        public void run() {
-        				            System.out.println("ping");
+        				            System.out.println("countdown end");
         				        }
         				    }, 0, 5000);*/
         	
@@ -185,7 +186,7 @@ public class TrainerGUI extends Application {
         	public void changed(ObservableValue<? extends Boolean> testProp, Boolean oldVal, Boolean newVal) {
         		if (newVal) {
         			System.out.println("testprop set true");
-        			controller.removeListener(trainerListener);
+        			controller.removeListener(learnerListener);
         			controller.addListener(leapListener);
         			
         		}
@@ -264,7 +265,7 @@ public class TrainerGUI extends Application {
         System.out.println(result);*/
         
 
-        trainerListener.frameReadyProperty().addListener(new ChangeListener<Boolean>() {
+        learnerListener.frameReadyProperty().addListener(new ChangeListener<Boolean>() {
         	public void changed(ObservableValue<? extends Boolean> frameReady, Boolean oldVal, Boolean newVal) {
         		//System.out.println("Debug 1  " + frameReady + "  " + oldVal + "  " + newVal);
         		if (newVal) {
@@ -393,6 +394,7 @@ public class TrainerGUI extends Application {
         		else if (controller.frame().hands().isEmpty()) {
         			Platform.runLater(new Runnable() {
         				public void run() {
+        					// remove shapes if hands leave tracking area
         					System.out.println("Debug 6");
         					root3D.getChildren().clear();
         				}
@@ -405,7 +407,7 @@ public class TrainerGUI extends Application {
     
 
     public void stop() {
-        controller.removeListener(trainerListener);
+        controller.removeListener(learnerListener);
     }
     
 }

@@ -115,7 +115,7 @@ public class Visualizer extends Application {
 					//System.out.println(controller.frame().id());
 					//System.out.println(controller.frame(1).id());
         			
-        			// Move to JavaFX thread? Required to avoid exceptions...
+        			// move to JavaFX thread? required to avoid exceptions...
         			Platform.runLater(new Runnable() {
         				public void run() {			
         					//System.out.println("Debug 2  " + frameCopy.id());
@@ -232,6 +232,7 @@ public class Visualizer extends Application {
         		else if (controller.frame().hands().isEmpty()) {
         			Platform.runLater(new Runnable() {
         				public void run() {
+        					// remove shapes if hands leave tracking area
         					System.out.println("Debug 6");
         					root3D.getChildren().clear();
         				}

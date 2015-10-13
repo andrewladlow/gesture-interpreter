@@ -3,7 +3,7 @@ package gestureinterpreter;
 public class Driver {
 	
     public static void main(String[] args) {
-    	//Visualizer.launch(Visualizer.class, args);
-    	TrainerGUI.launch(TrainerGUI.class, args);
+    	Visualizer.launch(Visualizer.class, args);
+    	//LearnerGUI.launch(LearnerGUI.class, args);
     }
 }
