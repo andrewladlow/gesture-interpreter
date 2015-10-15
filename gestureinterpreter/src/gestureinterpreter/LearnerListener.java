@@ -116,6 +116,8 @@ public class LearnerListener extends Listener {
 
         System.out.println("Debug add");
         System.out.println(frameList.size());
+
+
     }
 
     public Boolean recordableFrame(Frame frame, int min, int max){
@@ -127,9 +129,9 @@ public class LearnerListener extends Listener {
             
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));
                 
-             if (palmVelocity >= min) {
-            	 return true;
-             }
+            if (palmVelocity >= min) {
+            	return true;
+            }
                 
              
              for (Finger finger : hand.fingers()) {
