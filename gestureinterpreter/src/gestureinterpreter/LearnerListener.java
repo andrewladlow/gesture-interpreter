@@ -91,16 +91,15 @@ public class LearnerListener extends Listener {
 	            System.out.println("Debug record");
 	            
 	        } else if (recording) {
-	            
-	             
+	                      
 	            recording = false;
 	            	             
 	            stopRecording();
 	                
 	            if (frameCount >= minGestureFrames) {
-	                    saveGesture();
+	            	saveGesture();
 
-	                    System.out.println("Debug save 2");
+	                System.out.println("Debug save 2");
 	            }
 	        }
 		}
@@ -120,23 +119,20 @@ public class LearnerListener extends Listener {
 
     }
 
-    public Boolean recordableFrame(Frame frame, int min, int max){
+    public Boolean recordableFrame(Frame frame, int min, int max) {
         
-            
         for (Hand hand : frame.hands()) {
         	
-            Vector palmVelocityTemp = hand.palmVelocity();
+            Vector palmVelocityTemp = hand.palmVelocity(); 
+            float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));             
             
-            float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));
-                
             if (palmVelocity >= min) {
             	return true;
             }
-                
-             
-             for (Finger finger : hand.fingers()) {
+                  
+            for (Finger finger : hand.fingers()) {
             	 
-                Vector fingerVelocityTemp = finger.tipVelocity();
+            	Vector fingerVelocityTemp = finger.tipVelocity();
                 float fingerVelocity = Math.max(Math.abs(fingerVelocityTemp.getX()), Math.max(Math.abs(fingerVelocityTemp.getY()), Math.abs(fingerVelocityTemp.getZ())));
                     
                 if (fingerVelocity >= min) { 
@@ -171,8 +167,8 @@ public class LearnerListener extends Listener {
     	
     }
     
-    public void stopRecording(){
-        stopRecording=true;
+    public void stopRecording() {
+        stopRecording = true;
     }	
 	
 	
