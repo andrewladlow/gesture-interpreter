@@ -157,10 +157,10 @@ public class LearnerListener extends Listener {
     	System.out.println("Debug save attempt");
     	try {
     		for (int i = 0; i < frameList.size(); i++) {
-    			// see https://developer.leapmotion.com/documentation/java/devguide/Leap_Serialization.html
+    			// from https://developer.leapmotion.com/documentation/java/devguide/Leap_Serialization.html
     			// write 4 bytes detailing size of frame
     			Files.newOutputStream(Paths.get("frames.data")).write(ByteBuffer.allocate(4).putInt(frameList.get(i).length).array());
-    			// write actual frame afterwards
+    			// write actual frame data afterwards
     			Files.newOutputStream(Paths.get("frames.data")).write(frameList.get(i));
     		}
     	} catch (IOException e) {
