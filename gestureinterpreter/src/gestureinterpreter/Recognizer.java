@@ -8,27 +8,34 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import com.leapmotion.leap.Bone;
+import com.leapmotion.leap.Controller;
+import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Frame;
+import com.leapmotion.leap.Hand;
+import com.leapmotion.leap.Vector;
 
 public class Recognizer {
-	public void loadFrames() {
+	public void compareFrame (Frame curFrame) {
 		// from https://developer.leapmotion.com/documentation/java/devguide/Leap_Serialization.html
-		// deserializes frames from file
+		// deserialize frames from file
 		try {
-			Path inFilepath = Paths.get("gestures/d.data");
+			
+			Path inFilepath = Paths.get("gestures/frames.data");
 			byte[] data = Files.readAllBytes(inFilepath);
 			int c = 0;
+			int f = 0;
 			int nextBlockSize = 0;
 			if(data.length > 4) nextBlockSize = (data[c++] & 0x000000ff) << 24 |
 		                                      	(data[c++] & 0x000000ff) << 16 |
 		                                      	(data[c++] & 0x000000ff) <<  8 |
 		                                      	(data[c++] & 0x000000ff);
-			
 			while (c + nextBlockSize <= data.length) {
 				byte[] frameData = Arrays.copyOfRange(data, c, c + nextBlockSize);
 				c += nextBlockSize;
-				Frame newFrame = new Frame();
-				newFrame.deserialize(frameData);
+				Frame storedFrame = new Frame();
+				storedFrame.deserialize(frameData);
+				frameCompare(curFrame, storedFrame);
 				if(data.length - c > 4)  nextBlockSize = (data[c++] & 0x000000ff) << 24 |
 														 (data[c++] & 0x000000ff) << 16 |
 														 (data[c++] & 0x000000ff) <<  8 |
@@ -39,7 +46,20 @@ public class Recognizer {
 		}
 	}
 	
-	public void compareTo (Frame currentFrame) {
+	public void frameCompare (Frame curFrame, Frame storedFrame) {
 		
+		for (Hand curHand : curFrame.hands()) {
+			System.out.println("test");
+			for (Hand storedHand : storedFrame.hands()) {
+				for (Finger curFinger : curHand.fingers()) {
+					Vector curTip = curFinger.tipPosition();
+					for (Finger storedFinger : storedHand.fingers()) {
+						Vector storedTip = storedFinger.tipPosition();
+						float result = curTip.dot(storedTip);
+						System.out.println(result);
+					}
+				}	
+			}
+		}
 	}
 }

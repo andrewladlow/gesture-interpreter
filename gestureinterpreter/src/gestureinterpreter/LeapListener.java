@@ -43,7 +43,6 @@ public class LeapListener extends Listener {
 	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
-	
 	public void onConnect(Controller controller) {
 		System.out.println("connected leap");
 	}

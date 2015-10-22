@@ -1,33 +1,26 @@
 package gestureinterpreter;
 
-import com.leapmotion.leap.HandList;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class Gesture implements Serializable {
     String name;
-    ArrayList<Point> points = new ArrayList<Point>();
-    HandList hands;
+    ArrayList<Point> pointArray = new ArrayList<Point>();
     
-    public Gesture(String input){
-        name = input;
+    public Gesture (String name) {
+        this.name = name;
     }
     
-    public Gesture(){
-        name = null;
+    public void addPoint (Point point) {
+        pointArray.add(point);
     }
     
-    public void add(Point point){
-        points.add(point);
+    public Point getPoint (int index) {
+        return pointArray.get(index);
     }
     
-    public Point get(int i){
-        return points.get(i);
-    }
-    
-    public void set(int i, Point p){
-        points.set(i, p);
+    public void setPoint (int index, Point p) {
+        pointArray.set(index, p);
     }
 }
