@@ -12,6 +12,10 @@ public class Gesture implements Serializable {
         this.name = name;
     }
     
+    public String getName () {
+    	return name;
+    }
+    
     public void addPoint (Point point) {
         pointArray.add(point);
     }

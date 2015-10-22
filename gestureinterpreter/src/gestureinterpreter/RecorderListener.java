@@ -9,6 +9,8 @@ import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.FingerList;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -35,22 +37,26 @@ public class RecorderListener extends Listener {
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
 	private Gesture gesture;
-    private int frameCount = 0;
-    
+	
+    private int gestureFrameCount = 0;  
     private int minGestureFrames = 5;
     private int minGestureVelocity = 150;
     
+    private int poseFrameCount = 0;
     private int minPoseFrames = 5;
     private int maxPoseVelocity = 50;	
+    private boolean validPoseFrame = false;
+    private boolean validPose = false;    
 	
     private enum State {
     	IDLE, RECORDING, STOPPED;
     }
     
-    private State state = State.IDLE;
+    private State state;
     
-    public void RecorderListener(String gestureName) {
-    	gesture = new Gesture(gestureName);
+    public void RecorderListener() {
+    	gesture = new Gesture("testGesture");
+    	state = State.IDLE;
     }
     
     public void onConnect(Controller controller) {
@@ -63,6 +69,7 @@ public class RecorderListener extends Listener {
 	
 	
 	public void onFrame(Controller controller) {
+		validPoseFrame = false;
 		Frame frame = controller.frame();
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
@@ -72,28 +79,36 @@ public class RecorderListener extends Listener {
 				return;
 			}
 	        
-	        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {
-	    		System.out.println("Debug 3");	            
+	        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            
 	             
 	            if (state == State.IDLE) {
-	                frameCount = 0;
 	                state = State.RECORDING; 
 	            }
 	            
+	            if (validPoseFrame) {
+	            	poseFrameCount++;
+	            	System.out.println("pose frame count: " + poseFrameCount);
+	            	if (poseFrameCount > minPoseFrames) {
+	            		validPose = true;
+	            	}
+	            } else {
+		            gestureFrameCount++;
+		            System.out.println("gesture frame count: " + gestureFrameCount);
+	        		poseFrameCount = 0;
+	        	}
 	            
-	            System.out.println("Debug frame: " + frame.id());
-	            storeFrame(frame);
-	            frameCount++;
+	            storePoint(frame);
 	            System.out.println("Debug record");
 	            
 	        } else if (state == State.RECORDING) {
 	                      
 	            state = State.STOPPED;
 	                
-	            if (frameCount >= minGestureFrames) {
-	            	saveGesture();
-
-	                System.out.println("Debug save 2");
+	            if (gestureFrameCount >= minGestureFrames || validPose) {
+	            	
+	            	saveGesture(gesture);
+	                System.out.println("Debug store");
+	                validPose = false;
 	            }
 	        }
 		}
@@ -104,14 +119,20 @@ public class RecorderListener extends Listener {
 	}
 	
 	
-    public Boolean validFrame(Frame frame, int min, int max) {
+    public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {
         
         for (Hand hand : frame.hands()) {
         	
             Vector palmVelocityTemp = hand.palmVelocity(); 
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));             
             
-            if (palmVelocity >= min) {
+            System.out.println("palm velocity: " + palmVelocity);
+            
+            if (palmVelocity >= minVelocity) {
+            	return true;
+            } else if (palmVelocity <= maxVelocity) {
+            	validPoseFrame = true;
+            	System.out.println("valid palm pose");
             	return true;
             }
                   
@@ -120,37 +141,42 @@ public class RecorderListener extends Listener {
             	Vector fingerVelocityTemp = finger.tipVelocity();
                 float fingerVelocity = Math.max(Math.abs(fingerVelocityTemp.getX()), Math.max(Math.abs(fingerVelocityTemp.getY()), Math.abs(fingerVelocityTemp.getZ())));
                     
-                if (fingerVelocity >= min) { 
+                if (fingerVelocity >= minVelocity) { 
                 	return true; 
+                } else if (fingerVelocity <= maxVelocity) {
+                	validPoseFrame = true;
+                	return true;
                 }
-
             }
-             
-            // some way of checking static gestures with max velocity? held position over x frames...
-        }
-        
-        if (poseRecordable) {
-        	this.recordedPoseFrames++;
-        	
-        	if (this.recordedPoseFrames >= this.minPoseFrames) {
-        		this.recordingPose = true;
-        		return true;
-        	} else {
-        		this.recordedPoseFrames = 0;
-        	}
         }
             
         return false;
     }
    
-    public void storeFrame(Frame frame) {
+    public void storePoint(Frame frame) {
     	
     	for (Hand hand : frame.hands()) {
-    		gesture.addPoint(new Point());
+    		gesture.addPoint(new Point(hand.palmVelocity().getX(), hand.palmVelocity().getY(), hand.palmVelocity().getZ()));
+    		
+    		for (Finger finger : hand.fingers()) {
+    			gesture.addPoint(new Point(finger.tipVelocity().getX(), finger.tipVelocity().getY(), finger.tipVelocity().getZ()));
+    		}
     	}
+    	
 
     }
     
+    public void saveGesture(Gesture gesture) {
+    	try {
+    		FileOutputStream outStream = new FileOutputStream(new File("gestures/" + gesture.getName() + ".csv"));
+    		ObjectOutputStream ObjOutStream = new ObjectOutputStream (outStream);
+    		ObjOutStream.writeObject(gesture);
+    		ObjOutStream.close();
+    		outStream.close();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
     
 /*    public void saveGesture(Controller controller) {
     	System.out.println("Debug save attempt");
