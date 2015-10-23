@@ -39,11 +39,11 @@ public class RecorderListener extends Listener {
 	private Gesture gesture;
 	
     private int gestureFrameCount = 0;  
-    private int minGestureFrames = 5;
+    private int minGestureFrames = 15;
     private int minGestureVelocity = 150;
     
     private int poseFrameCount = 0;
-    private int minPoseFrames = 5;
+    private int minPoseFrames = 15;
     private int maxPoseVelocity = 50;	
     private boolean validPoseFrame = false;
     private boolean validPose = false;    
@@ -54,7 +54,7 @@ public class RecorderListener extends Listener {
     
     private State state;
     
-    public void RecorderListener() {
+    public RecorderListener() {
     	gesture = new Gesture("testGesture");
     	state = State.IDLE;
     }
@@ -69,6 +69,7 @@ public class RecorderListener extends Listener {
 	
 	
 	public void onFrame(Controller controller) {
+		//System.out.println(state);
 		validPoseFrame = false;
 		Frame frame = controller.frame();
 		frameReady.set(false);
@@ -87,13 +88,13 @@ public class RecorderListener extends Listener {
 	            
 	            if (validPoseFrame) {
 	            	poseFrameCount++;
-	            	System.out.println("pose frame count: " + poseFrameCount);
+	            	//System.out.println("pose frame count: " + poseFrameCount);
 	            	if (poseFrameCount > minPoseFrames) {
 	            		validPose = true;
 	            	}
 	            } else {
 		            gestureFrameCount++;
-		            System.out.println("gesture frame count: " + gestureFrameCount);
+		           // System.out.println("gesture frame count: " + gestureFrameCount);
 	        		poseFrameCount = 0;
 	        	}
 	            
@@ -104,7 +105,7 @@ public class RecorderListener extends Listener {
 	                      
 	            state = State.STOPPED;
 	                
-	            if (gestureFrameCount >= minGestureFrames || validPose) {
+	            if ((gestureFrameCount >= minGestureFrames) || validPose) {
 	            	
 	            	saveGesture(gesture);
 	                System.out.println("Debug store");
@@ -126,7 +127,7 @@ public class RecorderListener extends Listener {
             Vector palmVelocityTemp = hand.palmVelocity(); 
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));             
             
-            System.out.println("palm velocity: " + palmVelocity);
+            //System.out.println("palm velocity: " + palmVelocity);
             
             if (palmVelocity >= minVelocity) {
             	return true;
@@ -168,10 +169,11 @@ public class RecorderListener extends Listener {
     
     public void saveGesture(Gesture gesture) {
     	try {
-    		FileOutputStream outStream = new FileOutputStream(new File("gestures/" + gesture.getName() + ".csv"));
-    		ObjectOutputStream ObjOutStream = new ObjectOutputStream (outStream);
-    		ObjOutStream.writeObject(gesture);
-    		ObjOutStream.close();
+    		System.out.println("saving " + gesture.getName());
+    		FileOutputStream outStream = new FileOutputStream(new File("gestures/" + gesture.getName()), false);
+    		ObjectOutputStream objOutStream = new ObjectOutputStream (outStream);
+    		objOutStream.writeObject(gesture);
+    		objOutStream.close();
     		outStream.close();
     	} catch (Exception e) {
     		e.printStackTrace();
