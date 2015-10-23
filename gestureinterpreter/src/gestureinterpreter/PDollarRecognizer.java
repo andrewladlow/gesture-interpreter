@@ -73,48 +73,47 @@ public class PDollarRecognizer {
 	static Point  mPointOrig = new Point(0.0,0.0,0);
 	static ArrayList<PointCloud> mPntClouds = new ArrayList<PointCloud>();
 
-        public PDollarRecognizer() { initializePointCloudTable(); }
+    public PDollarRecognizer() { 
+    	initializePointCloudTable(); 
+    }
 
-        public RecognizerResults Recognize(ArrayList<Point> points)
-	{
-		PointCloud foundPointCloud = null;
-                points = Resample(points, mNumPoints);
-                points = Scale(points);
-                points = TranslateTo(points, mPointOrig);
+    public RecognizerResults Recognize(ArrayList<Point> points) {
+	PointCloud foundPointCloud = null;
+            points = Resample(points, mNumPoints);
+            points = Scale(points);
+            points = TranslateTo(points, mPointOrig);
 
-                double score = Double.POSITIVE_INFINITY;
-                for( int i = 0; i < mPntClouds.size(); i++ ) // for each point-cloud template
-                {
-                        double distScore = GreedyCloudMatch(points, mPntClouds.get(i));
-                        if( distScore < score ) {
-                                score = distScore; // best (least) distance
-                                foundPointCloud = mPntClouds.get(i); // point-cloud
-                        }
-                }
-                return( foundPointCloud== null ) ? new RecognizerResults("No match.", 0.0)
-			: new RecognizerResults(foundPointCloud.mName, Math.max((score - 2.0) / -2.0, 0.0), String.format("score %f\n", score));
-        }
+            double score = Double.POSITIVE_INFINITY;
+            
+            // for each point-cloud template
+            for (int i = 0; i < mPntClouds.size(); i++) {
+                    double distScore = GreedyCloudMatch(points, mPntClouds.get(i));
+                    if (distScore < score) {
+                            score = distScore; // best (least) distance
+                            foundPointCloud = mPntClouds.get(i); // point-cloud
+                    }
+            }
+            return (foundPointCloud== null) ? new RecognizerResults("No match.", 0.0)
+		: new RecognizerResults(foundPointCloud.mName, Math.max((score - 2.0) / -2.0, 0.0), String.format("score %f\n", score));
+    }
 
-	public int addGesture(String name, ArrayList<Point> points)
-	{
+	public int addGesture(String name, ArrayList<Point> points) {
 		mPntClouds.add(new PointCloud(name, points, mNumPoints));
 		int num = 0;
-		for( int i = 0; i < mPntClouds.size(); i++ )
-		{
-			if( mPntClouds.get(i).mName.equals( name) )
+		for (int i = 0; i < mPntClouds.size(); i++) {
+			if(mPntClouds.get(i).mName.equals(name)) {
 				num++;
+			}
 		}
 		return num;
 	}
 
-	private static double GreedyCloudMatch(ArrayList<Point> points, PointCloud pntCloud)
-	{
+	private static double GreedyCloudMatch(ArrayList<Point> points, PointCloud pntCloud) {
 		double e = 0.50;
 		double step = Math.floor(Math.pow(points.size(), 1 - e));
 
 		double min = Double.POSITIVE_INFINITY;
-		for( int  i = 0; i < points.size(); i += step )
-		{
+		for (int  i = 0; i < points.size(); i += step) {
 			double d1 = CloudDistance(points, pntCloud.mPoints, i);
 			double d2 = CloudDistance(pntCloud.mPoints, points, i);
 			min = Math.min(min, Math.min(d1, d2)); // min3
@@ -122,23 +121,21 @@ public class PDollarRecognizer {
 		return min;
 	}
 
-	private static double CloudDistance(ArrayList<Point> pts1, ArrayList<Point> pts2, int start)
-	{
+	private static double CloudDistance(ArrayList<Point> pts1, ArrayList<Point> pts2, int start) {
 		// pts1.size() == pts2.size()
 		boolean[] matched = new boolean[pts1.size()]; 
-		for( int k = 0; k < pts1.size(); k++ )
+		for (int k = 0; k < pts1.size(); k++) {
 			matched[k] = false;
+		}
 		double sum = 0;
 		int i = start;
-		do
-		{
+		do {
 			int index = -1;
 			double min = Double.POSITIVE_INFINITY;
-			for( int j = 0; j < matched.length; j++ )
-			{
-				if( !matched[j] ) {
+			for(int j = 0; j < matched.length; j++) {
+				if(!matched[j]) {
 					double d = EuclideanDistance(pts1.get(i), pts2.get(j));
-					if( d < min ) {
+					if(d < min) {
 						min = d;
 						index = j;
 					}
@@ -148,25 +145,21 @@ public class PDollarRecognizer {
 			double weight = 1 - ((i - start + pts1.size()) % pts1.size()) / pts1.size();
 			sum += weight * min;
 			i = (i + 1) % pts1.size();
-		} while( i != start );
+		} while (i != start);
 		return sum;
 	}
 
-	private static ArrayList<Point> Resample(ArrayList<Point> points, int n)
-	{
+	private static ArrayList<Point> Resample(ArrayList<Point> points, int n) {
 		double I = PathLength(points) / (n - 1); // interval length
 		double D = 0.0;
 
 		ArrayList<Point> newpoints = new ArrayList<Point>(); 
 		newpoints.add(points.get(0));
 
-		for( int i = 1; i < points.size(); i++ )
-		{
-			if( points.get(i).getID() == points.get(i-1).getID() )
-			{
+		for (int i = 1; i < points.size(); i++) {
+			if (points.get(i).getID() == points.get(i-1).getID()) {
 				double d = EuclideanDistance(points.get(i - 1), points.get(i));
-				if ((D + d) >= I)
-				{
+				if ((D + d) >= I) {
 					double qx = points.get(i - 1).getX() + ((I - D) / d) * (points.get(i).getX() - points.get(i - 1).getX());
 					double qy = points.get(i - 1).getY() + ((I - D) / d) * (points.get(i).getY() - points.get(i - 1).getY());
 					Point q = new Point(qx, qy, points.get(i).ID);
@@ -181,52 +174,51 @@ public class PDollarRecognizer {
 
 		// sometimes we fall a rounding-error short of
 		// adding the last point, so add it if so
-		if( newpoints.size() == n - 1 ) 
-			newpoints.add(new Point(points.get(points.size() - 1).X, points.get(points.size() - 1).Y, points.get(points.size() - 1).ID));
+		if (newpoints.size() == n - 1) {
+			newpoints.add(new Point(points.get(points.size() - 1).getX(), points.get(points.size() - 1).getY(), points.get(points.size() - 1).ID));
+		}
 		return newpoints;
 	}
 
-	private static ArrayList<Point> Scale(ArrayList<Point> points)
-	{
+	private static ArrayList<Point> Scale(ArrayList<Point> points) {
 		double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
-		for( int i = 0; i < points.size(); i++ ) {
-			minX = Math.min(minX, points.get(i).X);
-			minY = Math.min(minY, points.get(i).Y);
-			maxX = Math.max(maxX, points.get(i).X);
-			maxY = Math.max(maxY, points.get(i).Y);
+		for (int i = 0; i < points.size(); i++) {
+			minX = Math.min(minX, points.get(i).getX());
+			minY = Math.min(minY, points.get(i).getY());
+			maxX = Math.max(maxX, points.get(i).getX());
+			maxY = Math.max(maxY, points.get(i).getY());
 		}
 
 		double size = Math.max(maxX - minX, maxY - minY);
 		ArrayList<Point> newpoints = new ArrayList<Point>();
 
-		for( int i = 0; i < points.size(); i++ ) {
-			double qx = (points.get(i).X - minX) / size;
-			double qy = (points.get(i).Y - minY) / size;
+		for (int i = 0; i < points.size(); i++) {
+			double qx = (points.get(i).getX() - minX) / size;
+			double qy = (points.get(i).getY() - minY) / size;
 			newpoints.add(new Point(qx, qy, points.get(i).ID));
 		}
 		return newpoints;
 	}
 
-	private static ArrayList<Point> TranslateTo(ArrayList<Point> points, Point pt) // translates points' centroid
-	{
+	// translates points' centroid
+	private static ArrayList<Point> TranslateTo(ArrayList<Point> points, Point pt) {
 		Point c = Centroid(points);
 		ArrayList<Point> newpoints = new ArrayList<Point>();
-		for( int i = 0; i < points.size(); i++ ) {
-			double qx = points.get(i).X + pt.X - c.X;
-			double qy = points.get(i).Y + pt.Y - c.Y;
+		for (int i = 0; i < points.size(); i++) {
+			double qx = points.get(i).getX() + pt.getX() - c.getX();
+			double qy = points.get(i).getY() + pt.getY() - c.getY();
 			newpoints.add(new Point(qx, qy, points.get(i).ID));
 		}
 		return newpoints;
 	}
 
-	private static Point Centroid(ArrayList<Point> points)
-	{
+	private static Point Centroid(ArrayList<Point> points) {
 		double x = 0.0;
 		double y = 0.0;
-		for( int i = 0; i < points.size(); i++ ) {
-			x += points.get(i).X;
-			y += points.get(i).Y;
+		for (int i = 0; i < points.size(); i++) {
+			x += points.get(i).getX();
+			y += points.get(i).getY();
 		}
 		x /= points.size();
 		y /= points.size();
@@ -234,11 +226,11 @@ public class PDollarRecognizer {
 	}
 
 	// average distance between corresponding points in two paths
-	private static double PathDistance(ArrayList<Point> pts1, ArrayList<Point> pts2)
-	{
+	private static double PathDistance(ArrayList<Point> pts1, ArrayList<Point> pts2) {
 		double d = 0.0;
-		for( int i = 0; i < pts1.size(); i++ ) // assumes pts1.size() == pts2.size()
+		for (int i = 0; i < pts1.size(); i++) { // assumes pts1.size() == pts2.size()
 			d += EuclideanDistance(pts1.get(i), pts2.get(i));
+		}
 		return d / pts1.size();
 	}
 
@@ -246,27 +238,25 @@ public class PDollarRecognizer {
 	private static double PathLength(ArrayList<Point> points)
 	{
 		double d = 0.0;
-		for( int i = 1; i < points.size(); i++ )
-		{
-			if( points.get(i).ID == points.get(i-1).ID )
+		for (int i = 1; i < points.size(); i++) {
+			if (points.get(i).ID == points.get(i-1).ID) {
 				d += EuclideanDistance(points.get(i - 1), points.get(i));
+			}
 		}
 		return d;
 	}
 
 	// Euclidean distance between two points
-	private static double EuclideanDistance(Point p1, Point p2)
-	{
-		double dx = p2.X - p1.X;
-		double dy = p2.Y - p1.Y;
+	private static double EuclideanDistance(Point p1, Point p2) {
+		double dx = p2.getX() - p1.getX();
+		double dy = p2.getY() - p1.getY();
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 
 	//
 	// PointCloud class: a point-cloud template
 	//
-	public class PointCloud
-	{
+	public class PointCloud {
 		public ArrayList<Point> mPoints;
 		public String mName;
 
