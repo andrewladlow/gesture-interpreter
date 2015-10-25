@@ -5,15 +5,26 @@ import java.util.ArrayList;
 
 
 public class Gesture implements Serializable {
-    String name;
-    ArrayList<Point> pointArray = new ArrayList<Point>();
+	
+	private static final long serialVersionUID = 8793521708114985027L;
+    private String name;
+    private ArrayList<Point> pointArray;
     
     public Gesture (String name) {
         this.name = name;
+        this.pointArray = new ArrayList<Point>();
     }
     
     public String getName () {
     	return name;
+    }
+    
+    public ArrayList<Point> getPointArray () {
+    	return pointArray;
+    }
+    
+    public void setPointArray (ArrayList<Point> newPointArray) {
+    	pointArray = newPointArray;
     }
     
     public void addPoint (Point point) {
