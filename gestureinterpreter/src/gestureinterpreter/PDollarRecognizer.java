@@ -83,6 +83,8 @@ public class PDollarRecognizer {
             currentGesture.setPointArray(TranslateTo(currentGesture.getPointArray(), mPointOrig));
 
             double score = Double.POSITIVE_INFINITY;
+            
+            System.out.println("\nPossible matches: ");
 
             // for each point-cloud template
             for (Gesture storedGesture : storedGestures) {
@@ -96,14 +98,13 @@ public class PDollarRecognizer {
                     }
             }
             
-            double scoreCalc = (2.0 - score) / -2.0;
             
-            if (foundGesture == null || (scoreCalc < 0.0 || scoreCalc > 1.0)) {
+            if (foundGesture == null) {
             	return new RecognizerResults("None", 0.0);
             } else {
-            	return new RecognizerResults(foundGesture.getName(), scoreCalc);
+            	return new RecognizerResults(foundGesture.getName(), Math.max((3.0 - score) / 3.0, 0.0));
             }
-
+           
     }
 
 	public int addGesture(String name, ArrayList<Point> points) {
