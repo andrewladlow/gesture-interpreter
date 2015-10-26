@@ -102,7 +102,7 @@ public class PDollarRecognizer {
             if (foundGesture == null) {
             	return new RecognizerResults("None", 0.0);
             } else {
-            	return new RecognizerResults(foundGesture.getName(), Math.max((3.0 - score) / 3.0, 0.0));
+            	return new RecognizerResults(foundGesture.getName(), Math.max((7.5 - score) / 5.0, 0.0));
             }
            
     }

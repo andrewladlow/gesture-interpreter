@@ -43,7 +43,7 @@ public class RecognizerListener extends Listener {
 	
     private int gestureFrameCount = 0;  
     private int minGestureFrames = 5;
-    private int minGestureVelocity = 300;
+    private int minGestureVelocity = 3300;
     
     private int poseFrameCount = 0;
     private int minPoseFrames = 50;
