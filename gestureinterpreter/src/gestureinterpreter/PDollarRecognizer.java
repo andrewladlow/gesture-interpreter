@@ -1,5 +1,5 @@
 /**
- * The $P Point-Cloud Recognizer (JavaScript version)
+ * The $P Point-Cloud Recognizer
  *
  * 	Radu-Daniel Vatavu, Ph.D.
  *	University Stefan cel Mare of Suceava
