@@ -50,7 +50,7 @@ public class RecognizerListener extends Listener {
     private int maxPoseVelocity = 30;	
     private boolean validPoseFrame = false;
     private boolean validPose = false;    
-	
+
     private enum State {
     	IDLE, RECORDING, STOPPED;
     }
