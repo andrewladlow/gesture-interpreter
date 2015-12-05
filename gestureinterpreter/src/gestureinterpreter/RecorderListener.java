@@ -43,10 +43,13 @@ public class RecorderListener extends Listener {
     private int minGestureVelocity = 300;
     
     private int poseFrameCount = 0;
-    private int minPoseFrames = 50;
+    private int minPoseFrames = 75;
     private int maxPoseVelocity = 30;	
     private boolean validPoseFrame = false;
     private boolean validPose = false;  
+    
+    // 1 sec delay between each recognition
+    private int coolDown = 1000;
 	
     private enum State {
     	IDLE, RECORDING, STOPPED;
@@ -69,7 +72,7 @@ public class RecorderListener extends Listener {
 	
 	
 	public void onFrame(Controller controller) {
-		System.out.println("Frame: " + controller.frame().id() + " State: " + state);
+		//System.out.println("Frame: " + controller.frame().id() + " State: " + state);
 		validPoseFrame = false;
 		Frame frame = controller.frame();
 		frameReady.set(false);
@@ -114,8 +117,8 @@ public class RecorderListener extends Listener {
         
         for (Hand hand : frame.hands()) {
         	
-            Vector palmVelocityTemp = hand.palmVelocity(); 
-        	//Vector palmVelocityTemp = hand.stabilizedPalmPosition();
+            //Vector palmVelocityTemp = hand.palmVelocity(); 
+        	Vector palmVelocityTemp = hand.stabilizedPalmPosition();
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));             
             
             System.out.println("palm velocity: " + palmVelocity);

@@ -22,6 +22,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
@@ -54,31 +55,12 @@ public class RecorderGUI extends Application {
     
     //private Timeline timeline;
     
-    public void gestureTimer(int time) {
-    	timerCount.set(time);
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(time), 
-						new EventHandler<ActionEvent>() {
-							public void handle(ActionEvent event) {
-								System.out.println("Finished countdown");
-								testProp.set(true);
-								doneFlag = true;
-							};
-						}, 
-						new KeyValue(timerCount, 0)));
-
-        //timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.playFromStart();
-
-        System.out.println("gesturetimer method end");        
-    }
-    
 	public BooleanProperty testPropProperty() {
 		return testProp;
 	}
 	
     
     public void start(Stage primaryStage) {
-    	
     	leapListener = new LeapListener();
         recorderListener = new RecorderListener();
         controller = new Controller();
@@ -101,24 +83,50 @@ public class RecorderGUI extends Application {
             }
         });
         
+        //GestureTimer gt = new GestureTimer();
+        
+        Task task = new Task<Integer>() {
+        	public Integer call() {
+        		int i;
+        		for (i = 5; i >= 0; i--) {
+        			updateProgress(i, 10);
+        			System.out.println(i);
+        			try {
+        				Thread.sleep(1000);
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        			}
+        		}
+        		return i;
+        	}
+        };
+        
     	Label timerLabel = new Label();
-    	timerLabel.textProperty().bind(timerCount.asString());
+    	//timerLabel.textProperty().bind(gt.timerCountProperty().asString());
+    	timerLabel.textProperty().bind(task.workDoneProperty().asString());
     	timerLabel.setTranslateX(200);
     	timerLabel.setTranslateY(200);
     	timerLabel.setFont(Font.font("Times New Roman", 24));
+//    	Thread t = new Thread() {
+//    		public void run() {
+//		    	for (char c = 'A'; c <= 'E'; c++) {
+//		    		Thread t = new Thread(task);
+//		    		t.start();
+//		    		while (task.getValue() == null) {
+//		    			;
+//		    		}
+//		    		System.out.println(c);
+//		    	}
+//    		}
+//    	};
+//    	t.start();
+    	
+    	new Thread(task).start();
+    	
+        //gt.start(5);
 
         root2D.getChildren().addAll(btn, timerLabel);
-        
-/*        Timeline timeline = new Timeline();
-        KeyValue kv = new KeyValue(timerCount, 0);
-        EventHandler onFinished = new EventHandler<ActionEvent> () {
-        	public void handle(ActionEvent event) {
-        		System.out.println("Finished countdown");
-        	}
-        };
-        KeyFrame kf = new KeyFrame(Duration.seconds(3), onFinished, kv);
-        timeline.getKeyFrames().add(kf);*/
-        
+
         //Timeline timeline = new Timeline();
         
         // timer runs and then UI... need concurrency

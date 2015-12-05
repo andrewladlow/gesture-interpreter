@@ -60,18 +60,26 @@
 package gestureinterpreter;
 
 public class RecognizerResults {
-	public String mName;
-	public double mScore;
-	public String mOtherInfo;
+	private String name;
+	private double score;
+	private String otherInfo;
 
 	public RecognizerResults(String name, double score) { 
-		mName = name; 
-		mScore = score; 
+		this.name = name; 
+		this.score = score; 
 	}
 	
 	public RecognizerResults(String name, double score, String otherInfo) { 
-		mName = name; 
-		mScore = score; 
-		mOtherInfo = otherInfo; 
+		this.name = name; 
+		this.score = score; 
+		this.otherInfo = otherInfo; 
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public double getScore() {
+		return score;
 	}
 }
