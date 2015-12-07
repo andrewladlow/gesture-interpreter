@@ -109,6 +109,7 @@ public class RecorderListener extends Listener {
 	            	saveGesture(gesture);
 	                System.out.println("Debug store");
 	                validPose = false;
+	                this.gestureDone.set(true);
 	            }
 	        }
 		}
