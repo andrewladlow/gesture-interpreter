@@ -6,6 +6,7 @@ import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.FingerList;
 import com.leapmotion.leap.Frame;
+import com.leapmotion.leap.Gesture.Type;
 import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.HandList;
 import com.leapmotion.leap.Listener;
@@ -69,16 +70,23 @@ public class LeapListener extends Listener {
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
 			frameReady.set(true);
+			for (com.leapmotion.leap.Gesture gesture : frame.gestures()) {
+				switch (gesture.type()) {
+					case TYPE_SCREEN_TAP:
+						System.out.println(gesture);
+						break;
+				}
+			}
 			// observer interrupts before method ends? no frames skipped? needs testing...
 			if (!touched) {
 				if (frame.hands().frontmost().fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
 					touched = true;
-					System.out.println("Finger touching");
+					//System.out.println("Finger touching");
 					app.boxValProperty().set(true);
 				}
 			} else if (touched && frame.hands().frontmost().fingers().frontmost().touchZone() != Zone.ZONE_TOUCHING) {
 				touched = false;
-				System.out.println("Finger no longer touching");
+				//System.out.println("Finger no longer touching");
 				app.boxValProperty().set(false);
 			}
 		}

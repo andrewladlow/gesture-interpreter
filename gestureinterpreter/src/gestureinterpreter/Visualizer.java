@@ -6,8 +6,10 @@ import com.leapmotion.leap.Bone;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Frame;
+import com.leapmotion.leap.Gesture.Type;
 import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.Vector;
+import com.sun.corba.se.impl.orbutil.graph.Node;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -52,6 +54,7 @@ public class Visualizer extends Application {
         controller = new Controller();
         //controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
+        controller.enableGesture(Type.TYPE_SCREEN_TAP);
         hands = new HashMap<Integer, HandFX>();
         controller.addListener(listener);
         
@@ -114,16 +117,17 @@ public class Visualizer extends Application {
         
         box.addEventHandler(RELEASE, (leapEv) -> {
         	box.setDepth(oldDepth);
+        	System.out.println("Leap release event");
         });
         
         
-        this.boxVal.addListener((ov, oldVal, newVal) -> {
+        this.boxValProperty().addListener((boxVal, oldVal, newVal) -> {
         	if (newVal) {
         		box.fireEvent(leapPressEvent);
-        		System.out.println("Fired press event");
+        		//System.out.println("Fired press event");
         	} else if (!newVal) {
         		box.fireEvent(leapReleaseEvent);
-        		System.out.println("Fired release event");
+        		//System.out.println("Fired release event");
         	}
         });
         
@@ -171,7 +175,7 @@ public class Visualizer extends Application {
         listener.frameReadyProperty().addListener((frameReady, oldVal, newVal) -> {
     		Frame frame = controller.frame();
     		
-    		// draw hands if atleast one is present in capture area
+    		// draw hands if at least one is present in tracking area
     		if (newVal) {
     			Platform.runLater(() -> {
 					for (Hand leapHand : frame.hands()) {
@@ -190,17 +194,16 @@ public class Visualizer extends Application {
     				}
     			});
  	
-    		// remove hand if it leaves leapmotion capture area
+    		// remove hand if it leaves tracking area
     		} else if (frame.hands().count() < controller.frame(1).hands().count()) {
     			Platform.runLater(() -> {
-					// remove shapes if hands leave tracking area
 					System.out.println("Debug 6");
 					for (Hand leapHand : frame.hands()) {
+						// first remove from storage hashmap
 						hands.remove(leapHand.id());
 					}
-					for (HashMap.Entry<Integer, HandFX> entry : hands.entrySet()) {
-						root3D.getChildren().remove(entry.getValue());
-					}
+					// then remove from display (filtering for only hand objects)
+					root3D.getChildren().removeIf((obj)->obj.getClass().equals(HandFX.class));
     			});
     		}
     	});
