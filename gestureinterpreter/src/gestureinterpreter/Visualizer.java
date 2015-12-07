@@ -1,5 +1,7 @@
 package gestureinterpreter;
 
+import java.util.HashMap;
+
 import com.leapmotion.leap.Bone;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
@@ -14,6 +16,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Point3D;
@@ -41,12 +44,17 @@ public class Visualizer extends Application {
     	return boxVal;
     }
     
+	private HashMap<Integer, HandFX> hands;
+    
     public void start(Stage primaryStage) {
+        hands = new HashMap<Integer, HandFX>();
         listener = new LeapListener(this);
         controller = new Controller();
         //controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
+        hands = new HashMap<Integer, HandFX>();
         controller.addListener(listener);
+        
         
         Group root2D = new Group();
         //StackPane root = new StackPane();
@@ -82,25 +90,39 @@ public class Visualizer extends Application {
         box.setTranslateZ(110);
         box.setRotationAxis(new Point3D(20, 0, 0));
         box.setRotate(30);
-        box.setOnMouseEntered((me) -> {
+        box.setOnMousePressed((me) -> {
         	box.setDepth(0);
         });
-        box.setOnMouseExited((me) -> {
+        box.setOnMouseReleased((me) -> {
         	box.setDepth(oldDepth);
         });
         
-        EventType ActioningEvent = new EventType();
-        ActionEvent ae = new ActionEvent();
-        box.addEventFilter(EventType.ROOT, (ae1) -> {
-        	//box.setDepth(0);
-        	System.out.println("Box event");
+        EventType<LeapEvent> OPTIONS_ALL = new EventType<>("OPTIONS_ALL");
+
+        EventType<LeapEvent> PRESS = new EventType<>(OPTIONS_ALL, "PRESS");
+        
+        EventType<LeapEvent> RELEASE = new EventType<>(OPTIONS_ALL, "RELEASE");
+
+
+        Event leapPressEvent = new LeapEvent(PRESS);
+        Event leapReleaseEvent = new LeapEvent(RELEASE);
+        
+        box.addEventHandler(PRESS, (leapEv) -> {
+        	box.setDepth(0);
+        	System.out.println("Leap press event");
         });
+        
+        box.addEventHandler(RELEASE, (leapEv) -> {
+        	box.setDepth(oldDepth);
+        });
+        
         
         this.boxVal.addListener((ov, oldVal, newVal) -> {
         	if (newVal) {
-        		box.fireEvent(ae);
+        		box.fireEvent(leapPressEvent);
         		System.out.println("Fired press event");
         	} else if (!newVal) {
+        		box.fireEvent(leapReleaseEvent);
         		System.out.println("Fired release event");
         	}
         });
@@ -146,145 +168,42 @@ public class Visualizer extends Application {
         System.out.println(result);*/
         
 
-        listener.frameReadyProperty().addListener(new ChangeListener<Boolean>() {
-        	public void changed(ObservableValue<? extends Boolean> frameReady, Boolean oldVal, Boolean newVal) {
-        		//System.out.println("Debug 1  " + frameReady + "  " + oldVal + "  " + newVal);
-        		if (newVal) {
-        			Frame frameCopy = controller.frame();    
-					//List<Hand> handsCopy = listener.getHands();
-        			//Frame frameCopy1 = listener.getFrame();
-        			//System.out.println(frameCopy1.id());
-					
-					//System.out.println(controller.frame().id());
-					//System.out.println(controller.frame(1).id());
-        			
-        			// move to JavaFX thread? required to avoid exceptions...
-        			Platform.runLater(new Runnable() {
-        				public void run() {			
-        					//System.out.println("Debug 2  " + frameCopy.id());
-        					root3D.getChildren().clear();
-        					root3D.getChildren().addAll(box);
-
-        					for (Hand hand : frameCopy.hands()) {
-        						//System.out.println("Debug 3");
-        			
-        						Sphere handSphere = ShapeCreator.createSphere(root3D, 15, Color.GREEN, Color.LIGHTGREEN);
-        						LeapToFX.move(handSphere, hand.palmPosition());
-        						//LeapToFX.move(palms[hand.get(0)], hand.palmPosition());
-        						
-        						//Bone bone = bonesCopy.get(i);
-        						//Hand hand = handsCopy.get(i);
-        						
-        						for (Finger finger : hand.fingers()) {       							
-        							//System.out.println("Debug 4");
-	        						//Finger finger = hand.fingers().get(i);
-        							Sphere fingerSphere = ShapeCreator.createSphere(root3D, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
-        							LeapToFX.move(fingerSphere, finger.tipPosition());
-        							
-        							//fingers[i] = ShapeCreator.createSphere(root, 7.5, Color.DARKGREEN, Color.GREEN);
-        							//LeapToFX.move(fingers[i], finger.tipPosition());
-        								
-        				/*			System.out.println("    " + finger.type() + ", id: " + finger.id()
-    								+ ", length: " + finger.length()
-    								+ "mm, width: " + finger.width() + "mm");*/
-        							
-        							for (Bone.Type boneType : Bone.Type.values()) {
-        								//System.out.println("Debug 5");
-        								Bone bone = finger.bone(boneType);
-        								
-        								// calculating similarity between a gesture and current hand frame
-        								// can do this by taking the direction of bones which are normalized (magnitude of 1)
-        								// comparison between 2 directions gives float between -1 and 1
-        								// range defined as -1 being nothing alike and 1 being perfect match
-        								// see http://xdpixel.com/dot-product-101/
-        								// see http://betterexplained.com/articles/vector-calculus-understanding-the-dot-product/
-        								
-        								//Vector currentDir = bone.direction();
-        						        //float result = currentDir.dot(new Vector(0f,0f,0f));
-        						        //System.out.println(currentDir);
-        						        //System.out.println(result);
-        						        
-	        		/*						System.out.println("      " + bone.type()
-	    									+ " bone, start: " + bone.prevJoint()
-	    									+ ", end: " + bone.nextJoint()
-	    									+ ", direction: " + bone.direction());*/
-
-        								Sphere jointSphere = ShapeCreator.createSphere(root3D, 7.5, Color.LIGHTGREEN, Color.GREENYELLOW);
-        								LeapToFX.move(jointSphere, bone.prevJoint());
-        								
-        					        	// Move shapes instead of recreating? possible gc memory concern
-        								
-        								// this solution works - but inefficient?
-        								// 0,1,0 because shape starts by pointing upwards
-        								// y converted to -1, gety and getz negative due to inversion between leapmotion cartesian and javafx coordinates
-        								// cross generates the axis that the shape spins around to fit
-        								// cross is the same as (-direction Z, 0, direction X) vector
-        								
-        								Cylinder boneCylinder = ShapeCreator.createCylinder(root3D, bone.width()/4, bone.length(), Color.LIGHTGREY, Color.WHITE);
-        								
-        	                            double angle = (new Vector(bone.direction().getX(), -bone.direction().getY(), -bone.direction().getZ())).angleTo(new Vector(0,-1,0));
-        	                            Vector cross = (new Vector(bone.direction().getX(), -bone.direction().getY(), -bone.direction().getZ())).cross(new Vector(0,-1,0));
-        								
-        								boneCylinder.getTransforms().add(new Rotate(-Math.toDegrees(angle), 
-        																0, 0, 0,
-        																new Point3D(cross.getX(),cross.getY(),cross.getZ())));       								
-        			
-        								LeapToFX.move(boneCylinder, bone.center());       					
-        								
-/*        								System.out.println(dx);
-        								System.out.println(cross.getX());
-        								System.out.println(cross.getY());
-        								System.out.println(cross.getZ());
-        								System.out.println(bone.direction().getZ());
-        								System.out.println(bone.direction());
-
-        								// this solution looks like it may work?
-        								// however bones are reflected on x axis and rotated 180 around y
-        								// also requires omission of leaptofx.move function
-        								// memory usage seems much lower?
-        								// see ruzman.de leap motion articles
-        								
-        								Rotate rotation = new Rotate();
-        								double dx = (float) (bone.prevJoint().getX() - bone.nextJoint().getX());
-        								double dy = (float) (bone.prevJoint().getY() - bone.nextJoint().getY());
-        								double dz = (float) (bone.prevJoint().getZ() - bone.nextJoint().getZ());
-
-        								rotation.setPivotY(boneCylinder.getHeight() / 2);
-        								rotation.setAxis(new Point3D(dz, 0, -dx));
-        								rotation.setAngle(180 - new Point3D(dx, -dy, dz).angle(Rotate.Y_AXIS));       								
-        								boneCylinder.getTransforms().addAll(rotation);
-        								
-        								//System.out.println(boneCylinder.getHeight());
-        								//System.out.println(bone.length());
-        								
-        								boneCylinder.setTranslateX(bone.prevJoint().getX());
-        								boneCylinder.setTranslateY(bone.prevJoint().getY() - boneCylinder.getHeight() / 2);
-        								boneCylinder.setTranslateZ(bone.prevJoint().getZ());       								
-        								//LeapToFX.move(boneCylinder, bone.center());
-*/        							
-        								}
-        						}
-	/*	    					System.out.println("      " + bone.type()
-								+ " bone, start: " + bone.prevJoint()
-								+ ", end: " + bone.nextJoint()
-								+ ", direction: " + bone.direction());   */
-		        			}
-        				}
-        			});
-        		}
-        		
-        		else if (controller.frame().hands().isEmpty()) {
-        			Platform.runLater(new Runnable() {
-        				public void run() {
-        					// remove shapes if hands leave tracking area
-        					System.out.println("Debug 6");
-        					root3D.getChildren().clear();
-        					root3D.getChildren().addAll(box);
-        				}
-        			});
-        		}
-        	}
-        });
+        listener.frameReadyProperty().addListener((frameReady, oldVal, newVal) -> {
+    		Frame frame = controller.frame();
+    		
+    		// draw hands if atleast one is present in capture area
+    		if (newVal) {
+    			Platform.runLater(() -> {
+					for (Hand leapHand : frame.hands()) {
+						int handId = leapHand.id();
+						HandFX hand = hands.get(handId);
+						
+						if(!hands.containsKey(handId)) {
+							hand = new HandFX();
+							hands.put(leapHand.id(), hand);
+							root3D.getChildren().add(hand);
+						}		
+						
+						if(hand != null) {
+							hand.update(frame.hand(leapHand.id()));
+						}
+    				}
+    			});
+ 	
+    		// remove hand if it leaves leapmotion capture area
+    		} else if (frame.hands().count() < controller.frame(1).hands().count()) {
+    			Platform.runLater(() -> {
+					// remove shapes if hands leave tracking area
+					System.out.println("Debug 6");
+					for (Hand leapHand : frame.hands()) {
+						hands.remove(leapHand.id());
+					}
+					for (HashMap.Entry<Integer, HandFX> entry : hands.entrySet()) {
+						root3D.getChildren().remove(entry.getValue());
+					}
+    			});
+    		}
+    	});
         
     }
           

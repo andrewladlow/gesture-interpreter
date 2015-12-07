@@ -66,12 +66,11 @@ public class RecognizerGUI extends Application {
 	}
     
     public void start(Stage primaryStage) {
-    	
+        hands = new HashMap<Integer, HandFX>();
     	leapListener = new LeapListener();
         recorderListener = new RecognizerListener(this);
         controller = new Controller();
         controller.addListener(recorderListener);
-        hands = new HashMap<>();
         
         Group root2D = new Group();
         
