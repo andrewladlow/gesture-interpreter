@@ -57,7 +57,7 @@ public class RecognizerListener extends Listener {
     private long timeRecognized = 0;
 
     private enum State {
-    	IDLE, RECORDING, STOPPED;
+    	IDLE, RECORDING;
     }
     
     private State state;
@@ -109,9 +109,7 @@ public class RecognizerListener extends Listener {
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
 			frameReady.set(true);		
-			if (state == State.STOPPED) {
-				return;
-			}
+			
 			// enforce 1 sec delay between recognitions
 			if (System.currentTimeMillis() - timeRecognized > 1000) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            		             
@@ -128,7 +126,7 @@ public class RecognizerListener extends Listener {
 		            System.out.println("debug record fail state");
 		            state = State.IDLE;
 		            
-		            if ((gestureFrameCount >= minGestureFrames) || validPose) {
+		            if (validPose || (gestureFrameCount >= minGestureFrames)) {
 		            	System.out.println("debug recognize");
 		                RecognizerResults recResult = pdRec.Recognize(gesture, storedGestures);
 		                System.out.println("\nClosest match: " + recResult.getName() + "\nNormalized score: " + recResult.getScore());

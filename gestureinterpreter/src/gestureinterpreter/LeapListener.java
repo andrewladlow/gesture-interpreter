@@ -9,6 +9,7 @@ import com.leapmotion.leap.Frame;
 import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.HandList;
 import com.leapmotion.leap.Listener;
+import com.leapmotion.leap.Pointable.Zone;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
@@ -41,7 +42,19 @@ import javafx.geometry.Point2D;
 
 public class LeapListener extends Listener {
 	
+	private final Visualizer app;
+	
+	private boolean touched = false;
+	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
+	
+	public LeapListener(Visualizer main) {
+		this.app = main;
+	}
+	
+	public LeapListener() {
+		this.app = null;
+	}
 	
 	public void onConnect(Controller controller) {
 		System.out.println("connected leap");
@@ -57,6 +70,17 @@ public class LeapListener extends Listener {
 		if (!frame.hands().isEmpty()) {
 			frameReady.set(true);
 			// observer interrupts before method ends? no frames skipped? needs testing...
+			if (!touched) {
+				if (frame.hands().frontmost().fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
+					touched = true;
+					System.out.println("Finger touching");
+					app.boxValProperty().set(true);
+				}
+			} else if (touched && frame.hands().frontmost().fingers().frontmost().touchZone() != Zone.ZONE_TOUCHING) {
+				touched = false;
+				System.out.println("Finger no longer touching");
+				app.boxValProperty().set(false);
+			}
 		}
 	}
 	

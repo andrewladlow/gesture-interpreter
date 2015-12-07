@@ -9,10 +9,13 @@ import com.leapmotion.leap.Vector;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -21,6 +24,7 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
@@ -31,8 +35,14 @@ public class Visualizer extends Application {
     private LeapListener listener = null;
     private Controller controller = null;
     
+    private BooleanProperty boxVal = new SimpleBooleanProperty();
+    
+    public BooleanProperty boxValProperty() {
+    	return boxVal;
+    }
+    
     public void start(Stage primaryStage) {
-        listener = new LeapListener();
+        listener = new LeapListener(this);
         controller = new Controller();
         //controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
@@ -64,6 +74,39 @@ public class Visualizer extends Application {
         SubScene subScene = new SubScene(root3D, 1280, 800, true, SceneAntialiasing.BALANCED);
         subScene.setCamera(camera);
         root2D.getChildren().addAll(subScene);
+        
+        Box box = ShapeCreator.createBox(200.0, 75.0,  50.0,  Color.RED, Color.GOLDENROD);
+        double oldDepth = 50.0;
+        box.setTranslateX(40);
+        box.setTranslateY(-300);
+        box.setTranslateZ(110);
+        box.setRotationAxis(new Point3D(20, 0, 0));
+        box.setRotate(30);
+        box.setOnMouseEntered((me) -> {
+        	box.setDepth(0);
+        });
+        box.setOnMouseExited((me) -> {
+        	box.setDepth(oldDepth);
+        });
+        
+        EventType ActioningEvent = new EventType();
+        ActionEvent ae = new ActionEvent();
+        box.addEventFilter(EventType.ROOT, (ae1) -> {
+        	//box.setDepth(0);
+        	System.out.println("Box event");
+        });
+        
+        this.boxVal.addListener((ov, oldVal, newVal) -> {
+        	if (newVal) {
+        		box.fireEvent(ae);
+        		System.out.println("Fired press event");
+        	} else if (!newVal) {
+        		System.out.println("Fired release event");
+        	}
+        });
+        
+        root3D.getChildren().addAll(box);
+        
        
 /*      Group root = new Group();
         Scene scene = new Scene(root, 1280, 800, true, SceneAntialiasing.BALANCED);
@@ -120,6 +163,7 @@ public class Visualizer extends Application {
         				public void run() {			
         					//System.out.println("Debug 2  " + frameCopy.id());
         					root3D.getChildren().clear();
+        					root3D.getChildren().addAll(box);
 
         					for (Hand hand : frameCopy.hands()) {
         						//System.out.println("Debug 3");
@@ -235,6 +279,7 @@ public class Visualizer extends Application {
         					// remove shapes if hands leave tracking area
         					System.out.println("Debug 6");
         					root3D.getChildren().clear();
+        					root3D.getChildren().addAll(box);
         				}
         			});
         		}

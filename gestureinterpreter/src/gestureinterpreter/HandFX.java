@@ -18,17 +18,15 @@ import com.leapmotion.leap.Hand;
 
 public class HandFX extends Group {
 	private Sphere palm;
-	
 	private ArrayList<Sphere> fingers = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> distals = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> proximals = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> intermediates = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> metacarpals = new ArrayList<Sphere>(5);
 
-	private ArrayList<JointFX> joints;
+	private ArrayList<JointFX> joints = new ArrayList<JointFX>();
 
 	public HandFX() {
-		joints = new ArrayList<JointFX>();
 
 		palm = ShapeCreator.createSphere(this, 10, Color.GREEN, Color.LIGHTGREEN);
 
@@ -53,7 +51,7 @@ public class HandFX extends Group {
 		
 		connectJoints(metacarpals.get(1), metacarpals.get(4));
 		
-		this.getChildren().addAll(palm);
+		this.getChildren().add(palm);
 		this.getChildren().addAll(fingers);
 		this.getChildren().addAll(distals);
 		this.getChildren().addAll(intermediates);
@@ -76,6 +74,7 @@ public class HandFX extends Group {
 		for (int i = 0; i < 5; i++) {
 			finger = itFinger.next();
 
+
 			LeapToFX.move(fingers.get(i), finger.tipPosition());
 			LeapToFX.move(distals.get(i), finger.bone(Type.TYPE_DISTAL).prevJoint());
 			LeapToFX.move(intermediates.get(i), finger.bone(Type.TYPE_INTERMEDIATE).prevJoint());
@@ -87,39 +86,6 @@ public class HandFX extends Group {
 		
 		for (JointFX joint : joints) {
 			joint.update();
-		}
-	}
-
-	private class JointFX {
-		private Sphere fromSphere;
-		private Sphere toSphere;
-		private Cylinder bone;
-		private Rotate joint;
-
-		public JointFX(Sphere fromSphere, Sphere toSphere) {
-			this.fromSphere = fromSphere;
-			this.toSphere = toSphere;
-			this.joint = new Rotate();
-			this.bone = ShapeCreator.createCylinder(3, Color.LIGHTGREY, Color.WHITE, joint);
-		}
-
-		public void update() {
-			double dx = (float) (fromSphere.getTranslateX() - toSphere.getTranslateX());
-			double dy = (float) (fromSphere.getTranslateY() - toSphere.getTranslateY());
-			double dz = (float) (fromSphere.getTranslateZ() - toSphere.getTranslateZ());
-
-			bone.setHeight(Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2)));
-			bone.setTranslateX(fromSphere.getTranslateX());
-			bone.setTranslateY(fromSphere.getTranslateY() - bone.getHeight() / 2);
-			bone.setTranslateZ(fromSphere.getTranslateZ());
-
-			joint.setPivotY(bone.getHeight() / 2);
-			joint.setAxis(new Point3D(dz, 0, -dx));
-			joint.setAngle(180 - new Point3D(dx, -dy, dz).angle(Rotate.Y_AXIS));
-		}
-
-		public Cylinder getBone() {
-			return bone;
 		}
 	}
 }

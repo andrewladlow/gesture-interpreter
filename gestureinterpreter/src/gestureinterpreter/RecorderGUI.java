@@ -44,29 +44,16 @@ import javafx.util.Duration;
 public class RecorderGUI extends Application {
 	
     private LeapListener leapListener = null;
-	private RecorderListener recorderListener = null;
+	//private RecorderListener recorderListener = null;
     private Controller controller = null;
-    
-    private IntegerProperty timerCount = new SimpleIntegerProperty();
-    
-    private BooleanProperty testProp = new SimpleBooleanProperty();
-    
-    private Boolean doneFlag = false;
-    
-    //private Timeline timeline;
-    
-	public BooleanProperty testPropProperty() {
-		return testProp;
-	}
-	
     
     public void start(Stage primaryStage) {
     	leapListener = new LeapListener();
-        recorderListener = new RecorderListener();
+        //recorderListener = new RecorderListener();
         controller = new Controller();
         //controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
-        controller.addListener(recorderListener);
+        //controller.addListener(recorderListener);
         
         Group root2D = new Group();
         //StackPane root = new StackPane();
@@ -84,48 +71,46 @@ public class RecorderGUI extends Application {
         });
         
         //GestureTimer gt = new GestureTimer();
-        
-        Task task = new Task<Integer>() {
-        	public Integer call() {
-        		int i;
-        		for (i = 5; i >= 0; i--) {
-        			updateProgress(i, 10);
-        			System.out.println(i);
-        			try {
-        				Thread.sleep(1000);
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        			}
-        		}
-        		return i;
-        	}
-        };
+
         
     	Label timerLabel = new Label();
     	//timerLabel.textProperty().bind(gt.timerCountProperty().asString());
-    	timerLabel.textProperty().bind(task.workDoneProperty().asString());
+    	//timerLabel.textProperty().bind(task.workDoneProperty().asString());
     	timerLabel.setTranslateX(200);
     	timerLabel.setTranslateY(200);
     	timerLabel.setFont(Font.font("Times New Roman", 24));
-//    	Thread t = new Thread() {
-//    		public void run() {
-//		    	for (char c = 'A'; c <= 'E'; c++) {
-//		    		Thread t = new Thread(task);
-//		    		t.start();
-//		    		while (task.getValue() == null) {
-//		    			;
-//		    		}
-//		    		System.out.println(c);
-//		    	}
-//    		}
-//    	};
-//    	t.start();
     	
-    	new Thread(task).start();
+    	//new Thread(task).start();
     	
         //gt.start(5);
 
         root2D.getChildren().addAll(btn, timerLabel);
+        
+        Thread t = new Thread(() -> {
+        	for (char c = 'A'; c <= 'Z'; c++) {
+        		try {
+        			Thread.sleep(3000);
+        		} catch (Exception e) {
+        			e.printStackTrace();
+        		}
+        		
+        		System.out.println(c);
+        		RecorderListener tempRecorderListener = new RecorderListener(c);
+        		controller.addListener(tempRecorderListener);
+        		while (tempRecorderListener.gestureDoneProperty().get() != true) {
+        			try {
+        				Thread.sleep(200);
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        			}
+        		}
+        		controller.removeListener(tempRecorderListener);
+        	}
+        });
+        t.start();
+        
+        
+        
 
         //Timeline timeline = new Timeline();
         
@@ -190,7 +175,7 @@ public class RecorderGUI extends Application {
 
             System.out.println("test #" + c);   */
         	
-        this.testPropProperty().addListener(new ChangeListener<Boolean>() {
+/*        this.testPropProperty().addListener(new ChangeListener<Boolean>() {
         	public void changed(ObservableValue<? extends Boolean> testProp, Boolean oldVal, Boolean newVal) {
         		if (newVal) {
         			System.out.println("testprop set true");
@@ -199,7 +184,7 @@ public class RecorderGUI extends Application {
         			
         		}
         	}
-        });
+        });*/
         	
         	
         	
@@ -273,7 +258,7 @@ public class RecorderGUI extends Application {
         System.out.println(result);*/
         
 
-        recorderListener.frameReadyProperty().addListener(new ChangeListener<Boolean>() {
+        leapListener.frameReadyProperty().addListener(new ChangeListener<Boolean>() {
         	public void changed(ObservableValue<? extends Boolean> frameReady, Boolean oldVal, Boolean newVal) {
         		//System.out.println("Debug 1  " + frameReady + "  " + oldVal + "  " + newVal);
         		if (newVal) {
@@ -415,7 +400,7 @@ public class RecorderGUI extends Application {
     
 
     public void stop() {
-        controller.removeListener(recorderListener);
+        controller.removeListener(leapListener);
     }
     
 }

@@ -36,6 +36,8 @@ public class RecorderListener extends Listener {
 	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
+	private BooleanProperty gestureDone = new SimpleBooleanProperty();
+	
 	private Gesture gesture;
 	
     private int gestureFrameCount = 0;  
@@ -57,9 +59,13 @@ public class RecorderListener extends Listener {
     
     private State state;
     
-    public RecorderListener() {
-    	gesture = new Gesture("gesture");
+    public RecorderListener(char c) {
+    	gesture = new Gesture(c);
     	state = State.IDLE;
+    }
+    
+    public BooleanProperty gestureDoneProperty() {
+    	return gestureDone;
     }
     
     public void onConnect(Controller controller) {

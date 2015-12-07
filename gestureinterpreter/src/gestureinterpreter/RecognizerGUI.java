@@ -94,13 +94,13 @@ public class RecognizerGUI extends Application {
     	
     	Label resultLabel = new Label();
     	//resultLabel.textProperty().bind(gestureRecognition);
-    	resultLabel.setTranslateX(500);
+    	resultLabel.setTranslateX(450);
     	resultLabel.setTranslateY(100);
     	resultLabel.setFont(Font.font("Times New Roman", 24));
     	
         root2D.getChildren().addAll(btn, titleLabel, resultLabel);
     	
-        this.gestureRecognitionProperty().addListener((ObservableValue<? extends RecognizerResults> gestureRecognition, RecognizerResults oldVal, RecognizerResults newVal) -> {
+        this.gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
         	resultLabel.textProperty().set("Closest match: " +  newVal.getName() + "\nMatch score: " + newVal.getScore());
         });
     	
@@ -120,9 +120,10 @@ public class RecognizerGUI extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        recorderListener.frameReadyProperty().addListener((ObservableValue<? extends Boolean> frameReady, Boolean oldVal, Boolean newVal) -> {
+        recorderListener.frameReadyProperty().addListener((frameReady, oldVal, newVal) -> {
     		Frame frame = controller.frame();
     		
+    		// draw hands if atleast one is present in capture area
     		if (newVal) {
     			Platform.runLater(() -> {
 					for (Hand leapHand : frame.hands()) {
@@ -141,16 +142,14 @@ public class RecognizerGUI extends Application {
     				}
     			});
  	
-    		//} else {
-    		} else if (frame.hands().isEmpty()) {
-/*    			for (Hand leapHand : frame.hands()) {
-    				for (HashMap.Entry<Integer, HandFX> e : hands.entrySet()) {
-    					System.out.println(e.getClass());
-					}
-    			}*/
+    		// remove hand if it leaves leapmotion capture area
+    		} else if (frame.hands().count() < controller.frame(1).hands().count()) {
     			Platform.runLater(() -> {
 					// remove shapes if hands leave tracking area
 					System.out.println("Debug 6");
+					for (Hand leapHand : frame.hands()) {
+						hands.remove(leapHand.id());
+					}
 					root3D.getChildren().clear();
     			});
     		}

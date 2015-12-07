@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
@@ -50,5 +51,22 @@ public class ShapeCreator {
 		cylinder.getTransforms().add(joint);
 
 		return cylinder;
+	}
+	
+	public static Box createBox(double width, double height, double depth, Color diffuse, Color specular)  {
+		
+		Box box = new Box();
+		
+		PhongMaterial mat = new PhongMaterial();
+		mat.setDiffuseColor(diffuse);
+		mat.setSpecularColor(specular);
+		box.setMaterial(mat);
+		
+		box.setWidth(width);
+		box.setHeight(height);
+		box.setDepth(depth);
+		
+		return box;
+		
 	}
 }
