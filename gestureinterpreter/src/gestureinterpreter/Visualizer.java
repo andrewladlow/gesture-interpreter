@@ -28,6 +28,7 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
@@ -118,6 +119,13 @@ public class Visualizer extends Application {
         box.addEventHandler(RELEASE, (leapEv) -> {
         	box.setDepth(oldDepth);
         	System.out.println("Leap release event");
+        });
+        
+        box.setOnMousePressed(new EventHandler<MouseEvent>() {
+        	
+            public void handle(MouseEvent event) {
+                System.out.println("Custom box mouse press!");
+            }
         });
         
         

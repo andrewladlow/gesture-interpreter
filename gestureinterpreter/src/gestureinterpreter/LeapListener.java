@@ -9,7 +9,9 @@ import com.leapmotion.leap.Frame;
 import com.leapmotion.leap.Gesture.Type;
 import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.HandList;
+import com.leapmotion.leap.InteractionBox;
 import com.leapmotion.leap.Listener;
+import com.leapmotion.leap.Pointable;
 import com.leapmotion.leap.Pointable.Zone;
 
 import java.io.BufferedOutputStream;
@@ -77,7 +79,29 @@ public class LeapListener extends Listener {
 						break;
 				}
 			}
+			
+			//InteractionBox iBox = controller.frame().interactionBox();
+			Finger frontFinger = frame.hands().frontmost().fingers().frontmost();
+
+			Vector frontFingerTip = frontFinger.tipPosition();
+			//Vector normalizedPoint = iBox.normalizePoint(leapPoint, true);
+
+			//float appX = normalizedPoint.getX() * 1280;
+			//float appY = (1 - normalizedPoint.getY()) * 600;
+			
 			// observer interrupts before method ends? no frames skipped? needs testing...
+			// x = -40 -- 118
+			// y = 298 -- 242
+			// z = -60 ? 
+			
+			// javafx box has contains(x, y) method -- possible solution? 
+			
+			System.out.println("Debug x: " + frontFingerTip.getX() + ", Debug y: " + frontFingerTip.getY() + ", Debuy z: " + frontFingerTip.getZ());
+			
+			if (frontFingerTip.getX() > -40 && frontFingerTip.getX() < 118) {
+				System.out.println("Satisfied x co-ord");
+			}
+			
 			if (!touched) {
 				if (frame.hands().frontmost().fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
 					touched = true;
