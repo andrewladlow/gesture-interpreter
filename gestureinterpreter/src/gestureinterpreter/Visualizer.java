@@ -33,6 +33,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -48,15 +50,17 @@ public class Visualizer extends Application {
     }
     
 	private HashMap<Integer, HandFX> hands;
+	
+	public Box box;
     
     public void start(Stage primaryStage) {
         hands = new HashMap<Integer, HandFX>();
+        
         listener = new LeapListener(this);
         controller = new Controller();
         //controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
         //controller.setPolicy(Controller.PolicyFlag.POLICY_IMAGES);
-        controller.enableGesture(Type.TYPE_SCREEN_TAP);
-        hands = new HashMap<Integer, HandFX>();
+        //controller.enableGesture(Type.TYPE_SCREEN_TAP);
         controller.addListener(listener);
         
         
@@ -87,7 +91,7 @@ public class Visualizer extends Application {
         subScene.setCamera(camera);
         root2D.getChildren().addAll(subScene);
         
-        Box box = ShapeCreator.createBox(200.0, 75.0,  50.0,  Color.RED, Color.GOLDENROD);
+        box = ShapeCreator.createBox(200.0, 75.0,  50.0,  Color.RED, Color.GOLDENROD);
         double oldDepth = 50.0;
         box.setTranslateX(40);
         box.setTranslateY(-300);
@@ -100,6 +104,11 @@ public class Visualizer extends Application {
         box.setOnMouseReleased((me) -> {
         	box.setDepth(oldDepth);
         });
+        
+        Text t = new Text (10, 20, "This is a text sample");
+        t.setTranslateX(-20);
+        t.setTranslateY(-290);
+        t.setTranslateZ(0);
         
         EventType<LeapEvent> OPTIONS_ALL = new EventType<>("OPTIONS_ALL");
 
@@ -139,7 +148,7 @@ public class Visualizer extends Application {
         	}
         });
         
-        root3D.getChildren().addAll(box);
+        root3D.getChildren().addAll(box, t);
         
        
 /*      Group root = new Group();

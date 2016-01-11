@@ -80,14 +80,15 @@ public class LeapListener extends Listener {
 				}
 			}
 			
-			//InteractionBox iBox = controller.frame().interactionBox();
+			InteractionBox iBox = controller.frame().interactionBox();
 			Finger frontFinger = frame.hands().frontmost().fingers().frontmost();
 
 			Vector frontFingerTip = frontFinger.tipPosition();
-			//Vector normalizedPoint = iBox.normalizePoint(leapPoint, true);
+			Vector leapPoint = frontFinger.stabilizedTipPosition();
+			Vector normalizedPoint = iBox.normalizePoint(leapPoint, true);
 
-			//float appX = normalizedPoint.getX() * 1280;
-			//float appY = (1 - normalizedPoint.getY()) * 600;
+			float appX = normalizedPoint.getX() * 1280;
+			float appY = (1 - normalizedPoint.getY()) * 600;
 			
 			// observer interrupts before method ends? no frames skipped? needs testing...
 			// x = -40 -- 118
@@ -96,19 +97,37 @@ public class LeapListener extends Listener {
 			
 			// javafx box has contains(x, y) method -- possible solution? 
 			
-			System.out.println("Debug x: " + frontFingerTip.getX() + ", Debug y: " + frontFingerTip.getY() + ", Debuy z: " + frontFingerTip.getZ());
+			//System.out.println("Debug x: " + frontFingerTip.getX() + ", Debug y: " + frontFingerTip.getY() + ", Debuy z: " + frontFingerTip.getZ());
+			
+			//System.out.println(app.box.getTranslateX());
+			
+			//System.out.println(app.box.contains(appX, appY));
+			
+			//System.out.println("X: " +  appX + "             Y: " + appY);
+			
+			// Works but seems messy?
 			
 			if (frontFingerTip.getX() > -40 && frontFingerTip.getX() < 118) {
-				System.out.println("Satisfied x co-ord");
+				//System.out.println("Satisfied x");
+				
+				if (frontFingerTip.getY() > 242 && frontFingerTip.getY() < 298) {
+					//System.out.println("Satisified y");
+					
+					if (frontFingerTip.getZ() < -60) {
+						//System.out.println("Satisified z");
+				
+						if (!touched) {
+							if (frame.hands().frontmost().fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
+								touched = true;
+								//System.out.println("Finger touching");
+								app.boxValProperty().set(true);
+							}
+						}
+					}
+				}
 			}
 			
-			if (!touched) {
-				if (frame.hands().frontmost().fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
-					touched = true;
-					//System.out.println("Finger touching");
-					app.boxValProperty().set(true);
-				}
-			} else if (touched && frame.hands().frontmost().fingers().frontmost().touchZone() != Zone.ZONE_TOUCHING) {
+			if (touched && frame.hands().frontmost().fingers().frontmost().touchZone() != Zone.ZONE_TOUCHING) {
 				touched = false;
 				//System.out.println("Finger no longer touching");
 				app.boxValProperty().set(false);
