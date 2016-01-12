@@ -83,7 +83,7 @@ public class RecorderGUI extends Application {
         root2D.getChildren().addAll(timerLabel, resultLabel, titleLabel);
         
         Thread t = new Thread(() -> {
-        	for (char c = 'A'; c <= 'D'; c++) {
+        	for (char c = 'C'; c <= 'C'; c++) {
         		try {
         			char temp = c;
         			Platform.runLater(() -> {

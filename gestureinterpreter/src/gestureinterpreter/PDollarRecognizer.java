@@ -95,7 +95,7 @@ public class PDollarRecognizer {
                             score = distScore; // best (least) distance
                             //foundPointCloud = mPntClouds.get(i); // point-cloud
                             foundGesture = storedGesture;
-                            Math.max(50, 51);
+                           // Math.max(50, 51);
                     }
             }
             

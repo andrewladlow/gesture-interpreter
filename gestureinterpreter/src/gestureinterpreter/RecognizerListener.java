@@ -35,6 +35,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import com.leapmotion.leap.Screen;
 import com.leapmotion.leap.Vector;
+import com.leapmotion.leap.Bone.Type;
 
 import javafx.geometry.Point2D;
 
@@ -156,8 +157,8 @@ public class RecognizerListener extends Listener {
     public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {
         
         for (Hand hand : frame.hands()) {	
-            //Vector palmVelocityTemp = hand.palmVelocity(); 
-        	Vector palmVelocityTemp = hand.stabilizedPalmPosition();
+            Vector palmVelocityTemp = hand.palmVelocity(); 
+        	//Vector palmVelocityTemp = hand.stabilizedPalmPosition();
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));             
             
             //System.out.println("palm velocity: " + palmVelocity);
@@ -210,6 +211,7 @@ public class RecognizerListener extends Listener {
     		for (Finger finger : hand.fingers()) {
     			//gesture.addPoint(new Point(finger.tipVelocity().getX(), finger.tipVelocity().getY(), finger.tipVelocity().getZ()));
     			gesture.addPoint(new Point(finger.stabilizedTipPosition().getX(), finger.stabilizedTipPosition().getY(), finger.stabilizedTipPosition().getZ()));
+    			//gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).prevJoint().getX(), finger.bone(Type.TYPE_PROXIMAL).prevJoint().getY(), finger.bone(Type.TYPE_PROXIMAL).prevJoint().getZ()));
     		}
     	}
     }
