@@ -21,14 +21,20 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
+import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBuilder;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
@@ -40,20 +46,25 @@ import javafx.stage.Stage;
 
 public class Visualizer extends Application {
 	
+	private Stage stage;
     private LeapListener listener = null;
     private Controller controller = null;
     
-    private BooleanProperty boxVal = new SimpleBooleanProperty();
+/*    private BooleanProperty boxVal = new SimpleBooleanProperty();
     
     public BooleanProperty boxValProperty() {
     	return boxVal;
-    }
+    }*/
     
 	private HashMap<Integer, HandFX> hands;
 	
-	public Box box;
+	public LeapButton leapButton1;
     
     public void start(Stage primaryStage) {
+    	this.stage = primaryStage;
+    	this.createMenu() {
+    		
+    	}
         hands = new HashMap<Integer, HandFX>();
         
         listener = new LeapListener(this);
@@ -85,19 +96,29 @@ public class Visualizer extends Application {
 		camera.setTranslateY(-600);
 		camera.setTranslateZ(300);
 		
+		
         Group root3D = new Group();
         root3D.getChildren().addAll(camera);
         SubScene subScene = new SubScene(root3D, 1280, 800, true, SceneAntialiasing.BALANCED);
         subScene.setCamera(camera);
         root2D.getChildren().addAll(subScene);
         
-        box = ShapeCreator.createBox(200.0, 75.0,  50.0,  Color.RED, Color.GOLDENROD);
+        leapButton1 = new LeapButton(1280, 600, Color.RED, Color.GOLDENROD, "Recognition");
+        
+        root3D.getChildren().addAll(leapButton1);
+        
+/*        box = ShapeCreator.createBox(200.0, 75.0,  50.0,  Color.RED, Color.GOLDENROD);
         double oldDepth = 50.0;
-        box.setTranslateX(40);
-        box.setTranslateY(-300);
+        System.out.println(box.localToScene(box.getBoundsInLocal()));
+        box.setTranslateX((scene.getWidth()/2)-600);
+        box.setTranslateY((scene.getHeight()/2)-600);
         box.setTranslateZ(110);
+
+        System.out.println(box.localToScene(box.getBoundsInLocal()));
+
         box.setRotationAxis(new Point3D(20, 0, 0));
         box.setRotate(30);
+        
         box.setOnMousePressed((me) -> {
         	box.setDepth(0);
         });
@@ -105,10 +126,30 @@ public class Visualizer extends Application {
         	box.setDepth(oldDepth);
         });
         
-        Text t = new Text (10, 20, "This is a text sample");
-        t.setTranslateX(-20);
-        t.setTranslateY(-290);
-        t.setTranslateZ(0);
+        Button button1 = new Button("Test Button");
+        button1.setTranslateX(500);
+        button1.setTranslateY(100);
+        button1.getStyleClass().add("leap-button");
+        scene.getStylesheets().add("gestureinterpreter/Buttons.css");
+        
+        //root2D.getChildren().addAll(button1);
+        
+        
+        Text text = new Text("TEST TEXT");
+        text.setStyle("-fx-font-size: 20;-fx-font-smoothing-type: lcd;");
+        Bounds temp = text.localToScene(text.getBoundsInLocal());
+        
+        text.setTranslateZ(110-box.getDepth());
+        text.setTranslateY(((scene.getHeight()/2)-600) + temp.getHeight());
+        //text.setTranslateY(temp.getMaxY()-temp.getMinY());
+        text.setCache(true);
+        text.setCacheHint(CacheHint.SCALE_AND_ROTATE);
+        text.setRotationAxis(new Point3D(20, 0, 0));
+        text.setRotate(30);
+        System.out.println(text.localToScene(text.getBoundsInLocal()));
+        
+        
+        
         
         EventType<LeapEvent> OPTIONS_ALL = new EventType<>("OPTIONS_ALL");
 
@@ -122,11 +163,13 @@ public class Visualizer extends Application {
         
         box.addEventHandler(PRESS, (leapEv) -> {
         	box.setDepth(0);
+        	text.setTranslateZ(text.getTranslateZ()-oldDepth);
         	System.out.println("Leap press event");
         });
         
         box.addEventHandler(RELEASE, (leapEv) -> {
         	box.setDepth(oldDepth);
+        	text.setTranslateZ(text.getTranslateZ()+oldDepth);
         	System.out.println("Leap release event");
         });
         
@@ -146,9 +189,31 @@ public class Visualizer extends Application {
         		box.fireEvent(leapReleaseEvent);
         		//System.out.println("Fired release event");
         	}
-        });
+        });*/
         
-        root3D.getChildren().addAll(box, t);
+        
+/*        BorderPane borderPane = new BorderPane();
+        //borderPane.setStyle("-fx-border-color: black;-fx-background-color: #66CCFF;");
+        borderPane.setTop(text);
+
+        borderPane.setTranslateX((scene.getWidth()/2)-600);
+        borderPane.setTranslateY((scene.getHeight()/2)-600);
+        borderPane.setTranslateZ(110);
+        borderPane.setRotationAxis(new Point3D(20, 0, 0));
+        borderPane.setRotate(30);
+
+        //borderPane.setCache(true);
+        //borderPane.setCacheHint(CacheHint.SCALE_AND_ROTATE);
+        
+        //root3D.getChildren().addAll(borderPane);
+        
+        StackPane stack = new StackPane();
+        //stack.getChildren().addAll(text);
+        
+        //root3D.getChildren().addAll(stack);
+*/        
+        //root3D.getChildren().addAll(box, text);
+
         
        
 /*      Group root = new Group();
@@ -163,7 +228,7 @@ public class Visualizer extends Application {
         */
         
         
-        primaryStage.setTitle("Test Tracking");
+        primaryStage.setTitle("Menu");
         primaryStage.setScene(scene);
         primaryStage.show();
         

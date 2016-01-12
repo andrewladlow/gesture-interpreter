@@ -68,6 +68,7 @@ public class LeapListener extends Listener {
 	}
     
 	public void onFrame(Controller controller) {
+		//System.out.println(app.box.localToScene(app.box.getBoundsInLocal()));
 		Frame frame = controller.frame();
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
@@ -82,6 +83,9 @@ public class LeapListener extends Listener {
 			
 			InteractionBox iBox = controller.frame().interactionBox();
 			Finger frontFinger = frame.hands().frontmost().fingers().frontmost();
+			
+			Pointable pointable = controller.frame().pointables().frontmost();
+
 
 			Vector frontFingerTip = frontFinger.tipPosition();
 			Vector leapPoint = frontFinger.stabilizedTipPosition();
@@ -99,13 +103,15 @@ public class LeapListener extends Listener {
 			
 			//System.out.println("Debug x: " + frontFingerTip.getX() + ", Debug y: " + frontFingerTip.getY() + ", Debuy z: " + frontFingerTip.getZ());
 			
-			//System.out.println(app.box.getTranslateX());
+			//System.out.println(normalizedPoint.getX());
 			
 			//System.out.println(app.box.contains(appX, appY));
 			
 			//System.out.println("X: " +  appX + "             Y: " + appY);
 			
 			// Works but seems messy?
+			
+			//if (app.box.contains(localX, localY))
 			
 			if (frontFingerTip.getX() > -40 && frontFingerTip.getX() < 118) {
 				//System.out.println("Satisfied x");
@@ -120,17 +126,25 @@ public class LeapListener extends Listener {
 							if (frame.hands().frontmost().fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
 								touched = true;
 								//System.out.println("Finger touching");
-								app.boxValProperty().set(true);
+								app.leapButton1.boxValProperty().set(true);
 							}
 						}
 					}
 				}
 			}
 			
+			
+			// Better solution using ibox for x and y but reusing above z check?
+			//465 1140
+			//203 313
+			
+			
 			if (touched && frame.hands().frontmost().fingers().frontmost().touchZone() != Zone.ZONE_TOUCHING) {
 				touched = false;
 				//System.out.println("Finger no longer touching");
-				app.boxValProperty().set(false);
+				app.leapButton1.boxValProperty().set(false);
+				app.stop();
+				RecognizerGUI.launch(RecognizerGUI.class, args);
 			}
 		}
 	}

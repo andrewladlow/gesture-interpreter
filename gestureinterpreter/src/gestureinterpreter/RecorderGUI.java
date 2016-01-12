@@ -232,7 +232,7 @@ public class RecorderGUI extends Application {
         */
         
         
-        primaryStage.setTitle("Test Tracking");
+        primaryStage.setTitle("Recorder");
         primaryStage.setScene(scene);
         primaryStage.show();
         

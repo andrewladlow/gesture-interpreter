@@ -115,7 +115,7 @@ public class RecognizerGUI extends Application {
         subScene.setCamera(camera);
         root2D.getChildren().addAll(subScene);
               
-        primaryStage.setTitle("Gesture Interpreter");
+        primaryStage.setTitle("Recognizer");
         primaryStage.setScene(scene);
         primaryStage.show();
 
