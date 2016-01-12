@@ -54,7 +54,7 @@ public class LeapListener extends Listener {
 	public LeapListener(Visualizer main) {
 		this.app = main;
 	}
-	
+
 	public LeapListener() {
 		this.app = null;
 	}
@@ -73,14 +73,7 @@ public class LeapListener extends Listener {
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
 			frameReady.set(true);
-			for (com.leapmotion.leap.Gesture gesture : frame.gestures()) {
-				switch (gesture.type()) {
-					case TYPE_SCREEN_TAP:
-						System.out.println(gesture);
-						break;
-				}
-			}
-			
+/*			
 			InteractionBox iBox = controller.frame().interactionBox();
 			Finger frontFinger = frame.hands().frontmost().fingers().frontmost();
 			
@@ -143,9 +136,10 @@ public class LeapListener extends Listener {
 				touched = false;
 				//System.out.println("Finger no longer touching");
 				app.leapButton1.boxValProperty().set(false);
-				app.stop();
-				RecognizerGUI.launch(RecognizerGUI.class, args);
-			}
+				app.swapScene("Recognizer");
+				//app.stop();
+				//RecognizerGUI.launch(RecognizerGUI.class, args);
+			}*/
 		}
 	}
 	

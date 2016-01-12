@@ -45,11 +45,12 @@ public class RecognizerListener extends Listener {
 	private Gesture gesture;
 	
     private int gestureFrameCount = 0;  
-    private int minGestureFrames = 10;
+    private int minGestureFrames = 5;
     private int minGestureVelocity = 300;
     
     private int poseFrameCount = 0;
-    private int minPoseFrames = 50;
+    private int minPoseFrames = 25;
+    private int maxPoseFrames = 50;
     private int maxPoseVelocity = 30;	
     private boolean validPoseFrame = false;
     private boolean validPose = false;
@@ -80,7 +81,7 @@ public class RecognizerListener extends Listener {
 	    		ObjectInputStream ObjInStream = new ObjectInputStream(inStream);
 	    		Gesture tempGesture = (Gesture) ObjInStream.readObject();
 	 		
-	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), 32));
+	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), 25));
 	    		tempGesture.setPointArray(PDollarRecognizer.Scale(tempGesture.getPointArray()));
 	    		tempGesture.setPointArray(PDollarRecognizer.TranslateTo(tempGesture.getPointArray(), new Point(0.0,0.0,0.0)));
 	    		
@@ -131,10 +132,13 @@ public class RecognizerListener extends Listener {
 		                RecognizerResults recResult = pdRec.Recognize(gesture, storedGestures);
 		                System.out.println("\nClosest match: " + recResult.getName() + "\nNormalized score: " + recResult.getScore());
 		                state = State.IDLE;
+		                validPose = false;
 		                timeRecognized = System.currentTimeMillis();
 		                Platform.runLater(() -> {
 				            recGUI.gestureRecognitionProperty().set(recResult);
 		                });
+		            } else {
+		            	System.out.println("Recognition failed");
 		            }
 		        }
 			}
@@ -152,7 +156,8 @@ public class RecognizerListener extends Listener {
     public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {
         
         for (Hand hand : frame.hands()) {	
-            Vector palmVelocityTemp = hand.palmVelocity(); 
+            //Vector palmVelocityTemp = hand.palmVelocity(); 
+        	Vector palmVelocityTemp = hand.stabilizedPalmPosition();
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));             
             
             //System.out.println("palm velocity: " + palmVelocity);
@@ -176,6 +181,11 @@ public class RecognizerListener extends Listener {
                 	break;
                 }
             }
+        }
+        
+        if (poseFrameCount > maxPoseFrames) {
+        	poseFrameCount = 0;
+        	return false;
         }
         
         if (validPoseFrame) {

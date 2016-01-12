@@ -45,16 +45,16 @@ public class RecorderListener extends Listener {
     private int minGestureVelocity = 300;
     
     private int poseFrameCount = 0;
-    private int minPoseFrames = 75;
+    private int minPoseFrames = 25;
+    private int maxPoseFrames = 50;
     private int maxPoseVelocity = 30;	
     private boolean validPoseFrame = false;
     private boolean validPose = false;  
     
-    // 1 sec delay between each recognition
-    private int coolDown = 1000;
+    private long timeRecognized = 0;
 	
     private enum State {
-    	IDLE, RECORDING, STOPPED;
+    	IDLE, RECORDING;
     }
     
     private State state;
@@ -84,34 +84,36 @@ public class RecorderListener extends Listener {
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
 			frameReady.set(true);
-			
-			if (state == State.STOPPED) {
-				return;
-			}
+			// enforce 1 sec delay between recognitions
+			if (System.currentTimeMillis() - timeRecognized > 1000) {	
 	        
-	        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            
-	             
-	            if (state == State.IDLE) {
-	                state = State.RECORDING; 
-	            }
-	            
-	         
-	            
-	            storePoint(frame);
-	            System.out.println("Debug record");
-	            
-	        } else if (state == State.RECORDING) {
-	            System.out.println("debug record state");
-	            state = State.STOPPED;
-	            
-	            if ((gestureFrameCount >= minGestureFrames) || validPose) {
-	            	
-	            	saveGesture(gesture);
-	                System.out.println("Debug store");
-	                validPose = false;
-	                this.gestureDone.set(true);
-	            }
-	        }
+		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            
+		             
+		            if (state == State.IDLE) {
+		                state = State.RECORDING; 
+		            }
+		            
+		         
+		            
+		            storePoint(frame);
+		            System.out.println("Debug record");
+		            
+		        } else if (state == State.RECORDING) {
+		            System.out.println("debug record state");
+		            state = State.IDLE;
+		            
+		            if ((gestureFrameCount >= minGestureFrames) || validPose) {
+		            	
+		            	saveGesture(gesture);
+		                System.out.println("Debug store");
+		                validPose = false;
+		                timeRecognized = System.currentTimeMillis();
+		                this.gestureDone.set(true);
+		            } else {
+		            	System.out.println("Recording failed");
+		            }
+		        }
+			}
 		}
 	}
 
@@ -128,7 +130,7 @@ public class RecorderListener extends Listener {
         	Vector palmVelocityTemp = hand.stabilizedPalmPosition();
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));             
             
-            System.out.println("palm velocity: " + palmVelocity);
+            //System.out.println("palm velocity: " + palmVelocity);
             
             if (palmVelocity >= minVelocity) {
             	return true;
@@ -151,6 +153,11 @@ public class RecorderListener extends Listener {
                 	break;
                 }
             }
+        }
+        
+        if (poseFrameCount > maxPoseFrames) {
+        	poseFrameCount = 0;
+        	return false;
         }
         
         if (validPoseFrame) {

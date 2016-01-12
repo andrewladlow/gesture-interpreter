@@ -66,7 +66,7 @@ import java.lang.Double;
 
 public class PDollarRecognizer {
 
-	static int mNumPoints = 32;
+	static int mNumPoints = 25;
 	static Point mPointOrig = new Point(0.0,0.0,0.0,0);
 	static ArrayList<PointCloud> mPntClouds = new ArrayList<PointCloud>();
 
@@ -103,10 +103,10 @@ public class PDollarRecognizer {
             if (foundGesture == null) {
             	return new RecognizerResults("None", 0.0);
             } else {
-            	//return new RecognizerResults(foundGesture.getName(), Math.max((7.5 - score) / 5.0, 0.0));
+            	return new RecognizerResults(foundGesture.getName(), score);
             	//double test = (Math.min(parseInt(100 * Math.max(nearest - 4.0) / -4.0, 0.0), 100)/100.0)
             	//return new RecognizerResults(foundGesture.getName(), Math.min(parseInt(100 * Math.max(score - 4.0) / -4.0, 0.0), 100)/100.0);
-            	return new RecognizerResults(foundGesture.getName(), Math.max((score - 3.0) / 3.0, 0.0));
+            	//return new RecognizerResults(foundGesture.getName(), Math.max((score - 3.0) / 3.0, 0.0));
             }
            
     }

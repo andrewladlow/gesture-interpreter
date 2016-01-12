@@ -49,7 +49,9 @@ import javafx.util.Duration;
 
 public class RecognizerGUI extends Application {
 	
-    private LeapListener leapListener = null;
+	private Scene scene;
+
+    private LeapListener listener = null;
 	private RecognizerListener recorderListener = null;
     private Controller controller = null;
     
@@ -64,27 +66,21 @@ public class RecognizerGUI extends Application {
 	public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
 		return gestureRecognition;
 	}
-    
+
     public void start(Stage primaryStage) {
+    	System.out.println("INIT2");
+	    Stage stage = new Stage();
+	    
         hands = new HashMap<Integer, HandFX>();
-    	leapListener = new LeapListener();
+    	listener = new LeapListener();
         recorderListener = new RecognizerListener(this);
         controller = new Controller();
         controller.addListener(recorderListener);
         
         Group root2D = new Group();
         
-        Scene scene = new Scene(root2D, 1280, 600);
-        Button btn = new Button();
-        btn.setTranslateX(1200);
-        btn.setText("Hello world");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-        	
-            public void handle(ActionEvent event) {
-                System.out.println("hello world");    
-            }
-        });
-        
+        scene = new Scene(root2D, 1280, 600);
+
         Label titleLabel = new Label();
         titleLabel.textProperty().set("Gesture Recognizer");
         titleLabel.setTranslateX(10);
@@ -97,7 +93,7 @@ public class RecognizerGUI extends Application {
     	resultLabel.setTranslateY(100);
     	resultLabel.setFont(Font.font("Times New Roman", 24));
     	
-        root2D.getChildren().addAll(btn, titleLabel, resultLabel);
+        root2D.getChildren().addAll(titleLabel, resultLabel);
     	
         this.gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
         	resultLabel.textProperty().set("Closest match: " +  newVal.getName() + "\nMatch score: " + newVal.getScore());
@@ -115,47 +111,18 @@ public class RecognizerGUI extends Application {
         subScene.setCamera(camera);
         root2D.getChildren().addAll(subScene);
               
-        primaryStage.setTitle("Recognizer");
+
+        FXHandListener handRenderer = new FXHandListener(controller, recorderListener, hands);
+        root3D.getChildren().add(handRenderer);
+        
+        
+        primaryStage.setTitle("Gesture Interpreter");
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        recorderListener.frameReadyProperty().addListener((frameReady, oldVal, newVal) -> {
-    		Frame frame = controller.frame();
-    		
-    		// draw hands if atleast one is present in capture area
-    		if (newVal) {
-    			Platform.runLater(() -> {
-					for (Hand leapHand : frame.hands()) {
-						int handId = leapHand.id();
-						HandFX hand = hands.get(handId);
-						
-						if(!hands.containsKey(handId)) {
-							hand = new HandFX();
-							hands.put(leapHand.id(), hand);
-							root3D.getChildren().add(hand);
-						}		
-						
-						if(hand != null) {
-							hand.update(frame.hand(leapHand.id()));
-						}
-    				}
-    			});
- 	
-    		// remove hand if it leaves leapmotion capture area
-    		} else if (frame.hands().count() < controller.frame(1).hands().count()) {
-    			Platform.runLater(() -> {
-					// remove shapes if hands leave tracking area
-					System.out.println("Debug 6");
-					for (Hand leapHand : frame.hands()) {
-						hands.remove(leapHand.id());
-					}
-					root3D.getChildren().clear();
-    			});
-    		}
-    	});
     }
     
     public void stop() {
         controller.removeListener(recorderListener);
+        Platform.exit();
     }    
 }

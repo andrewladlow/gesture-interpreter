@@ -44,8 +44,8 @@ public class LeapButton extends Group {
 		box = ShapeCreator.createBox(200.0, 75.0,  50.0,  Color.RED, Color.GOLDENROD);
         double oldDepth = 50.0;
         //System.out.println(box.localToScene(box.getBoundsInLocal()));
-        box.setTranslateX((appWidth/2)-600);
-        box.setTranslateY((appHeight/2)-600);
+        box.setLayoutX((appWidth/2)-600);
+        box.setLayoutY((appHeight/2)-600);
         box.setTranslateZ(110);
 
         box.setRotationAxis(new Point3D(20, 0, 0));
@@ -63,8 +63,8 @@ public class LeapButton extends Group {
         text.setStyle("-fx-font-size: 20; -fx-font-smoothing-type: lcd;");
         Bounds temp = text.localToScene(text.getBoundsInLocal());
         
-        text.setTranslateX(-10);
-        text.setTranslateY(((appHeight/2)-600) + temp.getHeight());
+        text.setLayoutX(-10);
+        text.setLayoutY(((appHeight/2)-600) + temp.getHeight());
         text.setTranslateZ(110-box.getDepth());
         text.setCache(true);
         text.setCacheHint(CacheHint.SCALE_AND_ROTATE);
@@ -84,12 +84,14 @@ public class LeapButton extends Group {
         
         box.addEventHandler(PRESS, (leapEv) -> {
         	box.setDepth(0);
+        	text.setTranslateY(-10);
         	text.setTranslateZ(text.getTranslateZ()-oldDepth);
         	System.out.println("Leap press event");
         });
         
         box.addEventHandler(RELEASE, (leapEv) -> {
         	box.setDepth(oldDepth);
+        	text.setTranslateY(5);
         	text.setTranslateZ(text.getTranslateZ()+oldDepth);
         	System.out.println("Leap release event");
         });
