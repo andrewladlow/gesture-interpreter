@@ -47,82 +47,56 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class RecognizerGUI extends Application {
+public class RecognizerGUI extends Group {
 	
-	private Scene scene;
-
-    private LeapListener listener = null;
-	private RecognizerListener recorderListener = null;
-    private Controller controller = null;
-    
-    private IntegerProperty timerCount = new SimpleIntegerProperty();
+	private RecognizerListener recognizerListener = null;
     
 	private ObjectProperty gestureRecognition = new SimpleObjectProperty();
-    
-	private HashMap<Integer, HandFX> hands;
-	
-    private Group root3D;
 
 	public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
 		return gestureRecognition;
 	}
 
-    public void start(Stage primaryStage) {
-    	System.out.println("INIT2");
-	    Stage stage = new Stage();
+    public RecognizerGUI(Controller controller) {
 	    
-        hands = new HashMap<Integer, HandFX>();
-    	listener = new LeapListener();
-        recorderListener = new RecognizerListener(this);
+        recognizerListener = new RecognizerListener(this);
         controller = new Controller();
-        controller.addListener(recorderListener);
+        controller.addListener(recognizerListener);
         
-        Group root2D = new Group();
-        
-        scene = new Scene(root2D, 1280, 600);
-
         Label titleLabel = new Label();
         titleLabel.textProperty().set("Gesture Recognizer");
         titleLabel.setTranslateX(10);
         titleLabel.setTranslateY(10);
         titleLabel.setFont(Font.font("Times New Roman", 24));
-    	
+        
     	Label resultLabel = new Label();
     	//resultLabel.textProperty().bind(gestureRecognition);
     	resultLabel.setTranslateX(450);
     	resultLabel.setTranslateY(100);
     	resultLabel.setFont(Font.font("Times New Roman", 24));
     	
-        root2D.getChildren().addAll(titleLabel, resultLabel);
+        this.getChildren().addAll(titleLabel, resultLabel);
     	
         this.gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
         	resultLabel.textProperty().set("Closest match: " +  newVal.getName() + "\nMatch score: " + newVal.getScore());
         });
     	
-        final PerspectiveCamera camera = new PerspectiveCamera();
+/*        final PerspectiveCamera camera = new PerspectiveCamera();
         camera.setFieldOfView(50);
 		camera.setTranslateX(-600);
 		camera.setTranslateY(-600);
 		camera.setTranslateZ(300);
 		
-		root3D = new Group();
+		Group root2D = new Group();
         root3D.getChildren().addAll(camera);
         SubScene subScene = new SubScene(root3D, 1280, 800, true, SceneAntialiasing.BALANCED);
         subScene.setCamera(camera);
-        root2D.getChildren().addAll(subScene);
+        root2D.getChildren().addAll(subScene);*/
               
 
-        FXHandListener handRenderer = new FXHandListener(controller, recorderListener, hands);
-        root3D.getChildren().add(handRenderer);
+        //FXHandListener handRenderer = new FXHandListener(controller, recognizerListener, hands);
+        //this.getChildren().add(handRenderer);
         
-        
-        primaryStage.setTitle("Gesture Interpreter");
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
     
-    public void stop() {
-        controller.removeListener(recorderListener);
-        Platform.exit();
-    }    
 }

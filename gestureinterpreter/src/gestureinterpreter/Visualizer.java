@@ -53,9 +53,17 @@ public class Visualizer extends Application {
     private LeapListener listener = null;
     private Controller controller = null;
     
+    private FXHandListener handRenderer;
 	private HashMap<Integer, HandFX> hands;
 	
 	public LeapButton leapButton1;
+	
+    private BooleanProperty swapVal = new SimpleBooleanProperty(false);
+    
+    public BooleanProperty swapValProperty() {
+    	return swapVal;
+    }
+	
     
     public void start(Stage primaryStage) {
     	this.stage = primaryStage;
@@ -66,7 +74,7 @@ public class Visualizer extends Application {
         controller = new Controller();
         controller.addListener(listener);
         
-        Group root = new Group();
+        root = new Group();
       
         scene = new Scene(root, 1280, 600, true, SceneAntialiasing.BALANCED);
 
@@ -81,20 +89,37 @@ public class Visualizer extends Application {
         leapButton1 = new LeapButton(1280, 600, Color.RED, Color.GOLDENROD, "Recognition");
         root.getChildren().add(leapButton1);     
         
-        FXHandListener handRenderer = new FXHandListener(controller, listener, hands);
+        handRenderer = new FXHandListener(controller, listener, hands);
         root.getChildren().add(handRenderer);
         
         stage.setTitle("Gesture Interpreter");
         stage.setScene(scene);
         stage.show();
+        
+/*        this.swapValProperty().addListener((swapVal, oldVal, newVal) -> {
+        	if (newVal) {
+        		Platform.runLater(() -> {
+            		RecognizerGUI RecognizerGUI = new RecognizerGUI();
+            		root.getChildren().clear();
+            		root.getChildren().add(RecognizerGUI);
+        		});
+        	}
+        });*/
     }
     
     public void swapScene(String sceneName) {
     	//if (sceneName.equals("Recognizer")) {
     		//stage.hide();
         	System.out.println("INIT1");
-            controller.removeListener(listener);
-    		//RecognizerGUI RecognizerGUI = new RecognizerGUI();
+            //controller.removeListener(listener);
+        	Platform.runLater(() -> {
+	    		RecognizerGUI RecognizerGUI = new RecognizerGUI();
+	    		// clear all except hand visuals
+				root.getChildren().removeIf((obj)->(!obj.getClass().equals(FXHandListener.class)));
+	    		root.getChildren().add(RecognizerGUI);
+	            //root.getChildren().add(handRenderer);
+        	});
+    		//root.getChildren().add(handRenderer);
     		//Scene RecogScene = RecognizerGUI.start();
     		//stage.setScene(RecogScene);
     	//	stage.show();
@@ -102,8 +127,9 @@ public class Visualizer extends Application {
     }
           
     public void stop() {
-    	//root
+    	System.out.println("Stopping...");
         controller.removeListener(listener);
+        Platform.exit();
     }
     
     public static void main(String[] args) {
