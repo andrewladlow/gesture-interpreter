@@ -35,6 +35,7 @@ import javafx.scene.control.ButtonBuilder;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
@@ -47,16 +48,21 @@ import javafx.stage.Stage;
 
 public class Visualizer extends Application {
 	
+	private final float APPHEIGHT = 1280;
+	private final float APPWIDTH = 600;
+	
 	private Stage stage;
-	private Scene scene;
-	private Group root;
-    private LeapListener listener = null;
-    private Controller controller = null;
+	private Group root3D;
+	private Group root2D;
+	private LeapListener leapListener;
+    private MenuListener menuListener;
+    private Controller controller;
     
     private FXHandListener handRenderer;
 	private HashMap<Integer, HandFX> hands;
 	
-	public LeapButton leapButton1;
+	public LeapButton recognizerButton;
+	public LeapButton recorderButton;
 	
     private BooleanProperty swapVal = new SimpleBooleanProperty(false);
     
@@ -64,19 +70,20 @@ public class Visualizer extends Application {
     	return swapVal;
     }
 	
-    
     public void start(Stage primaryStage) {
     	this.stage = primaryStage;
 
         hands = new HashMap<Integer, HandFX>();
         
-        listener = new LeapListener(this);
+        leapListener = new LeapListener();
+        menuListener = new MenuListener(this);
         controller = new Controller();
-        controller.addListener(listener);
+        controller.addListener(leapListener);
+        controller.addListener(menuListener);
         
-        root = new Group();
+        root3D = new Group();
       
-        scene = new Scene(root, 1280, 600, true, SceneAntialiasing.BALANCED);
+        SubScene subScene = new SubScene(root3D, APPWIDTH, APPHEIGHT, true, SceneAntialiasing.BALANCED);
 
         final PerspectiveCamera camera = new PerspectiveCamera();
         camera.setFieldOfView(50);
@@ -84,51 +91,52 @@ public class Visualizer extends Application {
 		camera.setTranslateY(-600);
 		camera.setTranslateZ(250);
 			
-        scene.setCamera(camera);
+        subScene.setCamera(camera);
         
-        leapButton1 = new LeapButton(1280, 600, Color.RED, Color.GOLDENROD, "Recognition");
-        root.getChildren().add(leapButton1);     
         
-        handRenderer = new FXHandListener(controller, listener, hands);
-        root.getChildren().add(handRenderer);
+        
+        recognizerButton = new LeapButton(subScene.getWidth(), subScene.getHeight(), Color.RED, Color.GOLDENROD, "Recognition");
+        root3D.getChildren().add(recognizerButton);
+        
+        recorderButton = new LeapButton(subScene.getWidth(), subScene.getHeight(), Color.RED, Color.GOLDENROD, "Calibration");
+        root3D.getChildren().add(recorderButton);
+
+        handRenderer = new FXHandListener(controller, leapListener, hands);
+        root3D.getChildren().add(handRenderer);
+        
+        root2D = new Group();
+        Scene scene = new Scene(root2D, APPWIDTH, APPHEIGHT, true, SceneAntialiasing.BALANCED);
+        root2D.getChildren().addAll(subScene);
+        
+        Label titleLabel = new Label();
+        titleLabel.textProperty().set("Main menu");
+        titleLabel.setTranslateX(10);
+        titleLabel.setTranslateY(10);
+        titleLabel.setFont(Font.font("Times New Roman", 24));
+        
+        root2D.getChildren().addAll(titleLabel);
         
         stage.setTitle("Gesture Interpreter");
         stage.setScene(scene);
         stage.show();
-        
-/*        this.swapValProperty().addListener((swapVal, oldVal, newVal) -> {
-        	if (newVal) {
-        		Platform.runLater(() -> {
-            		RecognizerGUI RecognizerGUI = new RecognizerGUI();
-            		root.getChildren().clear();
-            		root.getChildren().add(RecognizerGUI);
-        		});
-        	}
-        });*/
     }
     
     public void swapScene(String sceneName) {
-    	//if (sceneName.equals("Recognizer")) {
-    		//stage.hide();
+    	if (sceneName.equals("Recognizer")) {
         	System.out.println("INIT1");
-            //controller.removeListener(listener);
         	Platform.runLater(() -> {
-	    		RecognizerGUI RecognizerGUI = new RecognizerGUI();
+	    		RecognizerGUI recogGUI = RecognizerGUI.getInstance();
+	    		recogGUI.init(controller);
 	    		// clear all except hand visuals
-				root.getChildren().removeIf((obj)->(!obj.getClass().equals(FXHandListener.class)));
-	    		root.getChildren().add(RecognizerGUI);
-	            //root.getChildren().add(handRenderer);
+				root3D.getChildren().removeIf((obj)->(!obj.getClass().equals(FXHandListener.class)));
+	    		root2D.getChildren().add(recogGUI);
         	});
-    		//root.getChildren().add(handRenderer);
-    		//Scene RecogScene = RecognizerGUI.start();
-    		//stage.setScene(RecogScene);
-    	//	stage.show();
-    	//}
+    	}
     }
           
     public void stop() {
     	System.out.println("Stopping...");
-        controller.removeListener(listener);
+        controller.removeListener(menuListener);
         Platform.exit();
     }
     

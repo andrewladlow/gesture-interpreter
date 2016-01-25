@@ -29,6 +29,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -49,6 +50,8 @@ import javafx.util.Duration;
 
 public class RecognizerGUI extends Group {
 	
+	private static RecognizerGUI INSTANCE = null;
+	
 	private RecognizerListener recognizerListener = null;
     
 	private ObjectProperty gestureRecognition = new SimpleObjectProperty();
@@ -56,11 +59,22 @@ public class RecognizerGUI extends Group {
 	public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
 		return gestureRecognition;
 	}
-
-    public RecognizerGUI(Controller controller) {
+	
+	
+	private RecognizerGUI() {
+		
+	}
+	
+	public static RecognizerGUI getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new RecognizerGUI();
+		}
+		return INSTANCE;
+	}
+	
+    public void init(Controller controller) {
 	    
         recognizerListener = new RecognizerListener(this);
-        controller = new Controller();
         controller.addListener(recognizerListener);
         
         Label titleLabel = new Label();
@@ -71,32 +85,15 @@ public class RecognizerGUI extends Group {
         
     	Label resultLabel = new Label();
     	//resultLabel.textProperty().bind(gestureRecognition);
-    	resultLabel.setTranslateX(450);
-    	resultLabel.setTranslateY(100);
     	resultLabel.setFont(Font.font("Times New Roman", 24));
-    	
+    	resultLabel.setTranslateX(930);
+    	resultLabel.setTranslateY(10);
+
         this.getChildren().addAll(titleLabel, resultLabel);
     	
         this.gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
         	resultLabel.textProperty().set("Closest match: " +  newVal.getName() + "\nMatch score: " + newVal.getScore());
-        });
-    	
-/*        final PerspectiveCamera camera = new PerspectiveCamera();
-        camera.setFieldOfView(50);
-		camera.setTranslateX(-600);
-		camera.setTranslateY(-600);
-		camera.setTranslateZ(300);
-		
-		Group root2D = new Group();
-        root3D.getChildren().addAll(camera);
-        SubScene subScene = new SubScene(root3D, 1280, 800, true, SceneAntialiasing.BALANCED);
-        subScene.setCamera(camera);
-        root2D.getChildren().addAll(subScene);*/
-              
-
-        //FXHandListener handRenderer = new FXHandListener(controller, recognizerListener, hands);
-        //this.getChildren().add(handRenderer);
-        
+        });      
     }
     
 }
