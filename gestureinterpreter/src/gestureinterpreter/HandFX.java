@@ -70,18 +70,16 @@ public class HandFX extends Group {
 
 		Iterator<Finger> itFinger = hand.fingers().iterator();
 
-		Finger finger = null;
-		for (int i = 0; i < 5; i++) {
-			finger = itFinger.next();
-
-
+		int i = 0;
+		for (Finger finger : hand.fingers()) {
 			LeapToFX.move(fingers.get(i), finger.tipPosition());
 			LeapToFX.move(distals.get(i), finger.bone(Type.TYPE_DISTAL).prevJoint());
 			LeapToFX.move(intermediates.get(i), finger.bone(Type.TYPE_INTERMEDIATE).prevJoint());
 			LeapToFX.move(proximals.get(i), finger.bone(Type.TYPE_PROXIMAL).prevJoint());
-			if (i == 1 || i == 0 || i == 4) {
+			if (i == 0 || i == 1 || i == 4) {
 				LeapToFX.move(metacarpals.get(i), finger.bone(Type.TYPE_METACARPAL).prevJoint());
 			}
+			i++;
 		}
 		
 		for (JointFX joint : joints) {

@@ -42,26 +42,21 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class RecorderGUI extends Application {
+public class RecorderGUI extends Group {
+	
+	private static RecorderGUI INSTANCE;
+    private Controller controller;
 
-    private LeapListener listener = null;
-	//private RecorderListener recorderListener = null;
-    private Controller controller = null;
+	private RecorderGUI() {}
+	
+	public static RecorderGUI getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new RecorderGUI();
+		}
+		return INSTANCE;
+	}
     
-	private HashMap<Integer, HandFX> hands;
-    
-    public void start(Stage primaryStage) {
-    	listener = new LeapListener();
-        //recorderListener = new RecorderListener();
-        controller = new Controller();
-        controller.addListener(listener);
-        
-        hands = new HashMap<Integer, HandFX>();
-
-        
-        Group root2D = new Group();
-
-        Scene scene = new Scene(root2D, 1280, 600);
+    public void init(Controller controller) {
 
         Label titleLabel = new Label();
         titleLabel.textProperty().set("Gesture Recorder");
@@ -70,40 +65,27 @@ public class RecorderGUI extends Application {
         titleLabel.setFont(Font.font("Times New Roman", 24));
     	
     	Label resultLabel = new Label();
-    	resultLabel.setTranslateX(450);
+    	resultLabel.setTranslateX(525);
     	resultLabel.setTranslateY(100);
     	resultLabel.setFont(Font.font("Times New Roman", 24));
-        
-    	Label timerLabel = new Label();
-    	timerLabel.setTranslateX(200);
-    	timerLabel.setTranslateY(200);
-    	timerLabel.setFont(Font.font("Times New Roman", 24));
     	
-
-        root2D.getChildren().addAll(timerLabel, resultLabel, titleLabel);
+        this.getChildren().addAll(resultLabel, titleLabel);
         
         Thread t = new Thread(() -> {
-        	for (char c = 'C'; c <= 'C'; c++) {
-        		try {
-        			char temp = c;
+        	for (char c = 'H'; c <= 'M'; c++) {
+        		char tempChar = c;
+    			for (int i = 3; i > 0; i--) {
+        			int count = i;
         			Platform.runLater(() -> {
-        				resultLabel.textProperty().set("Recording " + temp + " in 3...");
+        				resultLabel.textProperty().set("Recording " + tempChar + " in " + count + "...");
         			});
-        			Thread.sleep(1000);
-        			Platform.runLater(() -> {
-        				resultLabel.textProperty().set("Recording " + temp + " in 3...2...");
-        			});
-        			Thread.sleep(1000);
-        			Platform.runLater(() -> {
-        				resultLabel.textProperty().set("Recording " + temp + " in 3...2...1...");
-        			});
-        			Thread.sleep(1000);
-        			Platform.runLater(() -> {
-        				resultLabel.textProperty().set("Now recording " + temp);
-        			});
-        		} catch (Exception e) {
-        			e.printStackTrace();
-        		}
+    				try {
+    					Thread.sleep(1000);
+            		} catch (Exception e) {}
+    			}
+    			Platform.runLater(() -> {
+    				resultLabel.textProperty().set("Now recording " + tempChar + "...");
+    			});
         		
         		System.out.println(c);
         		RecorderListener tempRecorderListener = new RecorderListener(c);
@@ -111,53 +93,18 @@ public class RecorderGUI extends Application {
         		while (tempRecorderListener.gestureDoneProperty().get() != true) {
         			try {
         				Thread.sleep(200);
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        			}
+        			} catch (Exception e) {}
         		}
     			char temp = c;
     			Platform.runLater(() -> {
-    				resultLabel.textProperty().set("Recorded " + temp + "!");
+    				resultLabel.textProperty().set("Successfully recorded " + temp + "!");
     			});
     			try {
-    				Thread.sleep(1000);
-        		} catch (Exception e) {
-        			e.printStackTrace();
-        		}
+    				Thread.sleep(2000);
+        		} catch (Exception e) {}
         		controller.removeListener(tempRecorderListener);
         	}
         });
-        t.start();
-           
-        
-        final PerspectiveCamera camera = new PerspectiveCamera();
-        camera.setFieldOfView(50);
-		camera.setTranslateX(-600);
-		camera.setTranslateY(-600);
-		camera.setTranslateZ(300);
-		
-        Group root3D = new Group();
-        root3D.getChildren().addAll(camera);
-        SubScene subScene = new SubScene(root3D, 1280, 800, true, SceneAntialiasing.BALANCED);
-        subScene.setCamera(camera);
-        root2D.getChildren().addAll(subScene);
-       
-        
-
-        FXHandListener handRenderer = new FXHandListener(controller, listener, hands);
-        root3D.getChildren().add(handRenderer);
-        
-        primaryStage.setTitle("Recorder");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        
-        
+        t.start();  
     }
-    
-
-    public void stop() {
-        controller.removeListener(listener);
-        Platform.exit();
-    }
-    
 }

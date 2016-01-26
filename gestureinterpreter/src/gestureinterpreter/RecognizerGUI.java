@@ -50,20 +50,15 @@ import javafx.util.Duration;
 
 public class RecognizerGUI extends Group {
 	
-	private static RecognizerGUI INSTANCE = null;
-	
-	private RecognizerListener recognizerListener = null;
-    
+	private static RecognizerGUI INSTANCE;
+	private RecognizerListener recognizerListener; 
 	private ObjectProperty gestureRecognition = new SimpleObjectProperty();
 
 	public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
 		return gestureRecognition;
 	}
-	
-	
-	private RecognizerGUI() {
 		
-	}
+	private RecognizerGUI() {}
 	
 	public static RecognizerGUI getInstance() {
 		if (INSTANCE == null) {
@@ -86,7 +81,7 @@ public class RecognizerGUI extends Group {
     	Label resultLabel = new Label();
     	//resultLabel.textProperty().bind(gestureRecognition);
     	resultLabel.setFont(Font.font("Times New Roman", 24));
-    	resultLabel.setTranslateX(930);
+    	resultLabel.setTranslateX(Menu.APPWIDTH-350);
     	resultLabel.setTranslateY(10);
 
         this.getChildren().addAll(titleLabel, resultLabel);

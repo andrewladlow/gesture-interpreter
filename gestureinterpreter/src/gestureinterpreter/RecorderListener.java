@@ -85,8 +85,8 @@ public class RecorderListener extends Listener {
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
 			frameReady.set(true);
-			// enforce 1 sec delay between recognitions
-			if (System.currentTimeMillis() - timeRecognized > 1000) {	
+			// enforce atleast 3 sec delay between recordings
+			if (System.currentTimeMillis() - timeRecognized > 3000) {	
 	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            
 		             

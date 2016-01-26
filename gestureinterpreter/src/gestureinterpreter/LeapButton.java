@@ -43,14 +43,27 @@ public class LeapButton extends Group {
 	
 	private void createBox(double appWidth, double appHeight, Color diffuse, Color specular) {
 		box = ShapeCreator.createBox(200.0, 75.0,  50.0,  Color.RED, Color.GOLDENROD);
-        double oldDepth = 50.0;
         //System.out.println(box.localToScene(box.getBoundsInLocal()));
-        box.setLayoutX((appWidth/2)-appHeight);
-        box.setLayoutY((appHeight/2)-appHeight);
-        box.setTranslateZ(110);
+        
+        //box.setLayoutX((appWidth/2)-appHeight);
+        //box.setLayoutY((appHeight/2)-appHeight);
+        //box.setTranslateZ(110);
+        
+        //System.out.println("1 :" + box.getBoundsInLocal());
+        //System.out.println("2 :" + box.getBoundsInParent());
+        
+        //box.setTranslateX(40);
+        //box.setTranslateY(-285);
+        //box.setTranslateZ(110);
+        
+        //System.out.println("1- : " + box.getBoundsInLocal());
+        //System.out.println("2- : " + box.getBoundsInParent());
 
-        box.setRotationAxis(new Point3D(20, 0, 0));
-        box.setRotate(30);
+        //box.setRotationAxis(new Point3D(20, 0, 0));
+        //box.setRotate(30);
+        
+        //System.out.println(box.localToScene(box.getBoundsInLocal()));
+        
         box.setOnMousePressed((me) -> {
         	box.setDepth(0);
         });
@@ -62,15 +75,35 @@ public class LeapButton extends Group {
 	private void createText(double appHeight, String givenText) {
         text = new Text(givenText);
         text.setStyle("-fx-font-size: 20; -fx-font-smoothing-type: lcd;");
-        Bounds temp = text.localToScene(text.getBoundsInLocal());
-        
-        text.setLayoutX(-10);
-        text.setLayoutY(((appHeight/2)-appHeight) + temp.getHeight());
-        text.setTranslateZ(110-box.getDepth());
+        //Bounds temp = text.localToScene(text.getBoundsInLocal());
+        //text.setLayoutX(-10);
+        //text.setLayoutY(((appHeight/2)-appHeight) + temp.getHeight());
+        //text.setTranslateZ(110-box.getDepth());
+        //text.setCache(true);
+        //text.setCacheHint(CacheHint.SCALE_AND_ROTATE);
+        //text.setRotationAxis(new Point3D(20, 0, 0));
+        //text.setRotate(30);
+	}
+	
+	public void setPosition (double xPos, double yPos, double zPos) {
+		box.setTranslateX(xPos);
+		box.setTranslateY(yPos);
+		box.setTranslateZ(zPos);
+		
+		Bounds textBounds = text.localToScene(text.getBoundsInLocal());
+		text.setLayoutX(xPos-box.getWidth()/4);
+		text.setLayoutY(yPos + (textBounds.getHeight()/2) -5);
+		text.setTranslateZ(zPos-box.getDepth());
+	}
+	
+	public void setRotation(double axis, double rotation) {
+		box.setRotationAxis(new Point3D(axis, 0, 0));
+		box.setRotate(rotation);
+		
         text.setCache(true);
         text.setCacheHint(CacheHint.SCALE_AND_ROTATE);
-        text.setRotationAxis(new Point3D(20, 0, 0));
-        text.setRotate(30);
+		text.setRotationAxis(new Point3D(axis, 0, 0));
+		text.setRotate(rotation);
 	}
 	
 	private void createEvents() {
@@ -81,15 +114,15 @@ public class LeapButton extends Group {
         
         box.addEventHandler(PRESS, (leapEv) -> {
         	box.setDepth(0);
-        	text.setTranslateY(-10);
-        	text.setTranslateZ(text.getTranslateZ()-oldDepth);
+        	//text.setTranslateY(-10);
+        	text.setTranslateZ(text.getTranslateZ() + 40);
         	System.out.println("Leap press event");
         });
         
         box.addEventHandler(RELEASE, (leapEv) -> {
         	box.setDepth(oldDepth);
-        	text.setTranslateY(5);
-        	text.setTranslateZ(text.getTranslateZ()+oldDepth);
+        	//text.setTranslateY(5);
+        	text.setTranslateZ(text.getTranslateZ()- 40);
         	System.out.println("Leap release event");
         });
         

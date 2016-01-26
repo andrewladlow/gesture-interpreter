@@ -36,6 +36,8 @@ import com.leapmotion.leap.HandList;
 import com.leapmotion.leap.Listener;
 import com.leapmotion.leap.Screen;
 import com.leapmotion.leap.Vector;
+import com.sun.javafx.geom.Rectangle;
+
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,13 +47,14 @@ import javafx.geometry.Point2D;
 
 public class MenuListener extends Listener {
 	
-	private final Visualizer app;
+	private final Menu app;
 	
-	private boolean touched = false;
+	private boolean touchedRecognizer = false;
+	private boolean touchedRecorder = false;
 	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
-	public MenuListener(Visualizer main) {
+	public MenuListener(Menu main) {
 		this.app = main;
 	}
 	
@@ -70,18 +73,89 @@ public class MenuListener extends Listener {
 		if (!frame.hands().isEmpty()) {
 			frameReady.set(true);
 			
-			InteractionBox iBox = controller.frame().interactionBox();
-			Finger frontFinger = frame.hands().frontmost().fingers().frontmost();
 			
-			Pointable pointable = controller.frame().pointables().frontmost();
-
-
+			InteractionBox iBox = frame.interactionBox();
+			
+			Finger frontFinger = frame.fingers().frontmost();
 			Vector frontFingerTip = frontFinger.tipPosition();
-			Vector leapPoint = frontFinger.stabilizedTipPosition();
+			
+			//Pointable pointable = controller.frame().pointables().frontmost();
+			
+			System.out.println("XLEAP: " + frontFingerTip.getX() + "             YLEAP: " + frontFingerTip.getY() + "      ZLEAP: " + frontFingerTip.getZ());
+			
+			
+			Vector leapPoint = frontFinger.tipPosition();
 			Vector normalizedPoint = iBox.normalizePoint(leapPoint, true);
+			//normalizedPoint = normalizedPoint.plus(new Vector((float) 0.2, (float) 0, (float) 1));
+			
+			//normalizedPoint = normalizedPoint.times((float) 0.35);
+			//Vector position = new Vector((float) .175, (float) .75, (float) .75);
+			//normalizedPoint = normalizedPoint.minus(position);
+			
+			float appX = normalizedPoint.getX() * app.APPWIDTH;
+			float appY = (1 - normalizedPoint.getY()) * app.APPHEIGHT;
+			
+			
+			//System.out.println("XAPP: " +  appX + "             YAPP: " + appY);
+			
+/*			for (LeapButton button : app.leapButtons) {
+				//System.out.println(button.localToScene(button.getBoundsInLocal()));
+				if (button.localToScene(button.getBoundsInLocal()).contains(new Point2D(frontFingerTip.getX(), frontFingerTip.getY() * -1))) {
+					System.out.println("Hovering over button!");
+					//button.touchStatusProperty().set(true);
+				}
+			}*/
+			
+			if (frontFingerTip.getZ() < -85) {
+				if (frontFingerTip.getY() > 160 && frontFingerTip.getY() < 240) {
+					if (frontFingerTip.getX() > -230 && frontFingerTip.getX() < -60) {
+						
+						if (!touchedRecognizer) {
+							if (frontFinger.touchZone() == Zone.ZONE_TOUCHING) {
+								touchedRecognizer = true;
+								//System.out.println("Finger touching");
+								app.recognizerButton.touchStatusProperty().set(true);
+							}
+						}
+						
+					} else if (frontFingerTip.getX() > 30 && frontFingerTip.getX() < 200) {
+						
+						if (!touchedRecorder) {
+							if (frontFinger.touchZone() == Zone.ZONE_TOUCHING) {
+								touchedRecorder = true;
+								//System.out.println("Finger touching");
+								app.recorderButton.touchStatusProperty().set(true);
+							}
+						}
+					}
+				}
+			}
+			
+			
+			
+			if (touchedRecognizer && frontFinger.touchZone() != Zone.ZONE_TOUCHING) {
+				touchedRecognizer = false;
+				app.recognizerButton.touchStatusProperty().set(false);
+				app.swapScene("Recognizer");
+				app.swapValProperty().set(true);
+			} 
+			else if (touchedRecorder && frontFinger.touchZone() != Zone.ZONE_TOUCHING) {
+				touchedRecorder = false;
+				app.recorderButton.touchStatusProperty().set(false);
+				app.swapScene("Recorder");
+				app.swapValProperty().set(true);		
+			}
+			
+		}	
+	}
 
-			float appX = normalizedPoint.getX() * 1280;
-			float appY = (1 - normalizedPoint.getY()) * 600;
+/*
+			Vector frontFingerTip = frontFinger.tipPosition();
+			//Vector leapPoint = frontFinger.stabilizedTipPosition();
+			//Vector normalizedPoint = iBox.normalizePoint(leapPoint, true);
+
+			//float appX = normalizedPoint.getX() * 1280;
+			//float appY = (1 - normalizedPoint.getY()) * 600;
 			
 			// observer interrupts before method ends? no frames skipped? needs testing...
 			// x = -40 -- 118
@@ -111,9 +185,9 @@ public class MenuListener extends Listener {
 					if (frontFingerTip.getZ() < -60) {
 						//System.out.println("Satisified z");
 				
-						if (!touched) {
-							if (frame.hands().frontmost().fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
-								touched = true;
+						if (!touchedRecognizer) {
+							if (frontFinger.touchZone() == Zone.ZONE_TOUCHING) {
+								touchedRecognizer = true;
 								//System.out.println("Finger touching");
 								app.recognizerButton.touchStatusProperty().set(true);
 							}
@@ -128,8 +202,8 @@ public class MenuListener extends Listener {
 			//203 313
 			
 			
-			if (touched && frame.hands().frontmost().fingers().frontmost().touchZone() != Zone.ZONE_TOUCHING) {
-				touched = false;
+			if (touchedRecognizer && frontFinger.touchZone() != Zone.ZONE_TOUCHING) {
+				touchedRecognizer = false;
 				//System.out.println("Finger no longer touching");
 				app.recognizerButton.touchStatusProperty().set(false);
 				app.swapScene("Recognizer");
@@ -138,7 +212,7 @@ public class MenuListener extends Listener {
 				//RecognizerGUI.launch(RecognizerGUI.class, args);
 			}
 		}
-	}
+	}*/
 	
 
 	public BooleanProperty frameReadyProperty() {
