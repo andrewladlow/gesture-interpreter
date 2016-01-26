@@ -50,9 +50,13 @@ import javafx.util.Duration;
 
 public class RecognizerGUI extends Group {
 	
+	private Menu app;
+	
 	private static RecognizerGUI INSTANCE;
 	private RecognizerListener recognizerListener; 
 	private ObjectProperty gestureRecognition = new SimpleObjectProperty();
+	
+	public LeapButton backButton;
 
 	public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
 		return gestureRecognition;
@@ -67,8 +71,9 @@ public class RecognizerGUI extends Group {
 		return INSTANCE;
 	}
 	
-    public void init(Controller controller) {
+    public void init(Menu app, Controller controller) {
 	    
+    	this.app = app;
         recognizerListener = new RecognizerListener(this);
         controller.addListener(recognizerListener);
         
@@ -89,6 +94,21 @@ public class RecognizerGUI extends Group {
         this.gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
         	resultLabel.textProperty().set("Closest match: " +  newVal.getName() + "\nMatch score: " + newVal.getScore());
         });      
+        
+        Group root3D = new Group();
+        SubScene subScene = new SubScene(root3D, Menu.APPWIDTH, Menu.APPHEIGHT, true, SceneAntialiasing.BALANCED);
+        
+        this.getChildren().addAll(subScene);
+        
+        backButton = new LeapButton(Menu.APPWIDTH, Menu.APPHEIGHT, Color.RED, Color.GOLDENROD, "Return");     
+        backButton.setPosition(-10, -50, 110);
+        backButton.setRotation(1, 5);
+        
+        root3D.getChildren().addAll(backButton);
+    }
+    
+    public void goBack() {
+    	
     }
     
 }

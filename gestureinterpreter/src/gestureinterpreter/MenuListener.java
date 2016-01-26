@@ -137,13 +137,13 @@ public class MenuListener extends Listener {
 				touchedRecognizer = false;
 				app.recognizerButton.touchStatusProperty().set(false);
 				app.swapScene("Recognizer");
-				app.swapValProperty().set(true);
+				//app.swapValProperty().set(true);
 			} 
 			else if (touchedRecorder && frontFinger.touchZone() != Zone.ZONE_TOUCHING) {
 				touchedRecorder = false;
 				app.recorderButton.touchStatusProperty().set(false);
 				app.swapScene("Recorder");
-				app.swapValProperty().set(true);		
+				//app.swapValProperty().set(true);		
 			}
 			
 		}	

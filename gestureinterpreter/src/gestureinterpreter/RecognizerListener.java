@@ -36,10 +36,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import com.leapmotion.leap.Screen;
 import com.leapmotion.leap.Vector;
 import com.leapmotion.leap.Bone.Type;
+import com.leapmotion.leap.Pointable.Zone;
 
 import javafx.geometry.Point2D;
 
 public class RecognizerListener extends Listener {
+	
+	private boolean touchedBack = false;
 	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
@@ -110,7 +113,34 @@ public class RecognizerListener extends Listener {
 		Frame frame = controller.frame();
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
-			frameReady.set(true);		
+			frameReady.set(true);
+			
+			Finger frontFinger = frame.fingers().frontmost();
+			Vector frontFingerTip = frontFinger.tipPosition();
+			
+			if (frontFingerTip.getZ() < -85) {
+				if (frontFingerTip.getY() > 160 && frontFingerTip.getY() < 240) {
+					if (frontFingerTip.getX() > -230 && frontFingerTip.getX() < -60) {
+						
+						if (!touchedBack) {
+							if (frontFinger.touchZone() == Zone.ZONE_TOUCHING) {
+								touchedBack = true;
+								//System.out.println("Finger touching");
+								recGUI.backButton.touchStatusProperty().set(true);
+							}
+						}
+					}
+				}
+			}
+			
+			
+			if (touchedBack && frontFinger.touchZone() != Zone.ZONE_TOUCHING) {
+				touchedBack = false;
+				recGUI.backButton.touchStatusProperty().set(false);
+			    recGUI.goBack();
+				//recGUI.backValProperty().set(true);
+			} 
+			
 			
 			// enforce 1 sec delay between recognitions
 			if (System.currentTimeMillis() - timeRecognized > 1000) {	        

@@ -63,17 +63,16 @@ public class Menu extends Application {
     
     private FXHandListener handRenderer;
 	private HashMap<Integer, HandFX> hands;
-	ArrayList<LeapButton> leapButtons;
 	
 	public LeapButton recognizerButton;
 	public LeapButton recorderButton;
 	
-    private BooleanProperty swapVal = new SimpleBooleanProperty(false);
+/*    private BooleanProperty swapVal = new SimpleBooleanProperty(false);
     
     public BooleanProperty swapValProperty() {
     	return swapVal;
     }
-	
+	*/
     public void start(Stage primaryStage) {
     	this.stage = primaryStage;
     	
@@ -105,7 +104,6 @@ public class Menu extends Application {
 		camera.setTranslateZ(275);	
         subScene.setCamera(camera); 
         
-        leapButtons = new ArrayList<LeapButton>();
         
         recognizerButton = new LeapButton(APPWIDTH, APPHEIGHT, Color.RED, Color.GOLDENROD, "Recognition");     
         recognizerButton.setPosition(-170, -200, 110);
@@ -118,7 +116,6 @@ public class Menu extends Application {
         
         System.out.println(recognizerButton.localToScene(recognizerButton.getBoundsInLocal()));
         
-        leapButtons.add(recognizerButton);
         root3D.getChildren().add(recognizerButton);
         
         recorderButton = new LeapButton(APPWIDTH, APPHEIGHT, Color.RED, Color.GOLDENROD, "Calibration");       
@@ -127,7 +124,6 @@ public class Menu extends Application {
         
         System.out.println(recorderButton.localToScene(recorderButton.getBoundsInLocal()));
         
-        leapButtons.add(recorderButton);
         root3D.getChildren().add(recorderButton);
 
         handRenderer = new FXHandListener(controller, leapListener, hands);
@@ -144,12 +140,13 @@ public class Menu extends Application {
         	System.out.println("Swapping to recognizer");
         	Platform.runLater(() -> {
 	    		RecognizerGUI recogGUI = RecognizerGUI.getInstance();
-	    		recogGUI.init(controller);
+	    		recogGUI.init(this, controller);
 	    		// clear all except hand visuals
 				root3D.getChildren().removeIf((obj)->(!obj.getClass().equals(FXHandListener.class)));
 				root2D.getChildren().clear();
 				root2D.getChildren().add(subScene);
 	    		root2D.getChildren().add(recogGUI);
+	    		
         	});
     	} 
     	else if (sceneName.equals("Recorder")) {
