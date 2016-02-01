@@ -53,8 +53,8 @@ public class RecognizerListener extends Listener {
     private int minGestureVelocity = 300;
     
     private int poseFrameCount = 0;
-    private int minPoseFrames = 25;
-    private int maxPoseFrames = 50;
+    private int minPoseFrames = 50;
+    private int maxPoseFrames = 75;
     private int maxPoseVelocity = 30;	
     private boolean validPoseFrame = false;
     private boolean validPose = false;
@@ -85,7 +85,7 @@ public class RecognizerListener extends Listener {
 	    		ObjectInputStream ObjInStream = new ObjectInputStream(inStream);
 	    		Gesture tempGesture = (Gesture) ObjInStream.readObject();
 	 		
-	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), 25));
+	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), PDollarRecognizer.MNUMPOINTS));
 	    		tempGesture.setPointArray(PDollarRecognizer.Scale(tempGesture.getPointArray()));
 	    		tempGesture.setPointArray(PDollarRecognizer.TranslateTo(tempGesture.getPointArray(), new Point(0.0,0.0,0.0)));
 	    		
@@ -119,8 +119,8 @@ public class RecognizerListener extends Listener {
 			Vector frontFingerTip = frontFinger.tipPosition();
 			
 			if (frontFingerTip.getZ() < -85) {
-				if (frontFingerTip.getY() > 160 && frontFingerTip.getY() < 240) {
-					if (frontFingerTip.getX() > -230 && frontFingerTip.getX() < -60) {
+				if (frontFingerTip.getY() > 10 && frontFingerTip.getY() < 90) {
+					if (frontFingerTip.getX() > -170 && frontFingerTip.getX() < 30) {
 						
 						if (!touchedBack) {
 							if (frontFinger.touchZone() == Zone.ZONE_TOUCHING) {
@@ -142,7 +142,7 @@ public class RecognizerListener extends Listener {
 			} 
 			
 			
-			// enforce 1 sec delay between recognitions
+			// enforce delay between recognitions
 			if (System.currentTimeMillis() - timeRecognized > 1000) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            		             
 		            if (state == State.IDLE) {

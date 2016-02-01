@@ -15,6 +15,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 
 public class LeapButton extends Group {
 	
@@ -85,10 +87,9 @@ public class LeapButton extends Group {
         //text.setRotate(30);
 	}
 	
-	public void setPosition (double xPos, double yPos, double zPos) {
-		box.setTranslateX(xPos);
-		box.setTranslateY(yPos);
-		box.setTranslateZ(zPos);
+	public void setPosition (double xPos, double yPos, double zPos) {		
+		Translate translate = new Translate(xPos, yPos, zPos);
+		box.getTransforms().addAll(translate);
 		
 		Bounds textBounds = text.localToScene(text.getBoundsInLocal());
 		text.setLayoutX(xPos-box.getWidth()/4);
@@ -96,14 +97,12 @@ public class LeapButton extends Group {
 		text.setTranslateZ(zPos-box.getDepth());
 	}
 	
-	public void setRotation(double axis, double rotation) {
-		box.setRotationAxis(new Point3D(axis, 0, 0));
-		box.setRotate(rotation);
+	public void setRotation(double rotation, Point3D axis) {
+		box.getTransforms().addAll(new Rotate(rotation, axis));
 		
         text.setCache(true);
         text.setCacheHint(CacheHint.SCALE_AND_ROTATE);
-		text.setRotationAxis(new Point3D(axis, 0, 0));
-		text.setRotate(rotation);
+        text.getTransforms().addAll(new Rotate (rotation, axis));
 	}
 	
 	private void createEvents() {

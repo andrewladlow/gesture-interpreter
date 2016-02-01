@@ -54,8 +54,8 @@ public class MenuListener extends Listener {
 	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
-	public MenuListener(Menu main) {
-		this.app = main;
+	public MenuListener(Menu app) {
+		this.app = app;
 	}
 	
 	public void onConnect(Controller controller) {
@@ -81,8 +81,9 @@ public class MenuListener extends Listener {
 			
 			//Pointable pointable = controller.frame().pointables().frontmost();
 			
-			System.out.println("XLEAP: " + frontFingerTip.getX() + "             YLEAP: " + frontFingerTip.getY() + "      ZLEAP: " + frontFingerTip.getZ());
-			
+			//System.out.println("XLEAP: " + frontFingerTip.getX() + "             YLEAP: " + frontFingerTip.getY() + "      ZLEAP: " + frontFingerTip.getZ());
+			Vector test = controller.frame().fingers().frontmost().tipPosition();
+			System.out.println("X: " + test.getX() +  " Y: " + test.getY());
 			
 			Vector leapPoint = frontFinger.tipPosition();
 			Vector normalizedPoint = iBox.normalizePoint(leapPoint, true);

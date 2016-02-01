@@ -35,6 +35,8 @@ import javafx.geometry.Point2D;
 
 public class RecorderListener extends Listener {
 	
+	private final Object lock;
+	
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	
 	private BooleanProperty gestureDone = new SimpleBooleanProperty();
@@ -46,8 +48,8 @@ public class RecorderListener extends Listener {
     private int minGestureVelocity = 300;
     
     private int poseFrameCount = 0;
-    private int minPoseFrames = 25;
-    private int maxPoseFrames = 50;
+    private int minPoseFrames = 50;
+    private int maxPoseFrames = 75;
     private int maxPoseVelocity = 30;	
     private boolean validPoseFrame = false;
     private boolean validPose = false;  
@@ -60,7 +62,8 @@ public class RecorderListener extends Listener {
     
     private State state;
     
-    public RecorderListener(char c) {
+    public RecorderListener(char c, Object lock) {
+    	this.lock = lock;
     	gesture = new Gesture(c);
     	state = State.IDLE;
     }
@@ -110,6 +113,9 @@ public class RecorderListener extends Listener {
 		                validPose = false;
 		                timeRecognized = System.currentTimeMillis();
 		                this.gestureDone.set(true);
+		                synchronized(lock) {
+			                lock.notify();
+		                }
 		            } else {
 		            	System.out.println("Recording failed");
 		            }

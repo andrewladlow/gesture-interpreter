@@ -10,13 +10,6 @@ public class LeapToFX {
 		node.setTranslateZ(-vector.getZ());
 	}
 	
-	public static Vector swap (Vector leapVector) {
-		Vector fxVector = new Vector();
-		fxVector.setX(leapVector.getX());
-		fxVector.setY(-leapVector.getY());
-		fxVector.setZ(-leapVector.getZ());
-		return fxVector;
-	}
 }
 	
 

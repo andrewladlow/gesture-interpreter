@@ -15,6 +15,7 @@ import javafx.scene.transform.Rotate;
 import com.leapmotion.leap.Bone.Type;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Hand;
+import com.leapmotion.leap.Vector;
 
 public class HandFX extends Group {
 	private Sphere palm;
@@ -41,6 +42,7 @@ public class HandFX extends Group {
 			connectJoints(distals.get(i), intermediates.get(i));
 			connectJoints(intermediates.get(i), proximals.get(i));
 		}
+		
 
 		connectJoints(proximals.get(1), proximals.get(2));
 		connectJoints(proximals.get(2), proximals.get(3));
@@ -68,15 +70,17 @@ public class HandFX extends Group {
 	public void update(Hand hand) {
 		LeapToFX.move(palm, hand.palmPosition());
 
-		Iterator<Finger> itFinger = hand.fingers().iterator();
-
 		int i = 0;
 		for (Finger finger : hand.fingers()) {
 			LeapToFX.move(fingers.get(i), finger.tipPosition());
 			LeapToFX.move(distals.get(i), finger.bone(Type.TYPE_DISTAL).prevJoint());
 			LeapToFX.move(intermediates.get(i), finger.bone(Type.TYPE_INTERMEDIATE).prevJoint());
 			LeapToFX.move(proximals.get(i), finger.bone(Type.TYPE_PROXIMAL).prevJoint());
-			if (i == 0 || i == 1 || i == 4) {
+			// hide 3rd and 4th metacarpals off screen
+			if (i == 2 || i == 3) {
+				LeapToFX.move(metacarpals.get(i), new Vector(0,0,100));
+			}
+			else {
 				LeapToFX.move(metacarpals.get(i), finger.bone(Type.TYPE_METACARPAL).prevJoint());
 			}
 			i++;

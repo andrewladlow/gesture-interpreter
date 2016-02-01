@@ -66,7 +66,7 @@ import java.lang.Double;
 
 public class PDollarRecognizer {
 
-	static int mNumPoints = 25;
+	static final int MNUMPOINTS = 40;
 	static Point mPointOrig = new Point(0.0,0.0,0.0,0);
 	static ArrayList<PointCloud> mPntClouds = new ArrayList<PointCloud>();
 
@@ -78,7 +78,7 @@ public class PDollarRecognizer {
 	//PointCloud foundPointCloud = null;
 	Gesture foundGesture = null;
 			
-            currentGesture.setPointArray(Resample(currentGesture.getPointArray(), mNumPoints));
+            currentGesture.setPointArray(Resample(currentGesture.getPointArray(), this.MNUMPOINTS));
             currentGesture.setPointArray(Scale(currentGesture.getPointArray()));
             currentGesture.setPointArray(TranslateTo(currentGesture.getPointArray(), mPointOrig));
 
@@ -112,7 +112,7 @@ public class PDollarRecognizer {
     }
 
 	public int addGesture(String name, ArrayList<Point> points) {
-		mPntClouds.add(new PointCloud(name, points, mNumPoints));
+		mPntClouds.add(new PointCloud(name, points, this.MNUMPOINTS));
 		int num = 0;
 		for (int i = 0; i < mPntClouds.size(); i++) {
 			if (mPntClouds.get(i).mName.equals(name)) {
