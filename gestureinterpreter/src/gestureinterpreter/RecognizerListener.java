@@ -42,36 +42,31 @@ import javafx.geometry.Point2D;
 
 public class RecognizerListener extends Listener {
 	
-	private boolean touchedBack = false;
-	
-	private BooleanProperty frameReady = new SimpleBooleanProperty();
-	
-	private Gesture gesture;
-	
+	private boolean touchedBack = false;	
+	private BooleanProperty frameReady = new SimpleBooleanProperty();	
+	private Gesture gesture;	
     private int gestureFrameCount = 0;  
     private int minGestureFrames = 5;
-    private int minGestureVelocity = 300;
-    
+    private int minGestureVelocity = 300;    
     private int poseFrameCount = 0;
     private int minPoseFrames = 50;
-    private int maxPoseFrames = 75;
     private int maxPoseVelocity = 30;	
     private boolean validPoseFrame = false;
-    private boolean validPose = false;
-    
-    private long timeRecognized = 0;
+    private boolean validPose = false;   
+    private long timeRecognized = 0;   
+    private State state;   
+    private ArrayList<Gesture> storedGestures;   
+    private PDollarRecognizer pdRec = new PDollarRecognizer();   
+    private final RecognizerGUI recGUI;   
 
     private enum State {
     	IDLE, RECORDING;
     }
     
-    private State state;
-    
-    private ArrayList<Gesture> storedGestures;
-    
-    private PDollarRecognizer pdRec = new PDollarRecognizer();
-    
-    private final RecognizerGUI recGUI;
+
+	public BooleanProperty frameReadyProperty() {
+		return frameReady;
+	}
     
     public RecognizerListener(RecognizerGUI main) {
     	this.recGUI = main;
@@ -85,7 +80,7 @@ public class RecognizerListener extends Listener {
 	    		ObjectInputStream ObjInStream = new ObjectInputStream(inStream);
 	    		Gesture tempGesture = (Gesture) ObjInStream.readObject();
 	 		
-	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), PDollarRecognizer.MNUMPOINTS));
+	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), PDollarRecognizer.mNumPoints));
 	    		tempGesture.setPointArray(PDollarRecognizer.Scale(tempGesture.getPointArray()));
 	    		tempGesture.setPointArray(PDollarRecognizer.TranslateTo(tempGesture.getPointArray(), new Point(0.0,0.0,0.0)));
 	    		
@@ -108,42 +103,35 @@ public class RecognizerListener extends Listener {
     }
 	
 	public void onFrame(Controller controller) {
-		//System.out.println("Frame: " + controller.frame().id() + " State: " + state);
 		validPoseFrame = false;
 		Frame frame = controller.frame();
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
-			frameReady.set(true);
-			
+			frameReady.set(true);			
 			Finger frontFinger = frame.fingers().frontmost();
 			Vector frontFingerTip = frontFinger.tipPosition();
 			
 			if (frontFingerTip.getZ() < -85) {
 				if (frontFingerTip.getY() > 10 && frontFingerTip.getY() < 90) {
-					if (frontFingerTip.getX() > -170 && frontFingerTip.getX() < 30) {
-						
+					if (frontFingerTip.getX() > -170 && frontFingerTip.getX() < 30) {					
 						if (!touchedBack) {
 							if (frontFinger.touchZone() == Zone.ZONE_TOUCHING) {
 								touchedBack = true;
-								//System.out.println("Finger touching");
 								recGUI.backButton.touchStatusProperty().set(true);
 							}
 						}
 					}
 				}
 			}
-			
-			
+					
 			if (touchedBack && frontFinger.touchZone() != Zone.ZONE_TOUCHING) {
 				touchedBack = false;
 				recGUI.backButton.touchStatusProperty().set(false);
 			    recGUI.goBack();
-				//recGUI.backValProperty().set(true);
 			} 
-			
-			
+					
 			// enforce delay between recognitions
-			if (System.currentTimeMillis() - timeRecognized > 1000) {	        
+			if (System.currentTimeMillis() - timeRecognized > 500) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            		             
 		            if (state == State.IDLE) {
 		            	gestureFrameCount = 0;
@@ -152,50 +140,57 @@ public class RecognizerListener extends Listener {
 	                gestureFrameCount++;
 	                System.out.println("gesture frame count: " + gestureFrameCount);
 		            storePoint(frame);
-		            //System.out.println("Debug record");
 		            
-		        } else if (state == State.RECORDING) {
+		        } 
+		        else if (state == State.RECORDING) {
 		            System.out.println("debug record fail state");
 		            state = State.IDLE;
 		            
 		            if (validPose || (gestureFrameCount >= minGestureFrames)) {
+		            	if (validPose) {
+		            		gesture.setType("pose");
+		            	}
+		            	else {
+		            		gesture.setType("gesture");
+		            	}
 		            	System.out.println("debug recognize");
 		                RecognizerResults recResult = pdRec.Recognize(gesture, storedGestures);
 		                System.out.println("\nClosest match: " + recResult.getName() + "\nNormalized score: " + recResult.getScore());
-		                state = State.IDLE;
-		                validPose = false;
 		                timeRecognized = System.currentTimeMillis();
 		                Platform.runLater(() -> {
 				            recGUI.gestureRecognitionProperty().set(recResult);
 		                });
+		                // reset variables
+		                validPoseFrame = false;
+		                validPose = false;
+		                gestureFrameCount = 0;
+		                poseFrameCount = 0;
+			            state = State.IDLE; 
 		            } else {
 		            	System.out.println("Recognition failed");
 		            }
 		        }
 			}
-		} else {
+		} 
+		else {
 			if (state != State.IDLE) {
 				state = State.IDLE;
 			}
 		}
 	}
 
-	public BooleanProperty frameReadyProperty() {
-		return frameReady;
-	}
-	
     public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {
         
         for (Hand hand : frame.hands()) {	
             Vector palmVelocityTemp = hand.palmVelocity(); 
-        	//Vector palmVelocityTemp = hand.stabilizedPalmPosition();
-            float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), Math.max(Math.abs(palmVelocityTemp.getY()), Math.abs(palmVelocityTemp.getZ())));             
-            
-            //System.out.println("palm velocity: " + palmVelocity);
+            float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), 
+            							  Math.max(Math.abs(palmVelocityTemp.getY()), 
+            									   Math.abs(palmVelocityTemp.getZ())));             
             
             if (palmVelocity >= minVelocity) {
             	return true;
-            } else if (palmVelocity <= maxVelocity) {
+            } 
+            else if (palmVelocity <= maxVelocity) {
             	validPoseFrame = true;
             	System.out.println("valid palm pose");
             	break;
@@ -203,31 +198,31 @@ public class RecognizerListener extends Listener {
                   
             for (Finger finger : hand.fingers()) {           	 
             	Vector fingerVelocityTemp = finger.tipVelocity();
-                float fingerVelocity = Math.max(Math.abs(fingerVelocityTemp.getX()), Math.max(Math.abs(fingerVelocityTemp.getY()), Math.abs(fingerVelocityTemp.getZ())));
+                float fingerVelocity = Math.max(Math.abs(fingerVelocityTemp.getX()), 
+                								Math.max(Math.abs(fingerVelocityTemp.getY()), 
+                										 Math.abs(fingerVelocityTemp.getZ())));
                     
                 if (fingerVelocity >= minVelocity) { 
                 	return true; 
-                } else if (fingerVelocity <= maxVelocity) {
+                } 
+                else if (fingerVelocity <= maxVelocity) {
                 	validPoseFrame = true;
                 	break;
                 }
             }
         }
         
-        if (poseFrameCount > maxPoseFrames) {
-        	poseFrameCount = 0;
-        	return false;
-        }
-        
         if (validPoseFrame) {
         	poseFrameCount++;
         	System.out.println("pose frame count: " + poseFrameCount);
         	gestureFrameCount = 0;
-        	if (poseFrameCount > minPoseFrames) {
+        	if (poseFrameCount >= minPoseFrames) {
         		validPose = true;
+        		poseFrameCount = 0;
         		return true;
         	}
-        } else {
+        } 
+        else {
     		poseFrameCount = 0;
     	}      
         return false;
@@ -235,13 +230,14 @@ public class RecognizerListener extends Listener {
    
     public void storePoint(Frame frame) {    	
     	for (Hand hand : frame.hands()) {
-    		//gesture.addPoint(new Point(hand.palmVelocity().getX(), hand.palmVelocity().getY(), hand.palmVelocity().getZ()));
-    		gesture.addPoint(new Point(hand.stabilizedPalmPosition().getX(), hand.stabilizedPalmPosition().getY(), hand.stabilizedPalmPosition().getZ()));
+    		gesture.addPoint(new Point(hand.stabilizedPalmPosition().getX(), 
+    								   hand.stabilizedPalmPosition().getY(), 
+    								   hand.stabilizedPalmPosition().getZ()));
     		
     		for (Finger finger : hand.fingers()) {
-    			//gesture.addPoint(new Point(finger.tipVelocity().getX(), finger.tipVelocity().getY(), finger.tipVelocity().getZ()));
-    			gesture.addPoint(new Point(finger.stabilizedTipPosition().getX(), finger.stabilizedTipPosition().getY(), finger.stabilizedTipPosition().getZ()));
-    			//gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).prevJoint().getX(), finger.bone(Type.TYPE_PROXIMAL).prevJoint().getY(), finger.bone(Type.TYPE_PROXIMAL).prevJoint().getZ()));
+    			gesture.addPoint(new Point(finger.stabilizedTipPosition().getX(), 
+    									   finger.stabilizedTipPosition().getY(), 
+    									   finger.stabilizedTipPosition().getZ()));
     		}
     	}
     }

@@ -5,7 +5,9 @@ import javafx.event.EventType;
 
 public class LeapEvent extends Event {
 	
-    public LeapEvent(EventType<? extends Event> arg0) {
+	private static final long serialVersionUID = 1L;
+
+	public LeapEvent(EventType<? extends Event> arg0) {
         super(arg0);
     }
 }

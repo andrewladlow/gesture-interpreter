@@ -60,13 +60,11 @@
 package gestureinterpreter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.lang.Double;
 
 public class PDollarRecognizer {
 
-	static final int MNUMPOINTS = 40;
+	static int mNumPoints = 25;
 	static Point mPointOrig = new Point(0.0,0.0,0.0,0);
 	static ArrayList<PointCloud> mPntClouds = new ArrayList<PointCloud>();
 
@@ -78,7 +76,7 @@ public class PDollarRecognizer {
 	//PointCloud foundPointCloud = null;
 	Gesture foundGesture = null;
 			
-            currentGesture.setPointArray(Resample(currentGesture.getPointArray(), this.MNUMPOINTS));
+            currentGesture.setPointArray(Resample(currentGesture.getPointArray(), mNumPoints));
             currentGesture.setPointArray(Scale(currentGesture.getPointArray()));
             currentGesture.setPointArray(TranslateTo(currentGesture.getPointArray(), mPointOrig));
 
@@ -88,6 +86,14 @@ public class PDollarRecognizer {
 
             // for each point-cloud template
             for (Gesture storedGesture : storedGestures) {
+            	
+            	// skip if gestures are not of same type ("pose" and "gesture")
+            	if (!currentGesture.getType().equals(storedGesture.getType())) {
+            		System.out.println("CUR: " + currentGesture.getType());
+            		System.out.println("STORED: " + storedGesture.getType());
+            		continue;
+            	}
+            	
            // for ( int i = 0; i < storedGestures.size(); i++ )
                     double distScore = GreedyCloudMatch(currentGesture.getPointArray(), storedGesture.getPointArray());
                     System.out.println("Gesture: " + storedGesture.getName() + "\ndistScore: " + distScore);
@@ -102,7 +108,8 @@ public class PDollarRecognizer {
             
             if (foundGesture == null) {
             	return new RecognizerResults("None", 0.0);
-            } else {
+            } 
+            else {
             	return new RecognizerResults(foundGesture.getName(), score);
             	//double test = (Math.min(parseInt(100 * Math.max(nearest - 4.0) / -4.0, 0.0), 100)/100.0)
             	//return new RecognizerResults(foundGesture.getName(), Math.min(parseInt(100 * Math.max(score - 4.0) / -4.0, 0.0), 100)/100.0);
@@ -112,7 +119,7 @@ public class PDollarRecognizer {
     }
 
 	public int addGesture(String name, ArrayList<Point> points) {
-		mPntClouds.add(new PointCloud(name, points, this.MNUMPOINTS));
+		mPntClouds.add(new PointCloud(name, points, mNumPoints));
 		int num = 0;
 		for (int i = 0; i < mPntClouds.size(); i++) {
 			if (mPntClouds.get(i).mName.equals(name)) {
@@ -181,7 +188,8 @@ public class PDollarRecognizer {
 					newpoints.add(q); // append new point 'q'
 					points.add(i, q); // insert 'q' at position i in points s.t. 'q' will be the next i
 					D = 0.0;
-				} else {
+				} 
+				else {
 					D += d;
 				}
 			}

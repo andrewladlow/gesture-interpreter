@@ -8,10 +8,12 @@ public class Gesture implements Serializable {
 	
 	private static final long serialVersionUID = 8793521708114985027L;
     private String name;
+    private String type;
     private ArrayList<Point> pointArray;
     
     public Gesture(String name) {
         this.name = name;
+        this.type = "none";
         this.pointArray = new ArrayList<Point>();
     }
     
@@ -22,6 +24,14 @@ public class Gesture implements Serializable {
     
     public String getName() {
     	return name;
+    }
+    
+    public String getType() {
+    	return type;
+    }
+    
+    public void setType(String type) {
+    	this.type = type;
     }
     
     public ArrayList<Point> getPointArray() {

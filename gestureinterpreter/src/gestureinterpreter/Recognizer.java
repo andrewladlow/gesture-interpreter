@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.leapmotion.leap.Bone;
-import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Frame;
 import com.leapmotion.leap.Hand;

@@ -1,16 +1,10 @@
 package gestureinterpreter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Rotate;
 
 import com.leapmotion.leap.Bone.Type;
 import com.leapmotion.leap.Finger;
