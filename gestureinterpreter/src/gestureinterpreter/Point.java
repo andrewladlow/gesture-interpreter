@@ -2,6 +2,8 @@ package gestureinterpreter;
 
 import java.io.Serializable;
 
+import com.leapmotion.leap.Vector;
+
 public class Point implements Serializable {
 	
 	private static final long serialVersionUID = -7199124440157829270L;
@@ -15,6 +17,12 @@ public class Point implements Serializable {
         this.y = y;
         this.z = z;
 	}
+	
+	public Point (Vector v) {
+		this.x = v.getX();
+		this.y = v.getY();
+		this.z = v.getZ();
+	}
    
 	public Point (double x, double y, double z, int ID) {
 		this.x = x;
@@ -22,6 +30,7 @@ public class Point implements Serializable {
 	   	this.z = z;
 	   	this.ID = ID;
    	}
+	
    
    	public double getX() {
    		return x;

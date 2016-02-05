@@ -79,12 +79,26 @@ public class RecognizerListener extends Listener {
 	    		FileInputStream inStream = new FileInputStream(file);
 	    		ObjectInputStream ObjInStream = new ObjectInputStream(inStream);
 	    		Gesture tempGesture = (Gesture) ObjInStream.readObject();
+	    		
+	    		System.out.println(Arrays.asList(tempGesture.getPointArray().size()));
+/*	    		for (Point p : tempGesture.getPointArray()) {
+	    			System.out.println("PRE NORMALIZED");
+	    			System.out.println("X: " + p.getX() + "Y: " + p.getY() + "Z: " + p.getZ());
+	    		}*/
 	 		
 	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), PDollarRecognizer.mNumPoints));
 	    		tempGesture.setPointArray(PDollarRecognizer.Scale(tempGesture.getPointArray()));
 	    		tempGesture.setPointArray(PDollarRecognizer.TranslateTo(tempGesture.getPointArray(), new Point(0.0,0.0,0.0)));
 	    		
 	    		storedGestures.add(tempGesture);
+	    		
+	    		System.out.println(Arrays.asList(tempGesture.getPointArray().size()));
+/*	    		for (Point p : tempGesture.getPointArray()) {
+	    			System.out.println("NOW NORMALIZED");
+	    			System.out.println("X: " + p.getX() + "Y: " + p.getY() + "Z: " + p.getZ());
+	    		}*/
+	 		
+	    		
 	    		
 	    		ObjInStream.close();
 	    		inStream.close();
@@ -228,16 +242,17 @@ public class RecognizerListener extends Listener {
         return false;
     }
    
-    public void storePoint(Frame frame) {    	
+    public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
-    		gesture.addPoint(new Point(hand.stabilizedPalmPosition().getX(), 
-    								   hand.stabilizedPalmPosition().getY(), 
-    								   hand.stabilizedPalmPosition().getZ()));
-    		
+    		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));
+    		gesture.addPoint(new Point(hand.direction()));
+    		gesture.addPoint(new Point(hand.palmNormal()));
     		for (Finger finger : hand.fingers()) {
-    			gesture.addPoint(new Point(finger.stabilizedTipPosition().getX(), 
-    									   finger.stabilizedTipPosition().getY(), 
-    									   finger.stabilizedTipPosition().getZ()));
+    			gesture.addPoint(new Point(finger.stabilizedTipPosition()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint().minus(hand.palmPosition())));
     		}
     	}
     }

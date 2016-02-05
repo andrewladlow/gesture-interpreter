@@ -19,6 +19,7 @@ public class Gesture implements Serializable {
     
     public Gesture(char c) {
     	this.name = Character.toString(c);
+    	this.type = "none";
     	this.pointArray = new ArrayList<Point>();
     }
     

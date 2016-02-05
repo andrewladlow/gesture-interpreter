@@ -69,7 +69,7 @@ public class RecorderGUI {
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
 	
 		executor.execute(() -> {		
-			for (char c = 'A'; c <= 'Z'; c++) {
+			for (char c = 'A'; c <= 'C'; c++) {
 				char tempChar = c;
 				Image gestureImg = new Image("file:images/" + Character.toLowerCase(tempChar) + ".png");
 				gestureImgRect.setFill(new ImagePattern(gestureImg));
