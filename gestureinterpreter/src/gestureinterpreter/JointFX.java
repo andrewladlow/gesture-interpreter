@@ -12,11 +12,11 @@ public class JointFX {
 	private Cylinder bone;
 	private Rotate joint;
 
-	public JointFX(Sphere fromSphere, Sphere toSphere) {
-		this.fromSphere = fromSphere;
-		this.toSphere = toSphere;
-		this.joint = new Rotate();
-		this.bone = ShapeCreator.createCylinder(3, Color.LIGHTGREY, Color.WHITE, joint);
+	public JointFX(Sphere from, Sphere to) {
+		fromSphere = from;
+		toSphere = to;
+		joint = new Rotate();
+		bone = ShapeCreator.createCylinder(3, Color.LIGHTGREY, Color.WHITE, joint);
 	}
 
 	public void update() {
@@ -37,4 +37,4 @@ public class JointFX {
 	public Cylinder getBone() {
 		return bone;
 	}
-	}
+}

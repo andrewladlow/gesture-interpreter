@@ -82,21 +82,21 @@ public class RecorderListener extends Listener {
 		            state = State.IDLE;
 		            
 		            if (validPose) {
-		            	this.gesture.setType("pose");
+		            	gesture.setType("pose");
 		            }
 		            else if (gestureFrameCount >= minGestureFrames) {
-		            	this.gesture.setType("gesture");
+		            	gesture.setType("gesture");
 		            }
 	            	saveGesture(gesture);
 	                System.out.println("Debug store");
 	                validPose = false;
 	                timeRecognized = System.currentTimeMillis();
-	                this.gestureDone.set(true);
+	                gestureDone.set(true);
 	                // reset variables
-	                this.validPoseFrame = false;
-	                this.validPose = false;
-	                this.gestureFrameCount = 0;
-	                this.poseFrameCount = 0;
+	                validPoseFrame = false;
+	                validPose = false;
+	                gestureFrameCount = 0;
+	                poseFrameCount = 0;
 		            state = State.IDLE; 
 	                synchronized(lock) {
 		                lock.notify();

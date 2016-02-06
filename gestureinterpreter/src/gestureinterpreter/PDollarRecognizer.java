@@ -82,15 +82,15 @@ public class PDollarRecognizer {
 
             double score = Double.POSITIVE_INFINITY;
             
-            System.out.println("\nPossible matches: ");
+           // System.out.println("\nPossible matches: ");
 
             // for each point-cloud template
             for (Gesture storedGesture : storedGestures) {
             	
             	// skip if gestures are not of same type ("pose" and "gesture")
             	if (!currentGesture.getType().equals(storedGesture.getType())) {
-            		System.out.println("CUR: " + currentGesture.getType());
-            		System.out.println("STORED: " + storedGesture.getType());
+            		//System.out.println("CUR: " + currentGesture.getType());
+            		//System.out.println("STORED: " + storedGesture.getType());
             		continue;
             	}
             	

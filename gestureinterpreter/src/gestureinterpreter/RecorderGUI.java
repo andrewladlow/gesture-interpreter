@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 
 import com.leapmotion.leap.Controller;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -18,8 +19,7 @@ public class RecorderGUI {
 	
 	private Object lock;
 	private ExecutorService executor;
-	private Boolean alreadyActivated = false;
-	
+	private Boolean alreadyActivated = false;	
 	private Label titleLabel;
 	private Label resultLabel;
 	private Rectangle gestureImgRect;
@@ -59,15 +59,18 @@ public class RecorderGUI {
 			gestureImgRect.setScaleY(0.625);
 	
 			StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
+			StackPane.setMargin(titleLabel, new Insets(10,0,0,10));
 			StackPane.setAlignment(resultLabel, Pos.TOP_CENTER);
+			StackPane.setMargin(resultLabel, new Insets(10,0,0,0));
 			StackPane.setAlignment(gestureImgRect, Pos.TOP_CENTER);
+			StackPane.setMargin(gestureImgRect, new Insets(10,0,0,0));
 			
 			alreadyActivated = true;
 		}	
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
 	
 		executor.execute(() -> {		
-			for (char c = 'A'; c <= 'E'; c++) {
+			for (char c = 'F'; c <= 'Z'; c++) {
 				char tempChar = c;
 				Image gestureImg = new Image("file:images/" + Character.toLowerCase(tempChar) + ".png");
 				gestureImgRect.setFill(new ImagePattern(gestureImg));

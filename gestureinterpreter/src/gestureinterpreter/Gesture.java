@@ -11,16 +11,16 @@ public class Gesture implements Serializable {
     private String type;
     private ArrayList<Point> pointArray;
     
-    public Gesture(String name) {
-        this.name = name;
-        this.type = "none";
-        this.pointArray = new ArrayList<Point>();
+    public Gesture(String n) {
+        name = n;
+        type = "none";
+        pointArray = new ArrayList<Point>();
     }
     
     public Gesture(char c) {
-    	this.name = Character.toString(c);
-    	this.type = "none";
-    	this.pointArray = new ArrayList<Point>();
+    	name = Character.toString(c);
+    	type = "none";
+    	pointArray = new ArrayList<Point>();
     }
     
     public String getName() {
@@ -31,8 +31,8 @@ public class Gesture implements Serializable {
     	return type;
     }
     
-    public void setType(String type) {
-    	this.type = type;
+    public void setType(String t) {
+    	type = t;
     }
     
     public ArrayList<Point> getPointArray() {

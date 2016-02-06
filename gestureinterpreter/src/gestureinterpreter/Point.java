@@ -19,9 +19,9 @@ public class Point implements Serializable {
 	}
 	
 	public Point (Vector v) {
-		this.x = v.getX();
-		this.y = v.getY();
-		this.z = v.getZ();
+		x = v.getX();
+		y = v.getY();
+		z = v.getZ();
 	}
    
 	public Point (double x, double y, double z, int ID) {

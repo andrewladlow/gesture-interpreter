@@ -41,8 +41,9 @@ public class FXHandListener extends Group {
 						// first remove from storage hashmap
 						hands.remove(leapHand.id());
 					}
-					// then remove from display (filtering for only hand objects)
-					this.getChildren().removeIf((obj)->obj.getClass().equals(HandFX.class));
+					// then remove from display
+					//this.getChildren().removeIf((obj)->obj.getClass().equals(HandFX.class));
+					this.getChildren().clear();
     			});
     		}
     	});       

@@ -12,23 +12,17 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 
 import com.leapmotion.leap.Vector;
 import com.leapmotion.leap.Bone.Type;
-import com.leapmotion.leap.Pointable.Zone;
 
 public class RecognizerListener extends Listener {
 	
-	private boolean touchedBack = false;	
-	private BooleanProperty frameReady = new SimpleBooleanProperty();	
 	private Gesture gesture;	
     private int gestureFrameCount = 0;  
-    private int minGestureFrames = 5;
+    private int minGestureFrames = 10;
     private int minGestureVelocity = 300;    
     private int poseFrameCount = 0;
     private int minPoseFrames = 50;
@@ -45,12 +39,8 @@ public class RecognizerListener extends Listener {
     	IDLE, RECORDING;
     }
     
-	public BooleanProperty frameReadyProperty() {
-		return frameReady;
-	}
-    
-    public RecognizerListener(RecognizerGUI main) {
-    	this.recGUI = main;
+    public RecognizerListener(RecognizerGUI recGUI) {
+    	this.recGUI = recGUI;
     	storedGestures = new ArrayList<Gesture>();
     	gesture = new Gesture("testGesture");
     	state = State.IDLE;
@@ -61,7 +51,7 @@ public class RecognizerListener extends Listener {
 	    		ObjectInputStream ObjInStream = new ObjectInputStream(inStream);
 	    		Gesture tempGesture = (Gesture) ObjInStream.readObject();
 	    		
-	    		System.out.println(Arrays.asList(tempGesture.getPointArray().size()));
+	    		//System.out.println(Arrays.asList(tempGesture.getPointArray().size()));
 
 	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), PDollarRecognizer.mNumPoints));
 	    		tempGesture.setPointArray(PDollarRecognizer.Scale(tempGesture.getPointArray()));
@@ -69,7 +59,7 @@ public class RecognizerListener extends Listener {
 	    		
 	    		storedGestures.add(tempGesture);
 	    		
-	    		System.out.println(Arrays.asList(tempGesture.getPointArray().size()));   		
+	    		//System.out.println(Arrays.asList(tempGesture.getPointArray().size()));   		
 	    		
 	    		ObjInStream.close();
 	    		inStream.close();
@@ -90,30 +80,7 @@ public class RecognizerListener extends Listener {
 	public void onFrame(Controller controller) {
 		validPoseFrame = false;
 		Frame frame = controller.frame();
-		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
-			frameReady.set(true);			
-			Finger frontFinger = frame.fingers().frontmost();
-			Vector frontFingerTip = frontFinger.tipPosition();
-			
-			if (frontFingerTip.getZ() < -85) {
-				if (frontFingerTip.getY() > 10 && frontFingerTip.getY() < 90) {
-					if (frontFingerTip.getX() > -170 && frontFingerTip.getX() < 30) {					
-						if (!touchedBack) {
-							if (frontFinger.touchZone() == Zone.ZONE_TOUCHING) {
-								touchedBack = true;
-								recGUI.backButton.touchStatusProperty().set(true);
-							}
-						}
-					}
-				}
-			}
-					
-			if (touchedBack && frontFinger.touchZone() != Zone.ZONE_TOUCHING) {
-				touchedBack = false;
-				recGUI.backButton.touchStatusProperty().set(false);
-			    recGUI.goBack();
-			} 
 					
 			// enforce delay between recognitions
 			if (System.currentTimeMillis() - timeRecognized > 250) {	        
@@ -123,12 +90,12 @@ public class RecognizerListener extends Listener {
 		                state = State.RECORDING; 
 		            }      
 	                gestureFrameCount++;
-	                System.out.println("gesture frame count: " + gestureFrameCount);
+	                //System.out.println("gesture frame count: " + gestureFrameCount);
 		            storePoint(frame);
 		            
 		        } 
 		        else if (state == State.RECORDING) {
-		            System.out.println("debug record fail state");
+		            //System.out.println("debug record fail state");
 		            state = State.IDLE;
 		            
 		            if (validPose || (gestureFrameCount >= minGestureFrames)) {
@@ -138,9 +105,9 @@ public class RecognizerListener extends Listener {
 		            	else {
 		            		gesture.setType("gesture");
 		            	}
-		            	System.out.println("debug recognize");
+		            	//System.out.println("debug recognize");
 		                RecognizerResults recResult = pdRec.Recognize(gesture, storedGestures);
-		                System.out.println("\nClosest match: " + recResult.getName() + "\nNormalized score: " + recResult.getScore());
+		                //System.out.println("\nClosest match: " + recResult.getName() + "\nNormalized score: " + recResult.getScore());
 		                timeRecognized = System.currentTimeMillis();
 		                Platform.runLater(() -> {
 				            recGUI.gestureRecognitionProperty().set(recResult);
@@ -152,7 +119,7 @@ public class RecognizerListener extends Listener {
 		                poseFrameCount = 0;
 			            state = State.IDLE; 
 		            } else {
-		            	System.out.println("Recognition failed");
+		            	//System.out.println("Recognition failed");
 		            }
 		        }
 			}
@@ -177,7 +144,7 @@ public class RecognizerListener extends Listener {
             } 
             else if (palmVelocity <= maxVelocity) {
             	validPoseFrame = true;
-            	System.out.println("valid palm pose");
+            	//System.out.println("valid palm pose");
             	break;
             }
                   
@@ -199,7 +166,7 @@ public class RecognizerListener extends Listener {
         
         if (validPoseFrame) {
         	poseFrameCount++;
-        	System.out.println("pose frame count: " + poseFrameCount);
+        	//System.out.println("pose frame count: " + poseFrameCount);
         	gestureFrameCount = 0;
         	if (poseFrameCount >= minPoseFrames) {
         		validPose = true;
@@ -245,7 +212,7 @@ public class RecognizerListener extends Listener {
     
     public void saveGesture(Gesture gesture) {
     	try {
-    		System.out.println("saving " + gesture.getName());
+    		//System.out.println("saving " + gesture.getName());
     		FileOutputStream outStream = new FileOutputStream(new File("gestures/" + gesture.getName()), false);
     		ObjectOutputStream objOutStream = new ObjectOutputStream (outStream);
     		objOutStream.writeObject(gesture);

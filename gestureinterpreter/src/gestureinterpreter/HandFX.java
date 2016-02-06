@@ -26,11 +26,11 @@ public class HandFX extends Group {
 	// handles creation of 3D representation of a user's hand
 	public HandFX(Menu app) {
 		this.app = app;
-			
+
 		palm = ShapeCreator.createSphere(this, 10, Color.GREEN, Color.LIGHTGREEN);
 
 		for (int i = 0; i < 5; i++) {
-			fingers.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW)); 
+			fingers.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
 			distals.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
 			intermediates.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
 			proximals.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
@@ -40,14 +40,14 @@ public class HandFX extends Group {
 			connectJoints(distals.get(i), intermediates.get(i));
 			connectJoints(intermediates.get(i), proximals.get(i));
 		}
-		
+
 		connectJoints(proximals.get(1), proximals.get(2));
 		connectJoints(proximals.get(2), proximals.get(3));
-		connectJoints(proximals.get(3), proximals.get(4));	
+		connectJoints(proximals.get(3), proximals.get(4));
 		connectJoints(proximals.get(1), metacarpals.get(1));
-		connectJoints(proximals.get(4), metacarpals.get(4));	
+		connectJoints(proximals.get(4), metacarpals.get(4));
 		connectJoints(metacarpals.get(1), metacarpals.get(4));
-		
+
 		this.getChildren().add(palm);
 		this.getChildren().addAll(fingers);
 		this.getChildren().addAll(distals);
@@ -56,7 +56,8 @@ public class HandFX extends Group {
 		this.getChildren().addAll(metacarpals);
 	}
 
-	// associates a given joint with the bones behind and in front of it (bone - joint - bone)
+	// associates a given joint with the bones behind and in front of it (bone -
+	// joint - bone)
 	private void connectJoints(Sphere fromJoint, Sphere toJoint) {
 		JointFX jointFX = new JointFX(fromJoint, toJoint);
 		joints.add(jointFX);
@@ -67,44 +68,38 @@ public class HandFX extends Group {
 	public void update(Hand hand) {
 		LeapToFX.move(palm, hand.palmPosition());
 		Finger finger;
-		
+
 		for (int i = 0; i < hand.fingers().count(); i++) {
 			finger = hand.fingers().get(i);
 			LeapToFX.move(fingers.get(i), finger.tipPosition());
-			if (!touchedButton && this.checkIntersect(hand.fingers().frontmost(), fingers.get(i), app) 
-							   && hand.fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
-				touchedButton = true;
-			}
-			else {
-				touchedButton = false;
-			}
+			checkIntersect(hand.fingers().frontmost(), fingers.get(i), app);
+
 			LeapToFX.move(distals.get(i), finger.bone(Type.TYPE_DISTAL).prevJoint());
 			LeapToFX.move(intermediates.get(i), finger.bone(Type.TYPE_INTERMEDIATE).prevJoint());
 			LeapToFX.move(proximals.get(i), finger.bone(Type.TYPE_PROXIMAL).prevJoint());
 			// hide 3rd and 4th metacarpals off screen
 			if (i == 2 || i == 3) {
-				LeapToFX.move(metacarpals.get(i), new Vector(0,0,100));
-			}
-			else {
+				LeapToFX.move(metacarpals.get(i), new Vector(0, 0, 100));
+			} else {
 				LeapToFX.move(metacarpals.get(i), finger.bone(Type.TYPE_METACARPAL).prevJoint());
 			}
-		}		
+		}
 		for (JointFX joint : joints) {
 			joint.update();
 		}
 	}
-	
+
 	// handles collision of a finger and a button to trigger button presses by physical actions
-	private Boolean checkIntersect(Finger finger, Sphere shape, Menu app) {
+	private void checkIntersect(Finger finger, Sphere shape, Menu app) {
 		for (LeapButton button : app.getLeapButtons()) {
-			if (shape.localToScene(shape.getBoundsInLocal()).intersects(button.localToScene(button.getBoundsInLocal()))) {
+			// check that there's both an intersect between finger and button, and touch emulation is triggered
+			if (shape.localToScene(shape.getBoundsInLocal()).intersects(button.localToScene(button.getBoundsInLocal())) && finger.touchDistance() < -0.4) {
 				button.touchStatusProperty().set(true);
-				return true;
-			}
-			else if (finger.touchZone() != Zone.ZONE_TOUCHING) {
+				System.out.println(button.getText());
+				app.swapScene(button.getText());
+			} else {
 				button.touchStatusProperty().set(false);
 			}
 		}
-		return false;
 	}
 }
