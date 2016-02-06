@@ -16,14 +16,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
 public class RecorderGUI {
-	
 	private Object lock;
 	private ExecutorService executor;
 	private Boolean alreadyActivated = false;	
 	private Label titleLabel;
 	private Label resultLabel;
-	private Rectangle gestureImgRect;
-	
+	private Rectangle gestureImgRect;	
 	private static RecorderGUI instance;
 
 	private RecorderGUI() {
@@ -40,10 +38,8 @@ public class RecorderGUI {
 		return instance;
 	}
 
-	public void init(Menu app, Controller controller) {
-		
+	public void init(Menu app, Controller controller) {	
 		if (!alreadyActivated) {
-
 			titleLabel = new Label();
 			titleLabel.textProperty().set("Gesture Recorder");
 			titleLabel.setFont(Font.font("Times New Roman", 24));
@@ -104,7 +100,10 @@ public class RecorderGUI {
 					}
 					Thread.sleep(2000);
 					controller.removeListener(tempRecorderListener);		
-				} catch (Exception e) {}
+				} 
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			// return once all gestures have been recorded
 			app.swapScene("Menu");

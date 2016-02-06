@@ -89,31 +89,26 @@ public class PDollarRecognizer {
             	
             	// skip if gestures are not of same type ("pose" and "gesture")
             	if (!currentGesture.getType().equals(storedGesture.getType())) {
-            		//System.out.println("CUR: " + currentGesture.getType());
-            		//System.out.println("STORED: " + storedGesture.getType());
             		continue;
             	}
             	
-           // for ( int i = 0; i < storedGestures.size(); i++ )
                     double distScore = GreedyCloudMatch(currentGesture.getPointArray(), storedGesture.getPointArray());
                     System.out.println("Gesture: " + storedGesture.getName() + "\ndistScore: " + distScore);
                     if (distScore < score) {
                             score = distScore; // best (least) distance
-                            //foundPointCloud = mPntClouds.get(i); // point-cloud
                             foundGesture = storedGesture;
-                           // Math.max(50, 51);
                     }
             }
             
+            // normalizes score to value in range 0-100
+            double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
             
-            if (foundGesture == null) {
+            // must match with at least 50% accuracy to trigger (~5.7 distance or closer)
+            if (foundGesture == null || finalScore < 50.0) {
             	return new RecognizerResults("None", 0.0);
             } 
             else {
-            	return new RecognizerResults(foundGesture.getName(), score);
-            	//double test = (Math.min(parseInt(100 * Math.max(nearest - 4.0) / -4.0, 0.0), 100)/100.0)
-            	//return new RecognizerResults(foundGesture.getName(), Math.min(parseInt(100 * Math.max(score - 4.0) / -4.0, 0.0), 100)/100.0);
-            	//return new RecognizerResults(foundGesture.getName(), Math.max((score - 3.0) / 3.0, 0.0));
+            	return new RecognizerResults(foundGesture.getName(), finalScore);
             }
            
     }

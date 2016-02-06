@@ -16,7 +16,6 @@ import com.leapmotion.leap.Vector;
 import com.leapmotion.leap.Bone.Type;
 
 public class RecorderListener extends Listener {
-	
 	private final Object lock;
 	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	private BooleanProperty gestureDone = new SimpleBooleanProperty();
@@ -65,7 +64,7 @@ public class RecorderListener extends Listener {
 		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
 			frameReady.set(true);
-			// enforce atleast 3 sec delay between recordings
+			// enforce delay between recordings
 			if (System.currentTimeMillis() - timeRecognized > 3000) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            	          
 		            if (state == State.IDLE) {
@@ -115,8 +114,7 @@ public class RecorderListener extends Listener {
             Vector palmVelocityTemp = hand.palmVelocity(); 
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), 
             							  Math.max(Math.abs(palmVelocityTemp.getY()), 
-            									   Math.abs(palmVelocityTemp.getZ())));                    
-            
+            									   Math.abs(palmVelocityTemp.getZ())));                        
             if (palmVelocity >= minVelocity) {
             	return true;
             } 
@@ -138,8 +136,7 @@ public class RecorderListener extends Listener {
                 	break;
                 }
             }
-        }
-        
+        }     
         if (validPose || gestureFrameCount >= minGestureFrames) {
         	return false;
         }       

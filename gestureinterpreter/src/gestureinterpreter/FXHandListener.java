@@ -25,8 +25,7 @@ public class FXHandListener extends Group {
 							hand = new HandFX(app);
 							hands.put(leapHand.id(), hand);
 							this.getChildren().add(hand);
-						}		
-						
+						}							
 						if(hand != null) {
 							hand.update(frame.hand(leapHand.id()));
 						}

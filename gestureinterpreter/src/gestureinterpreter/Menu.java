@@ -142,7 +142,7 @@ public class Menu extends Application {
 	    		RecorderGUI recordGUI = RecorderGUI.getInstance();
 		    	recordGUI.init(this, controller);
 		    	break;
-    		case "Return":
+    		case "Menu":
 	    		controller.removeListener(RecognizerGUI.recognizerListener);
 	    		controller.addListener(leapListener);
 	            root2D.getChildren().addAll(titleLabel);

@@ -37,7 +37,7 @@ public class LeapButton extends Group {
     }
 	
 	private void createBox(double appWidth, double appHeight, Color diffuse, Color specular) {
-		box = ShapeCreator.createBox(200.0, 75.0,  50.0,  diffuse, specular);
+		box = ShapeCreator.createBox(200.0, 65.0,  50.0,  diffuse, specular);
 	}
 	
 	private void createText(double appHeight, String givenText) {
@@ -73,22 +73,22 @@ public class LeapButton extends Group {
         Event leapReleaseEvent = new LeapEvent(RELEASE);
         
         box.addEventHandler(PRESS, (leapEv) -> {
-        	box.setDepth(0);
-        	text.setTranslateZ(text.getTranslateZ() + 40);
+        	box.setDepth(25);
+        	text.setTranslateZ(text.getTranslateZ() + 15);
         	System.out.println("Leap press event fired");
         });
         
         box.addEventHandler(RELEASE, (leapEv) -> {
         	box.setDepth(oldDepth);
-        	text.setTranslateZ(text.getTranslateZ() - 40);
+        	text.setTranslateZ(text.getTranslateZ() - 15);
         	System.out.println("Leap release event fired");
         });
         
         touchStatusProperty().addListener((boxVal, oldVal, newVal) -> {
-        	if (newVal) {
+        	if (newVal && !oldVal) {
         		box.fireEvent(leapPressEvent);
         	} 
-        	else if (!newVal) {
+        	else if (!newVal && oldVal) {
         		box.fireEvent(leapReleaseEvent);
         	}
         });

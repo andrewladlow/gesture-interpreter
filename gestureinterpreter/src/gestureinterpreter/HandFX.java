@@ -2,6 +2,7 @@ package gestureinterpreter;
 
 import java.util.ArrayList;
 
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Sphere;
@@ -21,7 +22,6 @@ public class HandFX extends Group {
 	private ArrayList<Sphere> intermediates = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> metacarpals = new ArrayList<Sphere>(5);
 	private ArrayList<JointFX> joints = new ArrayList<JointFX>();
-	private Boolean touchedButton = false;
 
 	// handles creation of 3D representation of a user's hand
 	public HandFX(Menu app) {
@@ -93,12 +93,13 @@ public class HandFX extends Group {
 	private void checkIntersect(Finger finger, Sphere shape, Menu app) {
 		for (LeapButton button : app.getLeapButtons()) {
 			// check that there's both an intersect between finger and button, and touch emulation is triggered
-			if (shape.localToScene(shape.getBoundsInLocal()).intersects(button.localToScene(button.getBoundsInLocal())) && finger.touchDistance() < -0.4) {
+			Bounds shapeBounds = shape.localToScene(shape.getBoundsInLocal());
+			Bounds buttonBounds = button.localToScene(button.getBoundsInLocal());
+			if (!button.touchStatusProperty().getValue() && shapeBounds.intersects(buttonBounds) && finger.touchZone() == Zone.ZONE_TOUCHING) {
 				button.touchStatusProperty().set(true);
-				System.out.println(button.getText());
-				app.swapScene(button.getText());
-			} else {
+			} else if (button.touchStatusProperty().getValue() && !shapeBounds.intersects(buttonBounds) && finger.touchZone() != Zone.ZONE_TOUCHING) {
 				button.touchStatusProperty().set(false);
+				app.swapScene(button.getText());
 			}
 		}
 	}

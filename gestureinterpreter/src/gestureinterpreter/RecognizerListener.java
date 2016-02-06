@@ -83,21 +83,17 @@ public class RecognizerListener extends Listener {
 		if (!frame.hands().isEmpty()) {
 					
 			// enforce delay between recognitions
-			if (System.currentTimeMillis() - timeRecognized > 250) {	        
+			if (System.currentTimeMillis() - timeRecognized > 500) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            		             
 		            if (state == State.IDLE) {
 		            	gestureFrameCount = 0;
 		                state = State.RECORDING; 
 		            }      
 	                gestureFrameCount++;
-	                //System.out.println("gesture frame count: " + gestureFrameCount);
-		            storePoint(frame);
-		            
+		            storePoint(frame);		            
 		        } 
 		        else if (state == State.RECORDING) {
-		            //System.out.println("debug record fail state");
-		            state = State.IDLE;
-		            
+		            state = State.IDLE;	            
 		            if (validPose || (gestureFrameCount >= minGestureFrames)) {
 		            	if (validPose) {
 		            		gesture.setType("pose");
@@ -105,9 +101,7 @@ public class RecognizerListener extends Listener {
 		            	else {
 		            		gesture.setType("gesture");
 		            	}
-		            	//System.out.println("debug recognize");
 		                RecognizerResults recResult = pdRec.Recognize(gesture, storedGestures);
-		                //System.out.println("\nClosest match: " + recResult.getName() + "\nNormalized score: " + recResult.getScore());
 		                timeRecognized = System.currentTimeMillis();
 		                Platform.runLater(() -> {
 				            recGUI.gestureRecognitionProperty().set(recResult);
@@ -118,8 +112,6 @@ public class RecognizerListener extends Listener {
 		                gestureFrameCount = 0;
 		                poseFrameCount = 0;
 			            state = State.IDLE; 
-		            } else {
-		            	//System.out.println("Recognition failed");
 		            }
 		        }
 			}
@@ -131,14 +123,12 @@ public class RecognizerListener extends Listener {
 		}
 	}
 
-    public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {
-        
+    public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {        
         for (Hand hand : frame.hands()) {	
             Vector palmVelocityTemp = hand.palmVelocity(); 
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), 
             							  Math.max(Math.abs(palmVelocityTemp.getY()), 
-            									   Math.abs(palmVelocityTemp.getZ())));             
-            
+            									   Math.abs(palmVelocityTemp.getZ())));                        
             if (palmVelocity >= minVelocity) {
             	return true;
             } 
@@ -146,14 +136,12 @@ public class RecognizerListener extends Listener {
             	validPoseFrame = true;
             	//System.out.println("valid palm pose");
             	break;
-            }
-                  
+            }           
             for (Finger finger : hand.fingers()) {           	 
             	Vector fingerVelocityTemp = finger.tipVelocity();
                 float fingerVelocity = Math.max(Math.abs(fingerVelocityTemp.getX()), 
                 								Math.max(Math.abs(fingerVelocityTemp.getY()), 
-                										 Math.abs(fingerVelocityTemp.getZ())));
-                    
+                										 Math.abs(fingerVelocityTemp.getZ())));                 
                 if (fingerVelocity >= minVelocity) { 
                 	return true; 
                 } 
@@ -162,8 +150,7 @@ public class RecognizerListener extends Listener {
                 	break;
                 }
             }
-        }
-        
+        }        
         if (validPoseFrame) {
         	poseFrameCount++;
         	//System.out.println("pose frame count: " + poseFrameCount);
@@ -212,13 +199,13 @@ public class RecognizerListener extends Listener {
     
     public void saveGesture(Gesture gesture) {
     	try {
-    		//System.out.println("saving " + gesture.getName());
     		FileOutputStream outStream = new FileOutputStream(new File("gestures/" + gesture.getName()), false);
     		ObjectOutputStream objOutStream = new ObjectOutputStream (outStream);
     		objOutStream.writeObject(gesture);
     		objOutStream.close();
     		outStream.close();
-    	} catch (Exception e) {
+    	} 
+    	catch (Exception e) {
     		e.printStackTrace();
     	}
     }
