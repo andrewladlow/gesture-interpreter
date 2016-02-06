@@ -16,7 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 
 public class RecognizerGUI {
-	static RecognizerListener recognizerListener;
+	private RecognizerListener recognizerListener;
 	private ObjectProperty<RecognizerResults> gestureRecognition = new SimpleObjectProperty<RecognizerResults>();
 	private Label titleLabel;
 	private Label resultLabel;
@@ -103,7 +103,7 @@ public class RecognizerGUI {
 		app.getLeapButtons().clear();
 		
 		executor.execute(() -> {
-			for (int i = 60; i > 0; i--) {
+			for (int i = 10; i >= 0; i--) {
 				int time = i;
 				Platform.runLater(() -> {
 					timerLabel.textProperty().set("Time left: " + time + "s");
@@ -114,6 +114,21 @@ public class RecognizerGUI {
 				catch (Exception e) {
 					e.printStackTrace();
 				}		
+			}
+			controller.removeListener(recognizerListener);
+			Platform.runLater(() -> {
+				app.get2D().getChildren().removeAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
+				Label finalScoreLabel = new Label();
+				finalScoreLabel.setText("Final score: " + curScore);
+				finalScoreLabel.setFont(Font.font("Times New Roman", 40));
+				StackPane.setAlignment(resultLabel, Pos.CENTER);
+				app.get2D().getChildren().add(finalScoreLabel);
+			});
+			try {
+				Thread.sleep(5000);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 			app.swapScene("Menu");
 		});

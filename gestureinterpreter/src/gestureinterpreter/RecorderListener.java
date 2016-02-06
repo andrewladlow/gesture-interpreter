@@ -17,7 +17,6 @@ import com.leapmotion.leap.Bone.Type;
 
 public class RecorderListener extends Listener {
 	private final Object lock;
-	private BooleanProperty frameReady = new SimpleBooleanProperty();
 	private BooleanProperty gestureDone = new SimpleBooleanProperty();
 	private Gesture gesture;
     private int gestureFrameCount = 0;  
@@ -44,11 +43,7 @@ public class RecorderListener extends Listener {
     public BooleanProperty gestureDoneProperty() {
     	return gestureDone;
     }
-    
-	public BooleanProperty frameReadyProperty() {
-		return frameReady;
-	}
-    
+
     public void onConnect(Controller controller) {
     	System.out.println("connected trainer");
     }
@@ -61,9 +56,7 @@ public class RecorderListener extends Listener {
 	public void onFrame(Controller controller) {
 		validPoseFrame = false;
 		Frame frame = controller.frame();
-		frameReady.set(false);
 		if (!frame.hands().isEmpty()) {
-			frameReady.set(true);
 			// enforce delay between recordings
 			if (System.currentTimeMillis() - timeRecognized > 3000) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            	          
@@ -79,18 +72,19 @@ public class RecorderListener extends Listener {
 		        else if (state == State.RECORDING) {
 		            System.out.println("debug record state");
 		            state = State.IDLE;
-		            
-		            if (validPose) {
-		            	gesture.setType("pose");
+		            if (validPose || (gestureFrameCount >= minGestureFrames)) {
+		            	if (validPose) {
+		            		gesture.setType("pose");
+		            	}
+		            	else {
+		            		gesture.setType("gesture");
+		            	}
+		            	saveGesture(gesture);
+		                System.out.println("Debug store");
+		                validPose = false;
+		                timeRecognized = System.currentTimeMillis();
+		                gestureDone.set(true);
 		            }
-		            else if (gestureFrameCount >= minGestureFrames) {
-		            	gesture.setType("gesture");
-		            }
-	            	saveGesture(gesture);
-	                System.out.println("Debug store");
-	                validPose = false;
-	                timeRecognized = System.currentTimeMillis();
-	                gestureDone.set(true);
 	                // reset variables
 	                validPoseFrame = false;
 	                validPose = false;
@@ -101,10 +95,6 @@ public class RecorderListener extends Listener {
 		                lock.notify();
 	                }
 		        }
-			}
-		} else {
-			if (state != State.IDLE) {
-				state = State.IDLE;
 			}
 		}
 	}
@@ -120,7 +110,6 @@ public class RecorderListener extends Listener {
             } 
             else if (palmVelocity <= maxVelocity) {
             	validPoseFrame = true;
-            	System.out.println("valid palm pose");
             	break;
             }            
             for (Finger finger : hand.fingers()) {           	 
@@ -136,17 +125,13 @@ public class RecorderListener extends Listener {
                 	break;
                 }
             }
-        }     
-        if (validPose || gestureFrameCount >= minGestureFrames) {
-        	return false;
-        }       
+        }          
         if (validPoseFrame) {
         	poseFrameCount++;
-        	System.out.println("pose frame count: " + poseFrameCount);
         	gestureFrameCount = 0;
         	if (poseFrameCount >= minPoseFrames) {
         		validPose = true;
-        		// force recognition once minimum frame count reached
+        		poseFrameCount = 0;
         		return true;
         	}
         } 
