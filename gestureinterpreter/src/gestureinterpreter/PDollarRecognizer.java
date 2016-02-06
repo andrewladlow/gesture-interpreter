@@ -64,7 +64,7 @@ import java.lang.Double;
 
 public class PDollarRecognizer {
 
-	static int mNumPoints = 25;
+	static int mNumPoints = 50;
 	static Point mPointOrig = new Point(0.0,0.0,0.0,0);
 	static ArrayList<PointCloud> mPntClouds = new ArrayList<PointCloud>();
 

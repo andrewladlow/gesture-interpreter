@@ -16,7 +16,6 @@ import javafx.scene.text.Font;
 
 public class RecorderGUI {
 	
-	private Menu app;
 	private Object lock;
 	private ExecutorService executor;
 	private Boolean alreadyActivated = false;
@@ -42,7 +41,6 @@ public class RecorderGUI {
 	}
 
 	public void init(Menu app, Controller controller) {
-		this.app = app;
 		
 		if (!alreadyActivated) {
 
@@ -69,7 +67,7 @@ public class RecorderGUI {
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
 	
 		executor.execute(() -> {		
-			for (char c = 'A'; c <= 'C'; c++) {
+			for (char c = 'A'; c <= 'E'; c++) {
 				char tempChar = c;
 				Image gestureImg = new Image("file:images/" + Character.toLowerCase(tempChar) + ".png");
 				gestureImgRect.setFill(new ImagePattern(gestureImg));
@@ -78,12 +76,12 @@ public class RecorderGUI {
 						int count = i;
 						Platform.runLater(() -> {
 							resultLabel.textProperty().set("Recording " + tempChar + " in " + count + "...");
-							Helper.textFadeOut(1000, resultLabel);
+							TextHelper.textFadeOut(1000, resultLabel);
 						});
 						Thread.sleep(1000);			
 					}
 					Platform.runLater(() -> {
-						Helper.textFadeIn(1, resultLabel);
+						TextHelper.textFadeIn(1, resultLabel);
 						resultLabel.textProperty().set("Now recording " + tempChar + "...");
 					});
 					System.out.println(c);
@@ -98,7 +96,7 @@ public class RecorderGUI {
 					if (tempRecorderListener.gestureDoneProperty().get()) {
 						Platform.runLater(() -> {
 							resultLabel.textProperty().set("Successfully recorded " + tempChar + "!");
-							Helper.textFadeOut(2500, resultLabel);
+							TextHelper.textFadeOut(2500, resultLabel);
 						});
 					}
 					Thread.sleep(2000);

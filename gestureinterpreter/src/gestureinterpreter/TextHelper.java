@@ -4,7 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 
-public class Helper {
+public class TextHelper {
 	public static void textFadeOut (double duration, Node node) {
 	     FadeTransition ft = new FadeTransition(Duration.millis(duration), node);
 	     ft.setFromValue(1.0);

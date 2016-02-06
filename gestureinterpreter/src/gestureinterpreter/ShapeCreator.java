@@ -4,6 +4,7 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
@@ -53,6 +54,12 @@ public class ShapeCreator {
 		box.setDepth(depth);
 		
 		return box;
-		
+	}
+	
+	public static <T extends Shape3D> void changeColour(T shape, Color diffuse, Color specular) {
+		PhongMaterial mat = new PhongMaterial();
+		mat.setDiffuseColor(diffuse);
+		mat.setSpecularColor(specular);
+		shape.setMaterial(mat);
 	}
 }

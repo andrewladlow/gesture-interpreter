@@ -1,6 +1,8 @@
 package gestureinterpreter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.leapmotion.leap.Controller;
 
@@ -36,6 +38,7 @@ public class Menu extends Application {
 	private LeapListener leapListener;
     private MenuListener menuListener;
     private Controller controller;
+    private List<LeapButton> leapButtons;
     
     private FXHandListener handRenderer;
 	private HashMap<Integer, HandFX> hands;
@@ -50,10 +53,10 @@ public class Menu extends Application {
     	
         hands = new HashMap<Integer, HandFX>();
         leapListener = new LeapListener();
-        menuListener = new MenuListener(this);
+        //menuListener = new MenuListener(this);
         controller = new Controller();
         controller.addListener(leapListener);
-        controller.addListener(menuListener);
+        //controller.addListener(menuListener);
         
         root2D = new StackPane();
         root2D.setPrefSize(APPWIDTH, APPHEIGHT);
@@ -85,7 +88,7 @@ public class Menu extends Application {
 		camera.setNearClip(1);
         subScene.setCamera(camera); 
         
-        recognizerButton = new LeapButton(APPWIDTH, APPHEIGHT, Color.RED, Color.GOLDENROD, "Recognition");     
+        recognizerButton = new LeapButton(APPWIDTH, APPHEIGHT, Color.CRIMSON, Color.BLACK, "Recognition");     
         recognizerButton.setPosition(-170, -200, 110);
         recognizerButton.setRotation(0, Rotate.Z_AXIS);
         
@@ -100,8 +103,12 @@ public class Menu extends Application {
         System.out.println(recorderButton.localToScene(recorderButton.getBoundsInLocal()));
         
         root3D.getChildren().add(recorderButton);
+        
+        leapButtons = new ArrayList<LeapButton>();
+        leapButtons.add(recognizerButton);
+        leapButtons.add(recorderButton);
 
-        handRenderer = new FXHandListener(controller, leapListener, hands);
+        handRenderer = new FXHandListener(this, controller, leapListener, hands);
         root3D.getChildren().add(handRenderer);
              
         stage.setTitle("Gesture Interpreter");
@@ -160,6 +167,10 @@ public class Menu extends Application {
     
     public Group get3D() {
     	return this.root3D;
+    }
+    
+    public List<LeapButton> getLeapButtons() {
+    	return this.leapButtons;
     }
     
 }

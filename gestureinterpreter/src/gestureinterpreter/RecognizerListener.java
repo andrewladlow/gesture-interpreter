@@ -4,41 +4,23 @@ import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Listener;
 import com.leapmotion.leap.Frame;
 import com.leapmotion.leap.Hand;
-import com.leapmotion.leap.HandList;
 import com.leapmotion.leap.Finger;
-import com.leapmotion.leap.FingerList;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 
-import com.leapmotion.leap.Screen;
 import com.leapmotion.leap.Vector;
 import com.leapmotion.leap.Bone.Type;
 import com.leapmotion.leap.Pointable.Zone;
-
-import javafx.geometry.Point2D;
 
 public class RecognizerListener extends Listener {
 	
@@ -63,7 +45,6 @@ public class RecognizerListener extends Listener {
     	IDLE, RECORDING;
     }
     
-
 	public BooleanProperty frameReadyProperty() {
 		return frameReady;
 	}
@@ -81,24 +62,14 @@ public class RecognizerListener extends Listener {
 	    		Gesture tempGesture = (Gesture) ObjInStream.readObject();
 	    		
 	    		System.out.println(Arrays.asList(tempGesture.getPointArray().size()));
-/*	    		for (Point p : tempGesture.getPointArray()) {
-	    			System.out.println("PRE NORMALIZED");
-	    			System.out.println("X: " + p.getX() + "Y: " + p.getY() + "Z: " + p.getZ());
-	    		}*/
-	 		
+
 	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), PDollarRecognizer.mNumPoints));
 	    		tempGesture.setPointArray(PDollarRecognizer.Scale(tempGesture.getPointArray()));
 	    		tempGesture.setPointArray(PDollarRecognizer.TranslateTo(tempGesture.getPointArray(), new Point(0.0,0.0,0.0)));
 	    		
 	    		storedGestures.add(tempGesture);
 	    		
-	    		System.out.println(Arrays.asList(tempGesture.getPointArray().size()));
-/*	    		for (Point p : tempGesture.getPointArray()) {
-	    			System.out.println("NOW NORMALIZED");
-	    			System.out.println("X: " + p.getX() + "Y: " + p.getY() + "Z: " + p.getZ());
-	    		}*/
-	 		
-	    		
+	    		System.out.println(Arrays.asList(tempGesture.getPointArray().size()));   		
 	    		
 	    		ObjInStream.close();
 	    		inStream.close();
@@ -145,7 +116,7 @@ public class RecognizerListener extends Listener {
 			} 
 					
 			// enforce delay between recognitions
-			if (System.currentTimeMillis() - timeRecognized > 500) {	        
+			if (System.currentTimeMillis() - timeRecognized > 250) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            		             
 		            if (state == State.IDLE) {
 		            	gestureFrameCount = 0;
@@ -242,7 +213,7 @@ public class RecognizerListener extends Listener {
         return false;
     }
    
-    public void storePoint(Frame frame) {  	
+/*    public void storePointv2(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
     		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));
     		gesture.addPoint(new Point(hand.direction()));
@@ -255,7 +226,22 @@ public class RecognizerListener extends Listener {
     			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint().minus(hand.palmPosition())));
     		}
     	}
-    }
+    }*/
+    
+    public void storePoint(Frame frame) {  	
+    	for (Hand hand : frame.hands()) {
+    		gesture.addPoint(new Point(hand.palmNormal()));
+    		gesture.addPoint(new Point(hand.direction()));
+    		for (Finger finger : hand.fingers()) {
+    			gesture.addPoint(new Point(finger.direction()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).prevJoint()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).nextJoint()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint()));
+    		}
+    	}
+    } 
     
     public void saveGesture(Gesture gesture) {
     	try {

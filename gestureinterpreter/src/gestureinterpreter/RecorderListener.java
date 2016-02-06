@@ -161,15 +161,15 @@ public class RecorderListener extends Listener {
    
     public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
-    		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));
-    		gesture.addPoint(new Point(hand.direction()));
     		gesture.addPoint(new Point(hand.palmNormal()));
+    		gesture.addPoint(new Point(hand.direction()));
     		for (Finger finger : hand.fingers()) {
-    			gesture.addPoint(new Point(finger.stabilizedTipPosition()));
-    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).nextJoint().minus(hand.palmPosition())));
-    			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint().minus(hand.palmPosition())));
-    			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint().minus(hand.palmPosition())));
-    			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.direction()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).prevJoint()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).nextJoint()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint()));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint()));
     		}
     	}
     }

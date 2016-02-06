@@ -11,7 +11,7 @@ import javafx.scene.Group;
 
 public class FXHandListener extends Group {
 	
-	public FXHandListener(Controller controller, LeapListener listener, HashMap<Integer, HandFX> hands) {
+	public FXHandListener(Menu app, Controller controller, LeapListener listener, HashMap<Integer, HandFX> hands) {
         listener.frameReadyProperty().addListener((frameReady, oldVal, newVal) -> {
     		Frame frame = controller.frame();   		
     		// draw hands if at least one is present in tracking area
@@ -22,7 +22,7 @@ public class FXHandListener extends Group {
 						HandFX hand = hands.get(handId);
 						
 						if(!hands.containsKey(handId)) {
-							hand = new HandFX();
+							hand = new HandFX(app);
 							hands.put(leapHand.id(), hand);
 							this.getChildren().add(hand);
 						}		

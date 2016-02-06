@@ -9,20 +9,24 @@ import javafx.scene.shape.Sphere;
 import com.leapmotion.leap.Bone.Type;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Hand;
+import com.leapmotion.leap.Pointable.Zone;
 import com.leapmotion.leap.Vector;
 
 public class HandFX extends Group {
+	private Menu app;
 	private Sphere palm;
 	private ArrayList<Sphere> fingers = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> distals = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> proximals = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> intermediates = new ArrayList<Sphere>(5);
 	private ArrayList<Sphere> metacarpals = new ArrayList<Sphere>(5);
-
 	private ArrayList<JointFX> joints = new ArrayList<JointFX>();
+	private Boolean touchedButton = false;
 
-	public HandFX() {
-
+	// handles creation of 3D representation of a user's hand
+	public HandFX(Menu app) {
+		this.app = app;
+			
 		palm = ShapeCreator.createSphere(this, 10, Color.GREEN, Color.LIGHTGREEN);
 
 		for (int i = 0; i < 5; i++) {
@@ -37,14 +41,11 @@ public class HandFX extends Group {
 			connectJoints(intermediates.get(i), proximals.get(i));
 		}
 		
-
 		connectJoints(proximals.get(1), proximals.get(2));
 		connectJoints(proximals.get(2), proximals.get(3));
-		connectJoints(proximals.get(3), proximals.get(4));
-		
+		connectJoints(proximals.get(3), proximals.get(4));	
 		connectJoints(proximals.get(1), metacarpals.get(1));
-		connectJoints(proximals.get(4), metacarpals.get(4));
-		
+		connectJoints(proximals.get(4), metacarpals.get(4));	
 		connectJoints(metacarpals.get(1), metacarpals.get(4));
 		
 		this.getChildren().add(palm);
@@ -55,18 +56,28 @@ public class HandFX extends Group {
 		this.getChildren().addAll(metacarpals);
 	}
 
+	// associates a given joint with the bones behind and in front of it (bone - joint - bone)
 	private void connectJoints(Sphere fromJoint, Sphere toJoint) {
 		JointFX jointFX = new JointFX(fromJoint, toJoint);
 		joints.add(jointFX);
 		this.getChildren().add(jointFX.getBone());
 	}
 
+	// updates position of user's hand, taking raw data from LeapMotion listener
 	public void update(Hand hand) {
 		LeapToFX.move(palm, hand.palmPosition());
-
-		int i = 0;
-		for (Finger finger : hand.fingers()) {
+		Finger finger;
+		
+		for (int i = 0; i < hand.fingers().count(); i++) {
+			finger = hand.fingers().get(i);
 			LeapToFX.move(fingers.get(i), finger.tipPosition());
+			if (!touchedButton && this.checkIntersect(hand.fingers().frontmost(), fingers.get(i), app) 
+							   && hand.fingers().frontmost().touchZone() == Zone.ZONE_TOUCHING) {
+				touchedButton = true;
+			}
+			else {
+				touchedButton = false;
+			}
 			LeapToFX.move(distals.get(i), finger.bone(Type.TYPE_DISTAL).prevJoint());
 			LeapToFX.move(intermediates.get(i), finger.bone(Type.TYPE_INTERMEDIATE).prevJoint());
 			LeapToFX.move(proximals.get(i), finger.bone(Type.TYPE_PROXIMAL).prevJoint());
@@ -77,11 +88,23 @@ public class HandFX extends Group {
 			else {
 				LeapToFX.move(metacarpals.get(i), finger.bone(Type.TYPE_METACARPAL).prevJoint());
 			}
-			i++;
-		}
-		
+		}		
 		for (JointFX joint : joints) {
 			joint.update();
 		}
+	}
+	
+	// handles collision of a finger and a button to trigger button presses by physical actions
+	private Boolean checkIntersect(Finger finger, Sphere shape, Menu app) {
+		for (LeapButton button : app.getLeapButtons()) {
+			if (shape.localToScene(shape.getBoundsInLocal()).intersects(button.localToScene(button.getBoundsInLocal()))) {
+				button.touchStatusProperty().set(true);
+				return true;
+			}
+			else if (finger.touchZone() != Zone.ZONE_TOUCHING) {
+				button.touchStatusProperty().set(false);
+			}
+		}
+		return false;
 	}
 }

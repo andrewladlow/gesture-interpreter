@@ -62,17 +62,10 @@ package gestureinterpreter;
 public class RecognizerResults {
 	private String name;
 	private double score;
-	private String otherInfo;
 
 	public RecognizerResults(String name, double score) { 
 		this.name = name; 
 		this.score = score; 
-	}
-	
-	public RecognizerResults(String name, double score, String otherInfo) { 
-		this.name = name; 
-		this.score = score; 
-		this.otherInfo = otherInfo; 
 	}
 	
 	public String getName() {

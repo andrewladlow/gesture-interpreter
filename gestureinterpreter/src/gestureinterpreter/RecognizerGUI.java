@@ -20,6 +20,7 @@ public class RecognizerGUI {
 	private Label titleLabel;
 	private Label resultLabel;
 	private Label curWordLabel;
+	private Label scoreLabel;
 	private boolean alreadyActivated = false;	
 	private static RecognizerGUI instance;
 	public LeapButton backButton;	
@@ -57,14 +58,18 @@ public class RecognizerGUI {
 			curWordLabel = new Label();
 			curWordLabel.setText("Hello World");
 			curWordLabel.setFont(Font.font("Times New Roman", 24));
+			
+			scoreLabel = new Label();
+			scoreLabel.setFont(Font.font("Times New Roman", 24));
 	
 			StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
 			StackPane.setAlignment(resultLabel, Pos.TOP_CENTER);
 			StackPane.setAlignment(curWordLabel, Pos.CENTER);
+			StackPane.setAlignment(scoreLabel, Pos.TOP_RIGHT);
 			
 			this.gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
 				resultLabel.textProperty().set("Closest match: " + newVal.getName() + "\nMatch score: " + newVal.getScore());
-				Helper.textFadeOut(1500, resultLabel);
+				TextHelper.textFadeOut(1500, resultLabel);
 			});
 
 			backButton = new LeapButton(Menu.APPWIDTH, Menu.APPHEIGHT, Color.RED, Color.GOLDENROD, "Return");
