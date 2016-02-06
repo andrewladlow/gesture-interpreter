@@ -107,8 +107,6 @@ public class RecorderGUI {
 			}
 			// return once all gestures have been recorded
 			app.swapScene("Menu");
-		});
-		
+		});	
 	}
-	
 }

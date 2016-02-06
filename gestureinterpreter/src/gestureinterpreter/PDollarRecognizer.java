@@ -66,10 +66,9 @@ public class PDollarRecognizer {
 
 	static int mNumPoints = 50;
 	static Point mPointOrig = new Point(0.0,0.0,0.0,0);
-	static ArrayList<PointCloud> mPntClouds = new ArrayList<PointCloud>();
 
-    public PDollarRecognizer() { 
-    	initializePointCloudTable(); 
+    public PDollarRecognizer() {
+    	
     }
 
     public RecognizerResults Recognize(Gesture currentGesture, ArrayList<Gesture> storedGestures) {
@@ -112,17 +111,6 @@ public class PDollarRecognizer {
             }
            
     }
-
-	public int addGesture(String name, ArrayList<Point> points) {
-		mPntClouds.add(new PointCloud(name, points, mNumPoints));
-		int num = 0;
-		for (int i = 0; i < mPntClouds.size(); i++) {
-			if (mPntClouds.get(i).mName.equals(name)) {
-				num++;
-			}
-		}
-		return num;
-	}
 
 	public static double GreedyCloudMatch(ArrayList<Point> currentPoints, ArrayList<Point> storedPoints) {
 		double e = 0.50;
@@ -280,31 +268,4 @@ public class PDollarRecognizer {
 		return Math.sqrt(dx * dx + dy * dy + dz * dz);
 	}
 
-	//
-	// PointCloud class: a point-cloud template
-	//
-	public class PointCloud {
-		public ArrayList<Point> mPoints;
-		public String mName;
-
-		PointCloud(String name, ArrayList<Point> points, int numPoints) {
-
-			mName = name;
-			mPoints = points;
-
-			mPoints = PDollarRecognizer.Resample(mPoints, numPoints);
-			mPoints = PDollarRecognizer.Scale(mPoints);
-			mPoints = PDollarRecognizer.TranslateTo(mPoints, mPointOrig);
-		}
-	}
-
-	private void initializePointCloudTable() {
-/*		mPntClouds.add(new PointCloud("T", new ArrayList<Point>(Arrays.asList(
-			new Point(30,7,1),
-			new Point(103,7,1),
-			new Point(66,7,2),
-			new Point(66,87,2))),
-			mNumPoints)
-		);*/
-	}
 }

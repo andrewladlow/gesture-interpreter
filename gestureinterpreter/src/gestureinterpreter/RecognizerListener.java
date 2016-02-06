@@ -72,6 +72,7 @@ public class RecognizerListener extends Listener {
     }
 	
 	public void onFrame(Controller controller) {
+		validPoseFrame = false;
 		Frame frame = controller.frame();
 		if (!frame.hands().isEmpty()) {					
 			// enforce delay between recognitions

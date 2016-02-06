@@ -103,7 +103,7 @@ public class RecognizerGUI {
 		app.getLeapButtons().clear();
 		
 		executor.execute(() -> {
-			for (int i = 10; i >= 0; i--) {
+			for (int i = 60; i >= 0; i--) {
 				int time = i;
 				Platform.runLater(() -> {
 					timerLabel.textProperty().set("Time left: " + time + "s");

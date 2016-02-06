@@ -2,8 +2,6 @@ package gestureinterpreter;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.CacheHint;
@@ -19,15 +17,12 @@ public class LeapButton extends Group {
 	private Box box;
 	private Text text;
 	private final Double oldDepth = 50.0;
-    public static final EventType<LeapEvent> OPTIONS_ALL = new EventType<>("OPTIONS_ALL");
-    public static final EventType<LeapEvent> PRESS = new EventType<>(OPTIONS_ALL, "PRESS");
-    public static final EventType<LeapEvent> RELEASE = new EventType<>(OPTIONS_ALL, "RELEASE");
     private BooleanProperty touchStatus = new SimpleBooleanProperty();
     
 	public LeapButton(double appWidth, double appHeight, Color diffuse, Color specular, String givenText) {    
         createBox(appWidth, appHeight, diffuse, specular);
         createText(appHeight, givenText);
-        createEvents();
+        addListener();
          
 		this.getChildren().addAll(box, text);
 	}
@@ -68,28 +63,17 @@ public class LeapButton extends Group {
         text.getTransforms().addAll(new Rotate (rotation, axis));
 	}
 	
-	private void createEvents() {
-        Event leapPressEvent = new LeapEvent(PRESS);
-        Event leapReleaseEvent = new LeapEvent(RELEASE);
-        
-        box.addEventHandler(PRESS, (leapEv) -> {
-        	box.setDepth(25);
-        	text.setTranslateZ(text.getTranslateZ() + 15);
-        	System.out.println("Leap press event fired");
-        });
-        
-        box.addEventHandler(RELEASE, (leapEv) -> {
-        	box.setDepth(oldDepth);
-        	text.setTranslateZ(text.getTranslateZ() - 15);
-        	System.out.println("Leap release event fired");
-        });
-        
+	private void addListener() {    
         touchStatusProperty().addListener((boxVal, oldVal, newVal) -> {
         	if (newVal && !oldVal) {
-        		box.fireEvent(leapPressEvent);
+            	box.setDepth(25);
+            	text.setTranslateZ(text.getTranslateZ() + 15);
+            	System.out.println("Leap press event fired");
         	} 
         	else if (!newVal && oldVal) {
-        		box.fireEvent(leapReleaseEvent);
+            	box.setDepth(oldDepth);
+            	text.setTranslateZ(text.getTranslateZ() - 15);
+            	System.out.println("Leap release event fired");
         	}
         });
 	}
