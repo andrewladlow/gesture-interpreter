@@ -27,7 +27,6 @@ public class RecognizerGUI {
 	private int curScore;
 	private boolean alreadyActivated = false;	
 	private static RecognizerGUI instance;
-	public LeapButton backButton;
 	private ExecutorService executor;
 	
 
@@ -91,6 +90,7 @@ public class RecognizerGUI {
 					curScore += 10;
 					scoreLabel.setText("Score: " + curScore);
 					curLetter = Character.toString((char)(rand.nextInt(5) + 'A'));
+					TextHelper.textFadeIn(1000, curWordLabel);
 					curWordLabel.setText("Make a: " + curLetter);
 				}
 			});

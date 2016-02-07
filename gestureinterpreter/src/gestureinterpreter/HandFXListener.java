@@ -9,9 +9,9 @@ import com.leapmotion.leap.Hand;
 import javafx.application.Platform;
 import javafx.scene.Group;
 
-public class FXHandListener extends Group {
+public class HandFXListener extends Group {
 	
-	public FXHandListener(Menu app, Controller controller, LeapListener listener, HashMap<Integer, HandFX> hands) {
+	public HandFXListener(Menu app, Controller controller, LeapListener listener, HashMap<Integer, HandFX> hands) {
         listener.frameReadyProperty().addListener((frameReady, oldVal, newVal) -> {
     		Frame frame = controller.frame();   		
     		// draw hands if at least one is present in tracking area

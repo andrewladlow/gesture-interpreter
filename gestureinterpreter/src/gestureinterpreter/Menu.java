@@ -40,7 +40,7 @@ public class Menu extends Application {
     private Controller controller;
     private List<LeapButton> leapButtons;
     
-    private FXHandListener handRenderer;
+    private HandFXListener handRenderer;
 	private HashMap<Integer, HandFX> hands;
 	
 	private Label titleLabel;
@@ -69,7 +69,7 @@ public class Menu extends Application {
         root2D.getChildren().addAll(subScene);
               
         titleLabel = new Label();
-        titleLabel.textProperty().set("Main Menu");
+        titleLabel.textProperty().set("Menu");
         titleLabel.setFont(Font.font("Times New Roman", 24)); 
         root2D.getChildren().addAll(titleLabel);
         
@@ -105,7 +105,7 @@ public class Menu extends Application {
         leapButtons.add(recognizerButton);
         leapButtons.add(recorderButton);
 
-        handRenderer = new FXHandListener(this, controller, leapListener, hands);
+        handRenderer = new HandFXListener(this, controller, leapListener, hands);
         root3D.getChildren().add(handRenderer);
              
         stage.setTitle("Gesture Interpreter");
@@ -129,7 +129,7 @@ public class Menu extends Application {
     	
     	Platform.runLater(() -> {
     		// clear all except hand visuals
-    		root3D.getChildren().removeIf((obj)->(!obj.getClass().equals(FXHandListener.class)));
+    		root3D.getChildren().removeIf((obj)->(!obj.getClass().equals(HandFXListener.class)));
     		root2D.getChildren().clear();
     		root2D.getChildren().add(subScene);
 			

@@ -27,14 +27,14 @@ public class HandFX extends Group {
 	public HandFX(Menu app) {
 		this.app = app;
 
-		palm = ShapeCreator.createSphere(this, 10, Color.GREEN, Color.LIGHTGREEN);
+		palm = ShapeCreator.createSphere(this, 10, Color.GREY, Color.SILVER);
 
 		for (int i = 0; i < 5; i++) {
-			fingers.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
-			distals.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
-			intermediates.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
-			proximals.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
-			metacarpals.add(i, ShapeCreator.createSphere(this, 5, Color.LIGHTGREEN, Color.GREENYELLOW));
+			fingers.add(i, ShapeCreator.createSphere(this, 5, Color.GREY, Color.SILVER));
+			distals.add(i, ShapeCreator.createSphere(this, 5, Color.GREY, Color.SILVER));
+			intermediates.add(i, ShapeCreator.createSphere(this, 5, Color.GREY, Color.SILVER));
+			proximals.add(i, ShapeCreator.createSphere(this, 5, Color.GREY, Color.SILVER));
+			metacarpals.add(i, ShapeCreator.createSphere(this, 5, Color.GREY, Color.SILVER));
 
 			connectJoints(fingers.get(i), distals.get(i));
 			connectJoints(distals.get(i), intermediates.get(i));
