@@ -103,15 +103,16 @@ public class PDollarRecognizer {
 	    System.out.println("\nClosest match: " + foundGesture.getName() + "\nScore: " + score);
 	    
 	    // Normalizes score to value in range 0-100
-	    double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
+	    //double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
+	    double finalScore = score;
 	    
 	    // Must match with at least 50% accuracy to trigger (~5.7 distance or closer)
-	    if (foundGesture == null || finalScore < 50.0) {
-	    	return new RecognizerResults("None", 0.0);
-	    } 
-	    else {
+	    //if (foundGesture == null || finalScore < 50.0) {
+	    	//return new RecognizerResults("None", 0.0);
+	    //} 
+	    //else {
 	    	return new RecognizerResults(foundGesture.getName(), finalScore);
-	    }   
+	    //}   
     }
 
 	public static double GreedyCloudMatch(ArrayList<Point> currentPoints, ArrayList<Point> storedPoints) {
