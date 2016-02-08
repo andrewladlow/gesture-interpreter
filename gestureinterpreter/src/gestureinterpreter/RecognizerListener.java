@@ -82,9 +82,12 @@ public class RecognizerListener extends Listener {
 		                state = State.RECORDING; 
 		            }
 		            if (!validPoseFrame) {
-		                gestureFrameCount++;
-		                System.out.println("gesture frame count: " + gestureFrameCount);
-		            }       
+		            	gestureFrameCount++;
+		            	System.out.println("gesture frame count: " + gestureFrameCount);
+		            } else {
+		            	gestureFrameCount = 0;
+		            }
+		                   
 		            storePoint(frame);		            
 		        } 
 		        else if (state == State.RECORDING) {
@@ -122,6 +125,7 @@ public class RecognizerListener extends Listener {
             							  Math.max(Math.abs(palmVelocityTemp.getY()), 
             									   Math.abs(palmVelocityTemp.getZ())));                        
             if (palmVelocity >= minVelocity) {
+            	validPoseFrame = false;
             	return true;
             } 
             else if (palmVelocity <= maxVelocity) {
@@ -133,7 +137,8 @@ public class RecognizerListener extends Listener {
                 float fingerVelocity = Math.max(Math.abs(fingerVelocityTemp.getX()), 
                 								Math.max(Math.abs(fingerVelocityTemp.getY()), 
                 										 Math.abs(fingerVelocityTemp.getZ())));                 
-                if (fingerVelocity >= minVelocity) { 
+                if (fingerVelocity >= minVelocity) {
+                	validPoseFrame = false;
                 	return true; 
                 } 
                 else if (fingerVelocity <= maxVelocity) {

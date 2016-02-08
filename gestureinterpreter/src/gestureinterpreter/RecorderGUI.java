@@ -28,7 +28,7 @@ public class RecorderGUI {
 		lock = new Object();
 		// dynamic thread created as required and destroyed on 60sec timeout
 		// will therefore not hold idle threads if not being used
-		executor = Executors.newCachedThreadPool();
+		executor = Executors.newFixedThreadPool(1);
 	}
 
 	public static RecorderGUI getInstance() {
@@ -64,12 +64,14 @@ public class RecorderGUI {
 			alreadyActivated = true;
 		}	
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
-	
+		System.out.println("RECORDER ACTIVE");
 		executor.execute(() -> {		
-			for (char c = 'G'; c <= 'Z'; c++) {
+			for (char c = 'E'; c <= 'F'; c++) {
 				char tempChar = c;
 				Image gestureImg = new Image("file:images/" + Character.toLowerCase(tempChar) + ".png");
-				gestureImgRect.setFill(new ImagePattern(gestureImg));
+				Platform.runLater(() -> {
+					gestureImgRect.setFill(new ImagePattern(gestureImg));
+				});
 				try {			
 					for (int i = 3; i > 0; i--) {
 						int count = i;

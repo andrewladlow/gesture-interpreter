@@ -91,6 +91,9 @@ public class HandFX extends Group {
 
 	// handles collision of a finger and a button to trigger button presses by physical actions
 	private void checkIntersect(Finger finger, Sphere shape, Menu app) {
+		Boolean touchFlag = false;
+		String text = "";
+		long touchTime = 0;
 		for (LeapButton button : app.getLeapButtons()) {
 			// check that there's both an intersect between finger and button, and touch emulation is triggered
 			Bounds shapeBounds = shape.localToScene(shape.getBoundsInLocal());
@@ -103,9 +106,18 @@ public class HandFX extends Group {
 			else if (button.touchStatusProperty().getValue() 
 					&& !shapeBounds.intersects(buttonBounds) 
 					&& finger.touchZone() != Zone.ZONE_TOUCHING) {
+				touchFlag = true;
 				button.touchStatusProperty().set(false);
-				app.swapScene(button.getText());
+				text = button.getText();
+				touchTime = System.currentTimeMillis();
+				//app.swapScene(button.getText());
 			}
 		}
+		if (touchFlag) {
+			touchFlag = false;
+			app.swapScene(text);
+		}
+		
+		
 	}
 }

@@ -63,10 +63,10 @@ public class RecorderListener extends Listener {
 		            if (state == State.IDLE) {
 		                state = State.RECORDING; 
 		            }
-		            if (!validPoseFrame) {
-		                gestureFrameCount++;
-		                System.out.println("gesture frame count: " + gestureFrameCount);
-		            }       
+		            
+		            gestureFrameCount++;
+		            System.out.println("gesture frame count: " + gestureFrameCount);
+		                   
 		            storePoint(frame);		            
 		        } 
 		        else if (state == State.RECORDING) {
@@ -79,10 +79,10 @@ public class RecorderListener extends Listener {
 		            	else {
 		            		gesture.setType("gesture");
 		            	}
+		                timeRecognized = System.currentTimeMillis();
 		            	saveGesture(gesture);
 		                System.out.println("Debug store");
 		                validPose = false;
-		                timeRecognized = System.currentTimeMillis();
 		                gestureDone.set(true);
 		            }
 	                // reset variables
