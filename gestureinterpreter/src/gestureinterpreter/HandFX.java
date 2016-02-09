@@ -93,23 +93,17 @@ public class HandFX extends Group {
 	private void checkIntersect(Finger finger, Sphere shape, Menu app) {
 		Boolean touchFlag = false;
 		String text = "";
-		long touchTime = 0;
 		for (LeapButton button : app.getLeapButtons()) {
 			// check that there's both an intersect between finger and button, and touch emulation is triggered
 			Bounds shapeBounds = shape.localToScene(shape.getBoundsInLocal());
 			Bounds buttonBounds = button.localToScene(button.getBoundsInLocal());
-			if (!button.touchStatusProperty().getValue() 
-				&& shapeBounds.intersects(buttonBounds) 
-				&& finger.touchZone() == Zone.ZONE_TOUCHING) {
+			if (!button.touchStatusProperty().getValue() && shapeBounds.intersects(buttonBounds) && finger.touchZone() == Zone.ZONE_TOUCHING) {
 				button.touchStatusProperty().set(true);
 			} 
-			else if (button.touchStatusProperty().getValue() 
-					&& !shapeBounds.intersects(buttonBounds) 
-					&& finger.touchZone() != Zone.ZONE_TOUCHING) {
+			else if (button.touchStatusProperty().getValue() && !shapeBounds.intersects(buttonBounds) && finger.touchZone() != Zone.ZONE_TOUCHING) {
 				touchFlag = true;
 				button.touchStatusProperty().set(false);
 				text = button.getText();
-				touchTime = System.currentTimeMillis();
 				//app.swapScene(button.getText());
 			}
 		}

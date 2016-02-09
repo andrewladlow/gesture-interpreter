@@ -106,6 +106,7 @@ public class PDollarRecognizer {
 	    
 	    // Normalizes score to value in range 0-100
 	    //double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
+	    //100 * (12.0 - score)/12.0 ? Possibly better 
 	    double finalScore = score;
 	    
 	    // Must match with at least 50% accuracy to trigger (~5.7 distance or closer)

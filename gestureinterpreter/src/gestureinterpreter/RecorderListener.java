@@ -63,10 +63,13 @@ public class RecorderListener extends Listener {
 		            if (state == State.IDLE) {
 		                state = State.RECORDING; 
 		            }
-		            
-		            gestureFrameCount++;
-		            System.out.println("gesture frame count: " + gestureFrameCount);
-		                   
+		            if (!validPoseFrame) {
+		            	gestureFrameCount++;
+		            	System.out.println("gesture frame count: " + gestureFrameCount);
+		            } 
+		            else {
+		            	gestureFrameCount = 0;
+		            }
 		            storePoint(frame);		            
 		        } 
 		        else if (state == State.RECORDING) {

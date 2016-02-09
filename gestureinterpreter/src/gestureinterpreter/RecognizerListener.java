@@ -84,7 +84,8 @@ public class RecognizerListener extends Listener {
 		            if (!validPoseFrame) {
 		            	gestureFrameCount++;
 		            	System.out.println("gesture frame count: " + gestureFrameCount);
-		            } else {
+		            } 
+		            else {
 		            	gestureFrameCount = 0;
 		            }
 		                   
