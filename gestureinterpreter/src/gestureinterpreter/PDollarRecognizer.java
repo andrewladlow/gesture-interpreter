@@ -64,7 +64,7 @@ import java.lang.Double;
 
 public class PDollarRecognizer {
 
-	static int mNumPoints = 50;
+	static int mNumPoints = 32;
 	static Point mPointOrig = new Point(0.0,0.0,0.0,0);
 
     public PDollarRecognizer() {
@@ -104,10 +104,10 @@ public class PDollarRecognizer {
 	    // Show raw score value in console
 	    System.out.println("\nClosest match: " + foundGesture.getName() + "\nScore: " + score);
 	    
-	    // Normalizes score to value in range 0-100
-	    //double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
+	    // Translates score to value in range 0-100 (percentage of similarity)
+	    double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
 	    //100 * (12.0 - score)/12.0 ? Possibly better 
-	    double finalScore = score;
+	    //double finalScore = score;
 	    
 	    // Must match with at least 50% accuracy to trigger (~5.7 distance or closer)
 	    //if (foundGesture == null || finalScore < 50.0) {
@@ -199,13 +199,13 @@ public class PDollarRecognizer {
 		for (int i = 0; i < points.size(); i++) {
 			minX = Math.min(minX, points.get(i).getX());
 			minY = Math.min(minY, points.get(i).getY());
+			minZ = Math.min(minZ, points.get(i).getZ());
 			maxX = Math.max(maxX, points.get(i).getX());
 			maxY = Math.max(maxY, points.get(i).getY());
-			minZ = Math.min(minZ,  points.get(i).getZ());
-			maxZ = Math.max(maxZ,  points.get(i).getZ());
+			maxZ = Math.max(maxZ, points.get(i).getZ());
 		}
 
-		double size = Math.max(maxX - minX, maxY - minY);
+		double size = Math.max(maxX - minX, Math.max(maxY - minY, maxZ - minZ));
 		ArrayList<Point> newpoints = new ArrayList<Point>();
 
 		for (int i = 0; i < points.size(); i++) {

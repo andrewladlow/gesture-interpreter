@@ -85,7 +85,7 @@ public class RecognizerGUI {
 			
 			gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
 				resultLabel.textProperty().set("Closest match: " + newVal.getName() + "\nMatch score: " + newVal.getScore() + "%");
-				TextHelper.textFadeOut(1500, resultLabel);
+				TextHelper.textFadeOut(2000, resultLabel);
 				if (newVal.getName().equals(curLetter)) {
 					curScore += 10;
 					scoreLabel.setText("Score: " + curScore);

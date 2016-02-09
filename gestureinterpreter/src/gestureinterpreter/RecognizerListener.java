@@ -9,7 +9,9 @@ import com.leapmotion.leap.Finger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 
@@ -40,7 +42,6 @@ public class RecognizerListener extends Listener {
     	pdRec = new PDollarRecognizer();
     	this.recGUI = recGUI;
     	storedGestures = new ArrayList<Gesture>();
-    	gesture = new Gesture("testGesture");
     	state = State.IDLE;
     	File[] files = new File("gestures/").listFiles();
     	for (File file : files) {
@@ -72,23 +73,19 @@ public class RecognizerListener extends Listener {
     }
 	
 	public void onFrame(Controller controller) {
-		validPoseFrame = false;
 		Frame frame = controller.frame();
 		if (!frame.hands().isEmpty()) {					
 			// enforce delay between recognitions
-			if (System.currentTimeMillis() - timeRecognized > 500) {	        
+			if (System.currentTimeMillis() - timeRecognized > 1000) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            	          
 		            if (state == State.IDLE) {
+		            	gestureFrameCount = 0;
+		            	poseFrameCount = 0;
+		            	gesture = new Gesture("testGesture");
 		                state = State.RECORDING; 
 		            }
-		            if (!validPoseFrame) {
-		            	gestureFrameCount++;
-		            	System.out.println("gesture frame count: " + gestureFrameCount);
-		            } 
-		            else {
-		            	gestureFrameCount = 0;
-		            }
-		                   
+		            gestureFrameCount++;
+		            //System.out.println("gesture frame count: " + gestureFrameCount);
 		            storePoint(frame);		            
 		        } 
 		        else if (state == State.RECORDING) {
@@ -100,33 +97,31 @@ public class RecognizerListener extends Listener {
 		            	else {
 		            		gesture.setType("gesture");
 		            	}
+		            	long time1 = System.nanoTime();
 		                RecognizerResults recResult = pdRec.Recognize(gesture, storedGestures);
+		                long time2 = System.nanoTime();
+		                DecimalFormat df = new DecimalFormat("###.##");
+		                // convert ns to ms, rounded to 2 decimal places
+		                System.out.println("Time taken: " + df.format(Math.round(time2 - time1) / 1e6) + " ms");
 		                timeRecognized = System.currentTimeMillis();
 		                Platform.runLater(() -> {
 				            recGUI.gestureRecognitionProperty().set(recResult);
 		                });
-		            }
-	                // reset variables
-	                validPoseFrame = false;
+		            }		            
 	                validPose = false;
-	                gestureFrameCount = 0;
-	                poseFrameCount = 0;
-	                gesture = null;
-	                gesture = new Gesture("testGesture");
-		            state = State.IDLE; 
 		        }
 			}
 		} 
 	}
 
-    public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {        
+    public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {     
+    	validPoseFrame = false;
         for (Hand hand : frame.hands()) {	
             Vector palmVelocityTemp = hand.palmVelocity(); 
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), 
             							  Math.max(Math.abs(palmVelocityTemp.getY()), 
             									   Math.abs(palmVelocityTemp.getZ())));                        
             if (palmVelocity >= minVelocity) {
-            	validPoseFrame = false;
             	return true;
             } 
             else if (palmVelocity <= maxVelocity) {
@@ -139,7 +134,6 @@ public class RecognizerListener extends Listener {
                 								Math.max(Math.abs(fingerVelocityTemp.getY()), 
                 										 Math.abs(fingerVelocityTemp.getZ())));                 
                 if (fingerVelocity >= minVelocity) {
-                	validPoseFrame = false;
                 	return true; 
                 } 
                 else if (fingerVelocity <= maxVelocity) {
@@ -150,10 +144,9 @@ public class RecognizerListener extends Listener {
         }        
         if (validPoseFrame) {
         	poseFrameCount++;
-        	gestureFrameCount = 0;
+        	//System.out.println("pose frame count: " +  poseFrameCount);
         	if (poseFrameCount >= minPoseFrames) {
         		validPose = true;
-        		poseFrameCount = 0;
         		return true;
         	}
         } 
@@ -163,23 +156,9 @@ public class RecognizerListener extends Listener {
         return false;
     }
    
-/*    public void storePointv2(Frame frame) {  	
-    	for (Hand hand : frame.hands()) {
-    		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));
-    		gesture.addPoint(new Point(hand.direction()));
-    		gesture.addPoint(new Point(hand.palmNormal()));
-    		for (Finger finger : hand.fingers()) {
-    			gesture.addPoint(new Point(finger.stabilizedTipPosition()));
-    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).nextJoint().minus(hand.palmPosition())));
-    			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint().minus(hand.palmPosition())));
-    			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint().minus(hand.palmPosition())));
-    			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint().minus(hand.palmPosition())));
-    		}
-    	}
-    }*/
-    
     public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
+    		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));
     		gesture.addPoint(new Point(hand.palmNormal()));
     		gesture.addPoint(new Point(hand.direction()));
     		for (Finger finger : hand.fingers()) {

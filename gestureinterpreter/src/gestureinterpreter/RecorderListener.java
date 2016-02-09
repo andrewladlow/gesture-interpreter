@@ -54,27 +54,22 @@ public class RecorderListener extends Listener {
 	
 	
 	public void onFrame(Controller controller) {
-		validPoseFrame = false;
 		Frame frame = controller.frame();
-		if (!frame.hands().isEmpty()) {
-			// enforce delay between recordings
-			if (System.currentTimeMillis() - timeRecognized > 3000) {	        
+		if (!frame.hands().isEmpty()) {					
+			// enforce delay between recognitions
+			if (System.currentTimeMillis() - timeRecognized > 5000) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            	          
 		            if (state == State.IDLE) {
+		            	gestureFrameCount = 0;
+		            	poseFrameCount = 0;
 		                state = State.RECORDING; 
 		            }
-		            if (!validPoseFrame) {
-		            	gestureFrameCount++;
-		            	System.out.println("gesture frame count: " + gestureFrameCount);
-		            } 
-		            else {
-		            	gestureFrameCount = 0;
-		            }
+		            gestureFrameCount++;
+		            //System.out.println("gesture frame count: " + gestureFrameCount);
 		            storePoint(frame);		            
 		        } 
 		        else if (state == State.RECORDING) {
-		            System.out.println("debug record state");
-		            state = State.IDLE;
+		            state = State.IDLE;	            
 		            if (validPose || (gestureFrameCount >= minGestureFrames)) {
 		            	if (validPose) {
 		            		gesture.setType("pose");
@@ -82,18 +77,11 @@ public class RecorderListener extends Listener {
 		            	else {
 		            		gesture.setType("gesture");
 		            	}
-		                timeRecognized = System.currentTimeMillis();
 		            	saveGesture(gesture);
-		                System.out.println("Debug store");
-		                validPose = false;
+		                timeRecognized = System.currentTimeMillis();
 		                gestureDone.set(true);
 		            }
-	                // reset variables
-	                validPoseFrame = false;
 	                validPose = false;
-	                gestureFrameCount = 0;
-	                poseFrameCount = 0;
-		            state = State.IDLE; 
 	                synchronized(lock) {
 		                lock.notify();
 	                }
@@ -102,8 +90,9 @@ public class RecorderListener extends Listener {
 		}
 	}
 	
-    public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {        
-        for (Hand hand : frame.hands()) {      	
+    public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {     
+    	validPoseFrame = false;
+        for (Hand hand : frame.hands()) {	
             Vector palmVelocityTemp = hand.palmVelocity(); 
             float palmVelocity = Math.max(Math.abs(palmVelocityTemp.getX()), 
             							  Math.max(Math.abs(palmVelocityTemp.getY()), 
@@ -114,13 +103,13 @@ public class RecorderListener extends Listener {
             else if (palmVelocity <= maxVelocity) {
             	validPoseFrame = true;
             	break;
-            }            
+            }           
             for (Finger finger : hand.fingers()) {           	 
             	Vector fingerVelocityTemp = finger.tipVelocity();
                 float fingerVelocity = Math.max(Math.abs(fingerVelocityTemp.getX()), 
-                				                Math.max(Math.abs(fingerVelocityTemp.getY()), 
-                				                	     Math.abs(fingerVelocityTemp.getZ())));                  
-                if (fingerVelocity >= minVelocity) { 
+                								Math.max(Math.abs(fingerVelocityTemp.getY()), 
+                										 Math.abs(fingerVelocityTemp.getZ())));                 
+                if (fingerVelocity >= minVelocity) {
                 	return true; 
                 } 
                 else if (fingerVelocity <= maxVelocity) {
@@ -128,24 +117,25 @@ public class RecorderListener extends Listener {
                 	break;
                 }
             }
-        }          
+        }        
         if (validPoseFrame) {
         	poseFrameCount++;
-        	gestureFrameCount = 0;
+        	//System.out.println("pose frame count: " +  poseFrameCount);
         	if (poseFrameCount >= minPoseFrames) {
         		validPose = true;
-        		poseFrameCount = 0;
         		return true;
         	}
         } 
         else {
     		poseFrameCount = 0;
-    	}
+    	}      
         return false;
     }
-   
+    
+    
     public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
+    		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));
     		gesture.addPoint(new Point(hand.palmNormal()));
     		gesture.addPoint(new Point(hand.direction()));
     		for (Finger finger : hand.fingers()) {
