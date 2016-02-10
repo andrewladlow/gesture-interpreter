@@ -66,7 +66,7 @@ public class RecorderGUI {
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
 		System.out.println("RECORDER ACTIVE");
 		executor.execute(() -> {		
-			for (char c = 'M'; c <= 'Z'; c++) {
+			for (char c = 'K'; c <= 'Z'; c++) {
 				char tempChar = c;
 				Image gestureImg = new Image("file:images/" + Character.toLowerCase(tempChar) + ".png");
 				Platform.runLater(() -> {
