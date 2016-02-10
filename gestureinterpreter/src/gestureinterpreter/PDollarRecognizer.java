@@ -82,40 +82,34 @@ public class PDollarRecognizer {
 	
 	    double score = Double.POSITIVE_INFINITY;
 	    
-	    System.out.println("\nPossible matches: ");
+	    //System.out.println("\nPossible matches: ");
 	
 	    // For each point-cloud template
 	    for (Gesture storedGesture : storedGestures) {
 	    	
 	    	// Skip if gestures are not of same type ("pose" and "gesture")
 	    	if (!currentGesture.getType().equals(storedGesture.getType())) {
-	    		System.out.println(storedGesture.getType() + ": " + storedGesture.getName());
-	    		System.out.println("Type does not match" + "(" + storedGesture.getType() + " : " + currentGesture.getType() + ")");
+	    		//System.out.println(storedGesture.getType() + ": " + storedGesture.getName());
+	    		//System.out.println("Type does not match" + "(" + storedGesture.getType() + " : " + currentGesture.getType() + ")");
 	    		continue;
 	    	}
 	    	
 	            double distScore = GreedyCloudMatch(currentGesture.getPointArray(), storedGesture.getPointArray());
-	            System.out.println("Gesture: " + storedGesture.getName() + "\ndistScore: " + distScore);
+	            //System.out.println("Gesture: " + storedGesture.getName() + "\ndistScore: " + distScore);
 	            if (distScore < score) {
 	                    score = distScore; // best (least) distance
 	                    foundGesture = storedGesture;
 	            }
 	    }
 	    // Show raw score value in console
-	    System.out.println("\nClosest match: " + foundGesture.getName() + "\nScore: " + score);
+	    //System.out.println("\nClosest match: " + foundGesture.getName() + "\nScore: " + score);
 	    
 	    // Translates score to value in range 0-100 (percentage of similarity)
-	    double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
-	    //100 * (12.0 - score)/12.0 ? Possibly better 
-	    //double finalScore = score;
+	    //double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
+	    double finalScore = score;
 	    
-	    // Must match with at least 50% accuracy to trigger (~5.7 distance or closer)
-	    //if (foundGesture == null || finalScore < 50.0) {
-	    	//return new RecognizerResults("None", 0.0);
-	    //} 
-	    //else {
-	    	return new RecognizerResults(foundGesture.getName(), finalScore);
-	    //}   
+
+	    return new RecognizerResults(foundGesture.getName(), finalScore); 
     }
 
 	public static double GreedyCloudMatch(ArrayList<Point> currentPoints, ArrayList<Point> storedPoints) {

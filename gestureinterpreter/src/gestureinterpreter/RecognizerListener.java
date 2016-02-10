@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 
@@ -32,7 +31,7 @@ public class RecognizerListener extends Listener {
     private State state;   
     private ArrayList<Gesture> storedGestures;   
     private PDollarRecognizer pdRec;  
-    private RecognizerGUI recGUI;   
+    private RecognizerGUI recGUI; 
 
     private enum State {
     	IDLE, RECORDING;
@@ -100,8 +99,8 @@ public class RecognizerListener extends Listener {
 		            	long time1 = System.nanoTime();
 		                RecognizerResults recResult = pdRec.Recognize(gesture, storedGestures);
 		                long time2 = System.nanoTime();
-		                DecimalFormat df = new DecimalFormat("###.##");
 		                // convert ns to ms, rounded to 2 decimal places
+		                DecimalFormat df = new DecimalFormat("###.##");
 		                System.out.println("Time taken: " + df.format(Math.round(time2 - time1) / 1e6) + " ms");
 		                timeRecognized = System.currentTimeMillis();
 		                Platform.runLater(() -> {

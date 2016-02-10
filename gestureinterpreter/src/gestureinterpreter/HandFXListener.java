@@ -33,9 +33,9 @@ public class HandFXListener extends Group {
     			});	
     		} 	
      		// clear if there were hands and now there aren't
-    		// NB: causes hands to flash for a frame as the scene is cleared on one listener pulse and reformed the next
+    		// NB: sometimes causes hands to flash for a frame as the scene is cleared on one listener pulse and reformed the next
     		// previous solution of (frame.hands().count() < controller.frame(1).hands().count()) however caused 'glitchy' hand graphics -
-    		// - if leap motion lost track of hands (which is frequently the case with intricate gestures)
+    		// - if leap motion lost track of hands (which is frequently the case with intricate gestures), old hand frames would become stuck on screen
     		else if (oldVal && !newVal) {
     			Platform.runLater(() -> {
 					//System.out.println("Debug 6");
