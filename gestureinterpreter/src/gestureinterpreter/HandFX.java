@@ -3,6 +3,7 @@ package gestureinterpreter;
 import java.util.ArrayList;
 
 import javafx.geometry.Bounds;
+import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Sphere;
@@ -26,6 +27,7 @@ public class HandFX extends Group {
 	// handles creation of 3D representation of a user's hand
 	public HandFX(Menu app) {
 		this.app = app;
+
 
 		palm = ShapeCreator.createSphere(this, 10, Color.GREY, Color.SILVER);
 
