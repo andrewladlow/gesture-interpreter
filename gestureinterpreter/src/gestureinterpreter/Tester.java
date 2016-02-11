@@ -28,8 +28,8 @@ public class Tester {
 			curGesture = loadGesture(testGesture);
 			//System.out.println(curGesture.getPointArray().get(0).getX());
 			ArrayList<Point> test = curGesture.getPointArray();
-			//test.remove(0);
-			//test.remove(3);
+			test.remove(0);
+			test.remove(3);
 			System.out.println("--------------------------------");
 			System.out.println("Testing gesture: " + curGesture.getName());
         	long time1 = System.nanoTime();
@@ -58,8 +58,8 @@ public class Tester {
 				else if (file.getParentFile().getName().startsWith("gestureSet")) {
 					Gesture storedGesture = loadGesture(file);
 					ArrayList<Point> test = storedGesture.getPointArray();
-					//test.remove(0);
-					//test.remove(3);
+					test.remove(0);
+					test.remove(3);
 					storedGesture.setPointArray(test);
 					storedGesture.setPointArray(PDollarRecognizer.Resample(storedGesture.getPointArray(), PDollarRecognizer.mNumPoints));
 					storedGesture.setPointArray(PDollarRecognizer.Scale(storedGesture.getPointArray()));
