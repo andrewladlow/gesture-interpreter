@@ -42,26 +42,47 @@ public class RecognizerListener extends Listener {
     	this.recGUI = recGUI;
     	storedGestures = new ArrayList<Gesture>();
     	state = State.IDLE;
-    	File[] files = new File("gestures/").listFiles();
-    	for (File file : files) {
-	    	try {
-	    		FileInputStream inStream = new FileInputStream(file);
-	    		ObjectInputStream ObjInStream = new ObjectInputStream(inStream);
-	    		Gesture tempGesture = (Gesture) ObjInStream.readObject();
-
-	    		tempGesture.setPointArray(PDollarRecognizer.Resample(tempGesture.getPointArray(), PDollarRecognizer.mNumPoints));
-	    		tempGesture.setPointArray(PDollarRecognizer.Scale(tempGesture.getPointArray()));
-	    		tempGesture.setPointArray(PDollarRecognizer.TranslateTo(tempGesture.getPointArray(), new Point(0.0,0.0,0.0)));
-	    		
-	    		storedGestures.add(tempGesture);
-	    		
-	    		ObjInStream.close();
-	    		inStream.close();
-	    	} catch (Exception e) {
-	    		e.printStackTrace();
-	    	}
-    	}
+		loadFiles(new File("."));
     }
+    
+	// load files recursively to account for each gesture sample set in different folders
+	public void loadFiles(File filePath) {
+    	try {
+    	   	File[] files = filePath.listFiles();
+			for (File file : files) {
+				if (file.getName().startsWith("gestureSet")) {
+					loadFiles(file);
+				}
+				else if (file.getParentFile().getName().startsWith("gestureSet")) {
+					Gesture storedGesture = loadGesture(file);
+
+					storedGesture.setPointArray(PDollarRecognizer.Resample(storedGesture.getPointArray(), PDollarRecognizer.mNumPoints));
+					storedGesture.setPointArray(PDollarRecognizer.Scale(storedGesture.getPointArray()));
+					storedGesture.setPointArray(PDollarRecognizer.TranslateTo(storedGesture.getPointArray(), new Point(0.0,0.0,0.0)));
+					
+					storedGestures.add(storedGesture);
+				}
+			}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+	}
+	
+	public Gesture loadGesture(File fileName) {
+		Gesture gesture = null;
+		try {
+			FileInputStream inStream = new FileInputStream(fileName);
+			ObjectInputStream ObjInStream = new ObjectInputStream(inStream);
+			gesture = (Gesture) ObjInStream.readObject();
+			
+			ObjInStream.close();
+			inStream.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return gesture;
+	}
     
     public void onConnect(Controller controller) {
     	System.out.println("connected recognizer");
@@ -75,7 +96,7 @@ public class RecognizerListener extends Listener {
 		Frame frame = controller.frame();
 		if (!frame.hands().isEmpty()) {					
 			// enforce delay between recognitions
-			if (System.currentTimeMillis() - timeRecognized > 1000) {	        
+			if (System.currentTimeMillis() - timeRecognized > 250) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            	          
 		            if (state == State.IDLE) {
 		            	gestureFrameCount = 0;
@@ -157,7 +178,7 @@ public class RecognizerListener extends Listener {
    
     public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
-    		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));
+    		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));   		
     		gesture.addPoint(new Point(hand.palmNormal()));
     		gesture.addPoint(new Point(hand.direction()));
     		for (Finger finger : hand.fingers()) {

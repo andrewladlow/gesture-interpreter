@@ -14,6 +14,9 @@ import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.Pointable.Zone;
 import com.leapmotion.leap.Vector;
 
+/**
+ * Class representing a skeletal model of a human hand, taking position values from a LeapMotion sensor. 
+ */
 public class HandFX extends Group {
 	private Menu app;
 	private Sphere palm;
@@ -24,7 +27,10 @@ public class HandFX extends Group {
 	private List<Sphere> metacarpals = new ArrayList<Sphere>();
 	private List<JointFX> joints = new ArrayList<JointFX>();
 
-	// handles creation of 3D representation of a user's hand
+    /**
+     * Constructor to create this hand's bone and joint shape objects.
+     * @param app The parent class of this object. 
+     */
 	public HandFX(Menu app) {
 		this.app = app;
 		palm = ShapeCreator.createSphere(10, Color.GREY, Color.SILVER);
@@ -56,14 +62,22 @@ public class HandFX extends Group {
 		this.getChildren().addAll(metacarpals);
 	}
 
-	// links two given joint positions together, handles connecting bone properties
+    /**
+     * Links two given joint positions together, handles the properties of
+     * the bone in between these two joints.
+     * @param fromJoint The first of the two joints to be linked.
+     * @param toJoint The second of the two joints to be linked.
+     */
 	public void connectJoints(Sphere fromJoint, Sphere toJoint) {
 		JointFX jointFX = new JointFX(fromJoint, toJoint);
 		joints.add(jointFX);
 		this.getChildren().add(jointFX.getBone());
 	}
 
-	// updates position of user's hand, taking raw data from LeapMotion listener
+    /**
+     * Updates position of this hand, using the raw data for this hand from LeapMotion. 
+     * @param hand The LeapMotion hand to take position data from.
+     */
 	public void update(Hand hand) {
 		LeapToFX.move(palm, hand.palmPosition());
 		
@@ -89,7 +103,12 @@ public class HandFX extends Group {
 		}
 	}
 
-	// handles collision of a finger and a button to trigger button presses by physical actions
+    /**
+     * Handles collision of a finger and a button to trigger button presses by physical action.
+     * @param finger The finger to check for interaction.
+     * @param shape The shape representing this finger.
+     * @param app The parent class of this object.
+     */
 	private void checkIntersect(Finger finger, Sphere shape, Menu app) {
 		Boolean touchFlag = false;
 		String text = "";
@@ -104,7 +123,6 @@ public class HandFX extends Group {
 				touchFlag = true;
 				button.touchStatusProperty().set(false);
 				text = button.getText();
-				//app.swapScene(button.getText());
 			}
 		}
 		if (touchFlag) {
@@ -113,5 +131,9 @@ public class HandFX extends Group {
 		}
 		
 		
+	}
+	
+	public void clear() {
+		this.clear();
 	}
 }

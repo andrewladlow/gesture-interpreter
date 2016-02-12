@@ -1,15 +1,27 @@
 package gestureinterpreter;
 
+import java.util.HashMap;
+
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Frame;
+import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.Listener;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.application.Platform;
+import javafx.scene.Group;
 
 public class LeapListener extends Listener {
 	
-	private BooleanProperty frameReady = new SimpleBooleanProperty();
+	private Group handGroup;
+	private HashMap<Integer, HandFX> hands;
+	private Menu app;
+	
+	public LeapListener(HashMap<Integer, HandFX> hands, Menu app) {
+		this.hands = hands;
+		this.app = app;
+		handGroup = new Group();
+		app.get3D().getChildren().add(handGroup);
+	}
 	
 	public void onConnect(Controller controller) {
 		System.out.println("connected leap");
@@ -21,14 +33,29 @@ public class LeapListener extends Listener {
     
 	public void onFrame(Controller controller) {
 		Frame frame = controller.frame();
-		frameReady.set(false);
-		if (!frame.hands().isEmpty()) {
-			frameReady.set(true);		
-		}
-	}
 	
-	public BooleanProperty frameReadyProperty() {
-		return frameReady;
+		Platform.runLater(() -> {
+			// refresh frame if there are less hands in this frame than in the last one
+			if (frame.hands().count() < controller.frame(1).hands().count()) {
+				//hands.clear();
+				handGroup.getChildren().clear();
+			}
+			if (!frame.hands().isEmpty()) {
+				for (Hand leapHand : frame.hands()) {
+					int handId = leapHand.id();
+					HandFX hand = hands.get(handId);
+					
+					if (!hands.containsKey(handId)) {
+						hand = new HandFX(app);
+						hands.put(leapHand.id(), hand);
+						handGroup.getChildren().add(hand);
+					}							
+					if (hand != null) {
+						hand.update(frame.hand(leapHand.id()));
+					}
+				}
+			}
+		});
 	}
 	
 }

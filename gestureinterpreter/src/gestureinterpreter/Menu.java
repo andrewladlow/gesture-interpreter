@@ -38,7 +38,6 @@ public class Menu extends Application {
     private Controller controller;
     private List<LeapButton> leapButtons;
     
-    private HandFXListener handRenderer;
 	private HashMap<Integer, HandFX> hands;
 	
 	private Label titleLabel;
@@ -48,17 +47,16 @@ public class Menu extends Application {
 	
     public void start(Stage primaryStage) {
     	stage = primaryStage;
-    	
-        hands = new HashMap<Integer, HandFX>();
-        leapListener = new LeapListener();
-        controller = new Controller();
-        controller.addListener(leapListener);
-        
         root2D = new StackPane();
         root2D.setPrefSize(APPWIDTH, APPHEIGHT);
         
         root3D = new Group();
 		root3D.setDepthTest(DepthTest.ENABLE);
+		
+        hands = new HashMap<Integer, HandFX>();
+        leapListener = new LeapListener(hands, this);
+        controller = new Controller();
+        controller.addListener(leapListener);
 
         scene = new Scene(root2D, APPWIDTH, APPHEIGHT, false, SceneAntialiasing.BALANCED);
         subScene = new SubScene(root3D, APPWIDTH, APPHEIGHT, true, SceneAntialiasing.BALANCED);
@@ -102,9 +100,6 @@ public class Menu extends Application {
         leapButtons = new ArrayList<LeapButton>();
         leapButtons.add(recognizerButton);
         leapButtons.add(recorderButton);
-
-        handRenderer = new HandFXListener(this, controller, leapListener, hands);
-        root3D.getChildren().add(handRenderer);
              
         stage.setTitle("Gesture Interpreter");
         
@@ -123,7 +118,7 @@ public class Menu extends Application {
     	
     	Platform.runLater(() -> {
     		// clear all except hand visuals
-    		root3D.getChildren().removeIf((obj)->(!obj.getClass().equals(HandFXListener.class)));
+    		root3D.getChildren().removeIf((obj)->(obj.getClass().equals(LeapButton.class)));
     		root2D.getChildren().clear();
     		root2D.getChildren().add(subScene);
 			

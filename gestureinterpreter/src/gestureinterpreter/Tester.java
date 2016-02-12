@@ -28,7 +28,7 @@ public class Tester {
 		for (File testGesture : testGestures) {
 			curGesture = loadGesture(testGesture);
 			//System.out.println(curGesture.getPointArray().get(0).getX());
-			ArrayList<Point> test = curGesture.getPointArray();
+			//ArrayList<Point> test = curGesture.getPointArray();
 			//test.remove(0);
 			//test.remove(3);
 			System.out.println("--------------------------------");

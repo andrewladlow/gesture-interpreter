@@ -89,7 +89,7 @@ public class RecognizerGUI {
 				if (newVal.getName().equals(curLetter)) {
 					curScore += 10;
 					scoreLabel.setText("Score: " + curScore);
-					curLetter = Character.toString((char)(rand.nextInt(5) + 'A'));
+					curLetter = Character.toString((char)(rand.nextInt(26) + 'A'));
 					TextHelper.textFadeIn(1000, curWordLabel);
 					curWordLabel.setText("Make a: " + curLetter);
 				}
@@ -126,6 +126,8 @@ public class RecognizerGUI {
 			});
 			try {
 				Thread.sleep(5000);
+				curScore = 0;
+				scoreLabel.setText("Score: " + curScore);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
