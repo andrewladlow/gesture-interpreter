@@ -36,9 +36,6 @@ public class HandFX extends Group {
 			proximals.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
 			metacarpals.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
 
-/*			connectJoints(fingerTips.get(i), distals.get(i));
-			connectJoints(distals.get(i), intermediates.get(i));
-			connectJoints(intermediates.get(i), proximals.get(i));*/
 			connectJoints(distals.get(i), fingerTips.get(i));
 			connectJoints(intermediates.get(i), distals.get(i));
 			connectJoints(proximals.get(i), intermediates.get(i));
