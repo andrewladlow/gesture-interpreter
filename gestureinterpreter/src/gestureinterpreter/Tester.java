@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Tester {
 	private ArrayList<Gesture> storedGestures;
@@ -53,11 +54,22 @@ public class Tester {
 	
 	// load files recursively to account for each gesture sample set in different folders
 	public void loadFiles(File filePath) {
+		Random rand = new Random();
     	try {
     	   	File[] files = filePath.listFiles();
+    	   	System.out.println(filePath.getAbsolutePath());
 			for (File file : files) {
 				//System.out.println(file.getName());
-				if (file.getName().startsWith("gestureSet")) {
+				if (file.getName().startsWith("gestureSet1")
+					|| file.getName().startsWith("gestureSet2")
+					|| file.getName().startsWith("gestureSet3")
+					//|| file.getName().startsWith("gestureSet4")
+					//|| file.getName().startsWith("gestureSet5")
+					//|| file.getName().startsWith("gestureSet6")
+					//|| file.getName().startsWith("gestureSet7")
+					//|| file.getName().startsWith("gestureSet8")
+					//|| file.getName().startsWith("gestureSet9")) {
+					) {
 					loadFiles(file);
 				}
 				else if (file.getParentFile().getName().startsWith("gestureSet")) {
