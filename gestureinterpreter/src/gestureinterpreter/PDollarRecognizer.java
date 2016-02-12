@@ -239,15 +239,6 @@ public class PDollarRecognizer {
 		return new Point(x, y, z, 0);
 	}
 
-	// average distance between corresponding points in two paths
-	public static double PathDistance(ArrayList<Point> pts1, ArrayList<Point> pts2) {
-		double d = 0.0;
-		for (int i = 0; i < pts1.size(); i++) { // assumes pts1.size() == pts2.size()
-			d += EuclideanDistance(pts1.get(i), pts2.get(i));
-		}
-		return d / pts1.size();
-	}
-
 	// length traversed by a point path
 	public static double PathLength(ArrayList<Point> points)
 	{

@@ -8,7 +8,6 @@ import com.leapmotion.leap.Controller;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.DepthTest;
@@ -24,7 +23,6 @@ import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class Menu extends Application {
 	
@@ -89,7 +87,7 @@ public class Menu extends Application {
         recognizerButton.setPosition(-170, -200, 110);
         recognizerButton.setRotation(0, Rotate.Z_AXIS);
         
-        System.out.println(recognizerButton.localToScene(recognizerButton.getBoundsInLocal()));
+        //System.out.println(recognizerButton.localToScene(recognizerButton.getBoundsInLocal()));
         
         root3D.getChildren().add(recognizerButton);
         
@@ -97,7 +95,7 @@ public class Menu extends Application {
         recorderButton.setPosition(170, -200, 110);
         recorderButton.setRotation(0, Rotate.Z_AXIS);
         
-        System.out.println(recorderButton.localToScene(recorderButton.getBoundsInLocal()));
+        //System.out.println(recorderButton.localToScene(recorderButton.getBoundsInLocal()));
         
         root3D.getChildren().add(recorderButton);
         
@@ -110,15 +108,11 @@ public class Menu extends Application {
              
         stage.setTitle("Gesture Interpreter");
         
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent event) {
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                    	// force release of any held resources on exit
-                        System.exit(0);
-                    }
-                });
-            }
+        stage.setOnCloseRequest((event) -> {
+            Platform.runLater(() -> {
+            	// force release of any held resources on exit
+                System.exit(0);
+            });
         });
         
         stage.setScene(scene);

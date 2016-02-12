@@ -10,7 +10,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
 public class ShapeCreator {
-	public static Sphere createSphere(Group node, double radius, Color diffuse, Color specular) {		
+	public static Sphere createSphere(double radius, Color diffuse, Color specular) {		
 		Sphere sphere = new Sphere(radius);
 		PhongMaterial mat = new PhongMaterial();
 		mat.setDiffuseColor(diffuse);
@@ -20,25 +20,13 @@ public class ShapeCreator {
 		return sphere;
 	}
 	
-	public static Cylinder createCylinder(Group node, double radius, double height, Color diffuse, Color specular) {		
-		Cylinder cylinder = new Cylinder(radius, height);		
-		PhongMaterial mat = new PhongMaterial();
-		mat.setDiffuseColor(diffuse);
-		mat.setSpecularColor(specular);
-		cylinder.setMaterial(mat);		
-		node.getChildren().add(cylinder);
-		
-		return cylinder;
-	}
-	
-	public static Cylinder createCylinder(double radius, Color diffuse, Color specular, Rotate joint) {	
+	public static Cylinder createCylinder(double radius, Color diffuse, Color specular) {	
 		Cylinder cylinder = new Cylinder();		
 		PhongMaterial mat = new PhongMaterial();
 		mat.setDiffuseColor(diffuse);
 		mat.setSpecularColor(specular);
 		cylinder.setMaterial(mat);
 		cylinder.setRadius(radius);
-		cylinder.getTransforms().add(joint);
 
 		return cylinder;
 	}

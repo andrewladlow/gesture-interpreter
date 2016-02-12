@@ -28,7 +28,7 @@ public class RecorderGUI {
 		lock = new Object();
 		// dynamic thread created as required and destroyed on 60sec timeout
 		// will therefore not hold idle threads if not being used
-		executor = Executors.newFixedThreadPool(1);
+		executor = Executors.newCachedThreadPool();
 	}
 
 	public static RecorderGUI getInstance() {

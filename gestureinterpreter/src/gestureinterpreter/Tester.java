@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class Tester {
 	private ArrayList<Gesture> storedGestures;
 	private int matchCount;
+	private double totalTimeTaken;
 	
 	public void test() {
     	storedGestures = new ArrayList<Gesture>();
@@ -28,8 +29,8 @@ public class Tester {
 			curGesture = loadGesture(testGesture);
 			//System.out.println(curGesture.getPointArray().get(0).getX());
 			ArrayList<Point> test = curGesture.getPointArray();
-			test.remove(0);
-			test.remove(3);
+			//test.remove(0);
+			//test.remove(3);
 			System.out.println("--------------------------------");
 			System.out.println("Testing gesture: " + curGesture.getName());
         	long time1 = System.nanoTime();
@@ -40,10 +41,14 @@ public class Tester {
 				matchCount++;
 			}
 			System.out.println("Matching distance: " + recResult.getScore());
-            System.out.println("Time taken: " + df.format(Math.round(time2 - time1) / 1e6) + " ms");
+			String timeTaken = df.format(Math.round(time2 - time1) / 1e6);
+            System.out.println("Time taken: " + timeTaken + " ms");
+            totalTimeTaken += Double.parseDouble(timeTaken);
 		}
 		
-		System.out.println("\nMatch count: " + matchCount);
+		System.out.println("\nTotal match count: " + matchCount);
+		System.out.println("Average time taken: " + df.format(totalTimeTaken/26) + "ms");
+
 	}
 	
 	// load files recursively to account for each gesture sample set in different folders
@@ -58,8 +63,8 @@ public class Tester {
 				else if (file.getParentFile().getName().startsWith("gestureSet")) {
 					Gesture storedGesture = loadGesture(file);
 					ArrayList<Point> test = storedGesture.getPointArray();
-					test.remove(0);
-					test.remove(3);
+					//test.remove(0);
+					//test.remove(3);
 					storedGesture.setPointArray(test);
 					storedGesture.setPointArray(PDollarRecognizer.Resample(storedGesture.getPointArray(), PDollarRecognizer.mNumPoints));
 					storedGesture.setPointArray(PDollarRecognizer.Scale(storedGesture.getPointArray()));

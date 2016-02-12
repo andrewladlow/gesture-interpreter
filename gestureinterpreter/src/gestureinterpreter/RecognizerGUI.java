@@ -58,7 +58,7 @@ public class RecognizerGUI {
 			resultLabel.setFont(Font.font("Times New Roman", 24));
 	
 			Random rand = new Random();
-			curLetter = Character.toString((char)(rand.nextInt(5) + 'A'));
+			curLetter = Character.toString((char)(rand.nextInt(26) + 'A'));
 			curWordLabel = new Label();
 			curWordLabel.setText("Make a: " + curLetter);
 			curWordLabel.setFont(Font.font("Times New Roman", 32));
