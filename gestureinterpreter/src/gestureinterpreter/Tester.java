@@ -61,15 +61,15 @@ public class Tester {
 			for (File file : files) {
 				//System.out.println(file.getName());
 				if (file.getName().startsWith("gestureSet1")
-					|| file.getName().startsWith("gestureSet2")
-					|| file.getName().startsWith("gestureSet3")
-					//|| file.getName().startsWith("gestureSet4")
-					//|| file.getName().startsWith("gestureSet5")
-					//|| file.getName().startsWith("gestureSet6")
-					//|| file.getName().startsWith("gestureSet7")
-					//|| file.getName().startsWith("gestureSet8")
-					//|| file.getName().startsWith("gestureSet9")) {
-					) {
+				   || file.getName().startsWith("gestureSet2")
+				   || file.getName().startsWith("gestureSet3")
+				   || file.getName().startsWith("gestureSet4")
+				   || file.getName().startsWith("gestureSet5")
+				   || file.getName().startsWith("gestureSet6")
+				   || file.getName().startsWith("gestureSet7")
+				   || file.getName().startsWith("gestureSet8")
+				   || file.getName().startsWith("gestureSet9")) {
+					//) {
 					loadFiles(file);
 				}
 				else if (file.getParentFile().getName().startsWith("gestureSet")) {
