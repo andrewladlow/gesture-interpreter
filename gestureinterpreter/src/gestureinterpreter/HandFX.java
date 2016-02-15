@@ -20,12 +20,12 @@ import com.leapmotion.leap.Vector;
 public class HandFX extends Group {
 	private Menu app;
 	private Sphere palm;
-	private List<Sphere> fingerTips = new ArrayList<Sphere>();
-	private List<Sphere> distals = new ArrayList<Sphere>();
-	private List<Sphere> proximals = new ArrayList<Sphere>();
-	private List<Sphere> intermediates = new ArrayList<Sphere>();
-	private List<Sphere> metacarpals = new ArrayList<Sphere>();
-	private List<JointFX> joints = new ArrayList<JointFX>();
+	private List<Sphere> fingerTips = new ArrayList<Sphere>(5);
+	private List<Sphere> distals = new ArrayList<Sphere>(5);
+	private List<Sphere> proximals = new ArrayList<Sphere>(5);
+	private List<Sphere> intermediates = new ArrayList<Sphere>(5);
+	private List<Sphere> metacarpals = new ArrayList<Sphere>(5);
+	private List<JointFX> joints = new ArrayList<JointFX>(5);
 
     /**
      * Constructor to create this hand's bone and joint shape objects.
@@ -73,6 +73,34 @@ public class HandFX extends Group {
 		joints.add(jointFX);
 		this.getChildren().add(jointFX.getBone());
 	}
+	
+    /**
+     * Handles collision of a finger and a button to trigger button presses by physical action.
+     * @param finger The finger to check for interaction.
+     * @param shape The shape representing this finger.
+     * @param app The parent class of this object.
+     */
+	public void checkIntersect(Finger finger, Sphere shape, Menu app) {
+		Boolean touchFlag = false;
+		String text = "";
+		for (LeapButton button : app.getLeapButtons()) {
+			// check that there's both an intersect between finger and button, and touch emulation is triggered
+			Bounds shapeBounds = shape.localToScene(shape.getBoundsInLocal());
+			Bounds buttonBounds = button.localToScene(button.getBoundsInLocal());
+			if (!button.touchStatusProperty().getValue() && shapeBounds.intersects(buttonBounds) && finger.touchZone() == Zone.ZONE_TOUCHING) {
+				button.touchStatusProperty().set(true);
+			} 
+			else if (button.touchStatusProperty().getValue() && !shapeBounds.intersects(buttonBounds) && finger.touchZone() != Zone.ZONE_TOUCHING) {
+				touchFlag = true;
+				button.touchStatusProperty().set(false);
+				text = button.getText();
+			}
+		}
+		if (touchFlag) {
+			touchFlag = false;
+			app.swapScene(text);
+		}	
+	}
 
     /**
      * Updates position of this hand, using the raw data for this hand from LeapMotion. 
@@ -101,39 +129,5 @@ public class HandFX extends Group {
 		for (JointFX joint : joints) {
 			joint.update();
 		}
-	}
-
-    /**
-     * Handles collision of a finger and a button to trigger button presses by physical action.
-     * @param finger The finger to check for interaction.
-     * @param shape The shape representing this finger.
-     * @param app The parent class of this object.
-     */
-	private void checkIntersect(Finger finger, Sphere shape, Menu app) {
-		Boolean touchFlag = false;
-		String text = "";
-		for (LeapButton button : app.getLeapButtons()) {
-			// check that there's both an intersect between finger and button, and touch emulation is triggered
-			Bounds shapeBounds = shape.localToScene(shape.getBoundsInLocal());
-			Bounds buttonBounds = button.localToScene(button.getBoundsInLocal());
-			if (!button.touchStatusProperty().getValue() && shapeBounds.intersects(buttonBounds) && finger.touchZone() == Zone.ZONE_TOUCHING) {
-				button.touchStatusProperty().set(true);
-			} 
-			else if (button.touchStatusProperty().getValue() && !shapeBounds.intersects(buttonBounds) && finger.touchZone() != Zone.ZONE_TOUCHING) {
-				touchFlag = true;
-				button.touchStatusProperty().set(false);
-				text = button.getText();
-			}
-		}
-		if (touchFlag) {
-			touchFlag = false;
-			app.swapScene(text);
-		}
-		
-		
-	}
-	
-	public void clear() {
-		this.clear();
 	}
 }

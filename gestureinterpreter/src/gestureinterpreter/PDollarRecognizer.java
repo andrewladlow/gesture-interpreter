@@ -72,7 +72,6 @@ public class PDollarRecognizer {
     }
 
 	public RecognizerResults Recognize(Gesture currentGesture, ArrayList<Gesture> storedGestures) {
-		//PointCloud foundPointCloud = null;
 		Gesture foundGesture = null;
 				
 		// Normalize gesture before it is compared 
@@ -105,8 +104,8 @@ public class PDollarRecognizer {
 	    //System.out.println("\nClosest match: " + foundGesture.getName() + "\nScore: " + score);
 	    
 	    // Translates score to value in range 0-100 (percentage of similarity)
-	    //double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
-	    double finalScore = score;
+	    double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
+	    //double finalScore = score;
 	    
 
 	    return new RecognizerResults(foundGesture.getName(), finalScore); 
@@ -186,6 +185,7 @@ public class PDollarRecognizer {
 		return newpoints;
 	}
 
+	// Normalize values in range 0-1
 	public static ArrayList<Point> Scale(ArrayList<Point> points) {
 		double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
@@ -211,7 +211,7 @@ public class PDollarRecognizer {
 		return newpoints;
 	}
 
-	// translates points' centroid
+	// translates points to (0,0,0)
 	public static ArrayList<Point> TranslateTo(ArrayList<Point> points, Point pt) {
 		Point c = Centroid(points);
 		ArrayList<Point> newpoints = new ArrayList<Point>();

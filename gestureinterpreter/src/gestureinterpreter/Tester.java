@@ -54,7 +54,6 @@ public class Tester {
 	
 	// load files recursively to account for each gesture sample set in different folders
 	public void loadFiles(File filePath) {
-		Random rand = new Random();
     	try {
     	   	File[] files = filePath.listFiles();
     	   	System.out.println(filePath.getAbsolutePath());

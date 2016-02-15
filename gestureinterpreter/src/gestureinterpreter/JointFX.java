@@ -30,7 +30,7 @@ public class JointFX {
 		float dz = (float) (toSphere.getTranslateZ() - fromSphere.getTranslateZ());
 		
 		// align bone to position of from joint
-		bone.setHeight(Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2)));
+		bone.setHeight(Math.sqrt(dx * dx + dy * dy + dz * dz));
 		bone.setTranslateX(fromSphere.getTranslateX());
 		bone.setTranslateY(fromSphere.getTranslateY() - bone.getHeight() / 2);
 		bone.setTranslateZ(fromSphere.getTranslateZ());
