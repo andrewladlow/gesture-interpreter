@@ -207,10 +207,10 @@
   <association id="28">    
     <end type="SOURCE" refId="10" navigable="false">      
       <attribute id="29" name="hands">        
-        <position height="18" width="38" x="-779" y="484"/>      
+        <position height="18" width="38" x="-800" y="564"/>      
       </attribute>      
       <multiplicity id="30" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="1" y="-125"/>      
+        <position height="16" width="21" x="-800" y="551"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
@@ -411,10 +411,10 @@
   <association id="78">    
     <end type="SOURCE" refId="13" navigable="false">      
       <attribute id="79" name="app">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="18" width="26" x="-750" y="469"/>      
       </attribute>      
       <multiplicity id="80" minimum="0" maximum="1">        
-        <position height="16" width="23" x="-767" y="545"/>      
+        <position height="16" width="23" x="-752" y="486"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="10" navigable="true"/>    
