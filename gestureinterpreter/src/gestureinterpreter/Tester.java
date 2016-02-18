@@ -84,7 +84,8 @@ public class Tester {
 					storedGestures.add(storedGesture);
 				}
 			}
-    	} catch (Exception e) {
+    	} 
+    	catch (Exception e) {
     		e.printStackTrace();
     	}
 	}

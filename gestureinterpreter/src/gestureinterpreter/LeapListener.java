@@ -42,6 +42,7 @@ public class LeapListener extends Listener {
 					int handId = leapHand.id();
 					HandFX hand = hands.get(handId);
 					
+					// check hashmap to avoid recreation of hands on every frame
 					if (!hands.containsKey(handId)) {
 						hand = new HandFX(app);
 						hands.put(leapHand.id(), hand);

@@ -151,13 +151,28 @@ public class RecorderListener extends Listener {
     
     public void saveGesture(Gesture gesture) {
     	try {
+    		// find the last created gestureSet folder
+    	   	File topDir = new File(".");
+        	File[] files = topDir.listFiles(fileName -> fileName.getName().startsWith("gestureSet"));  	
+        	String lastDir = files[files.length-1].getName();
+        	int setDirCount = Integer.parseInt(lastDir.replaceAll("\\D", ""));
+        	
+        	// if the gesture set is full (all 26 letters present) we need to create a new set folder
+        	// otherwise we use the last created folder
+        	if (files[files.length-1].list().length == 26) {
+            	setDirCount++;
+            	File newSetDir = new File("gestureSet" + setDirCount);
+            	newSetDir.mkdir();
+        	}
+        	      	
     		System.out.println("saving " + gesture.getName());
-    		FileOutputStream outStream = new FileOutputStream(new File("gestures/" + gesture.getName()), false);
+    		FileOutputStream outStream = new FileOutputStream(new File("gestureSet" + setDirCount + "/" + gesture.getName()), false);
     		ObjectOutputStream objOutStream = new ObjectOutputStream (outStream);
     		objOutStream.writeObject(gesture);
     		objOutStream.close();
     		outStream.close();
-    	} catch (Exception e) {
+    	}
+		catch (Exception e) {
     		e.printStackTrace();
     	}
     }	

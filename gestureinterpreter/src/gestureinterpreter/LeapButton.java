@@ -63,7 +63,7 @@ public class LeapButton extends Group {
         text.getTransforms().addAll(new Rotate (rotation, axis));
 	}
 	
-	private void addListener() {    
+	public void addListener() {    
         touchStatusProperty().addListener((boxVal, oldVal, newVal) -> {
         	if (newVal && !oldVal) {
             	box.setDepth(25);

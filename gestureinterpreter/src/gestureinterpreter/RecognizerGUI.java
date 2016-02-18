@@ -60,7 +60,7 @@ public class RecognizerGUI {
 			Random rand = new Random();
 			curLetter = Character.toString((char)(rand.nextInt(26) + 'A'));
 			curWordLabel = new Label();
-			curWordLabel.setText("Make a: " + curLetter);
+			curWordLabel.setText("Make an: " + curLetter);
 			curWordLabel.setFont(Font.font("Times New Roman", 32));
 			
 			timerLabel = new Label();
@@ -103,7 +103,7 @@ public class RecognizerGUI {
 		app.getLeapButtons().clear();
 		
 		executor.execute(() -> {
-			for (int i = 6000; i >= 0; i--) {
+			for (int i = 60; i >= 0; i--) {
 				int time = i;
 				Platform.runLater(() -> {
 					timerLabel.textProperty().set("Time left: " + time + "s");

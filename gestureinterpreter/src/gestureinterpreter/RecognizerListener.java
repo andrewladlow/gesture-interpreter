@@ -63,7 +63,8 @@ public class RecognizerListener extends Listener {
 					storedGestures.add(storedGesture);
 				}
 			}
-    	} catch (Exception e) {
+    	} 
+    	catch (Exception e) {
     		e.printStackTrace();
     	}
 	}
