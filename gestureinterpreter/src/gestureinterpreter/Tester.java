@@ -20,7 +20,7 @@ public class Tester {
 		
 		PDollarRecognizer pdRec = new PDollarRecognizer();
 				
-		File testGestureFolder = new File("gestures");
+		File testGestureFolder = new File("testGestures");
 		File[] testGestures = testGestureFolder.listFiles();
 		Gesture curGesture;
 		

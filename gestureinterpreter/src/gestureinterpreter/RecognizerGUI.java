@@ -60,7 +60,7 @@ public class RecognizerGUI {
 			Random rand = new Random();
 			curLetter = Character.toString((char)(rand.nextInt(26) + 'A'));
 			curWordLabel = new Label();
-			curWordLabel.setText("Make an: " + curLetter);
+			curWordLabel.setText("Make the gesture for: " + curLetter);
 			curWordLabel.setFont(Font.font("Times New Roman", 32));
 			
 			timerLabel = new Label();
@@ -91,7 +91,7 @@ public class RecognizerGUI {
 					scoreLabel.setText("Score: " + curScore);
 					curLetter = Character.toString((char)(rand.nextInt(26) + 'A'));
 					TextHelper.textFadeIn(1000, curWordLabel);
-					curWordLabel.setText("Make a: " + curLetter);
+					curWordLabel.setText("Make the gesture for: " + curLetter);
 				}
 			});
 		
