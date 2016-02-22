@@ -9,10 +9,10 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
 /**
- * Class handling the joints of a human hand,
- * and the bones connecting them together.
+ * Class handling the bones connecting 
+ * joints together in the human hand.
  */
-public class JointFX {
+public class BoneFX {
 	private Sphere fromSphere;
 	private Sphere toSphere;
 	private Cylinder bone;
@@ -23,7 +23,7 @@ public class JointFX {
 	 * @param fromJoint The first joint position.
 	 * @param toJoint The second joint position. 
 	 */
-	public JointFX(Sphere fromJoint, Sphere toJoint) {
+	public BoneFX(Sphere fromJoint, Sphere toJoint) {
 		fromSphere = fromJoint;
 		toSphere = toJoint;
 		rotation = new Rotate();
@@ -57,7 +57,7 @@ public class JointFX {
 	}
 
 	/**
-	 * Returns the bone associated with this object. 
+	 * Returns the bone shape associated with this object. 
 	 * @return Bone cylinder. 
 	 */
 	public Cylinder getBone() {
