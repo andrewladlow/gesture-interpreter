@@ -61,27 +61,35 @@ package gestureinterpreter;
 
 import java.util.ArrayList;
 import java.lang.Double;
-
+/**
+ * Class handling recognition of gestures. 
+ */
 public class PDollarRecognizer {
 
 	static int mNumPoints = 32;
 	static Point mPointOrig = new Point(0.0,0.0,0.0,0);
 
+	/**
+	 * Empty constructor.  
+	 */
     public PDollarRecognizer() {
-    	
     }
 
+    /**
+     * Calculates the closest match between a given gesture and an array of stored gestures.
+     * @param currentGesture The testing gesture.
+     * @param storedGestures An array of stored gestures. 
+     */
 	public RecognizerResults Recognize(Gesture currentGesture, ArrayList<Gesture> storedGestures) {
 		Gesture foundGesture = null;
 				
-		// Normalize gesture before it is compared 
+		// Normalise gesture before it is compared 
 	    currentGesture.setPointArray(Resample(currentGesture.getPointArray(), mNumPoints));
 	    currentGesture.setPointArray(Scale(currentGesture.getPointArray()));
 	    currentGesture.setPointArray(TranslateTo(currentGesture.getPointArray(), mPointOrig));
 	
 	    double score = Double.POSITIVE_INFINITY;
 	    
-	    //System.out.println("\nPossible matches: ");
 	
 	    // For each point-cloud template
 	    for (Gesture storedGesture : storedGestures) {
@@ -111,6 +119,11 @@ public class PDollarRecognizer {
 	    return new RecognizerResults(foundGesture.getName(), finalScore); 
     }
 
+    /**
+     * Returns the overall Euclidean distance between two arrays of points.
+     * @param currentPoints The first point array.
+     * @param storedPoints The second point array.
+     */
 	public static double GreedyCloudMatch(ArrayList<Point> currentPoints, ArrayList<Point> storedPoints) {
 		double e = 0.50;
 		double step = Math.floor(Math.pow(currentPoints.size(), 1 - e));
@@ -124,6 +137,12 @@ public class PDollarRecognizer {
 		return min;
 	}
 
+    /**
+     * Returns the distance between two arrays of points, starting at a specific point. 
+     * @param pts1 The first array of points.
+     * @param pts2 The second array of points.
+     * @param start The starting point. 
+     */
 	public static double CloudDistance(ArrayList<Point> pts1, ArrayList<Point> pts2, int start) {
 		// pts1.size() == pts2.size()
 		boolean[] matched = new boolean[pts1.size()]; 
@@ -152,6 +171,11 @@ public class PDollarRecognizer {
 		return sum;
 	}
 
+    /**
+     * Resample an array of points to a given amount.
+     * @param points The array of points to resample.
+     * @param n The amount to resample to. 
+     */
 	public static ArrayList<Point> Resample(ArrayList<Point> points, int n) {
 		double I = PathLength(points) / (n - 1); // interval length
 		double D = 0.0;
@@ -185,7 +209,10 @@ public class PDollarRecognizer {
 		return newpoints;
 	}
 
-	// Normalize values in range 0-1
+    /**
+     * Normalises points in the range 0-1.
+     * @param points The array of points to normalise. 
+     */
 	public static ArrayList<Point> Scale(ArrayList<Point> points) {
 		double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
@@ -212,6 +239,11 @@ public class PDollarRecognizer {
 	}
 
 	// translates points to (0,0,0)
+    /**
+     * Translates points to a given point.
+     * @param points Array of points to translate.
+     * @param pt The point to translate to. 
+     */
 	public static ArrayList<Point> TranslateTo(ArrayList<Point> points, Point pt) {
 		Point c = Centroid(points);
 		ArrayList<Point> newpoints = new ArrayList<Point>();
@@ -224,6 +256,10 @@ public class PDollarRecognizer {
 		return newpoints;
 	}
 
+    /**
+     * Returns the centre point of an array of points.
+     * @param points The array of points.  
+     */
 	public static Point Centroid(ArrayList<Point> points) {
 		double x = 0.0;
 		double y = 0.0;
@@ -239,7 +275,10 @@ public class PDollarRecognizer {
 		return new Point(x, y, z, 0);
 	}
 
-	// length traversed by a point path
+    /**
+     * Returns the length traversed by a point path.
+     * @param points The path of points.  
+     */
 	public static double PathLength(ArrayList<Point> points)
 	{
 		double d = 0.0;
@@ -251,7 +290,11 @@ public class PDollarRecognizer {
 		return d;
 	}
 
-	// Euclidean distance between two points
+    /**
+     * Returns the Euclidean distance between two points.
+     * @param p1 The first point.
+     * @param p2 The second point.
+     */
 	public static double EuclideanDistance(Point p1, Point p2) {
 		double dx = p2.getX() - p1.getX();
 		double dy = p2.getY() - p1.getY();
