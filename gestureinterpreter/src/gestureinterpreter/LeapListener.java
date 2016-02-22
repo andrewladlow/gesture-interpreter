@@ -11,6 +11,10 @@ import com.leapmotion.leap.Listener;
 import javafx.application.Platform;
 import javafx.scene.Group;
 
+/**
+ * Class handling hand tracking, extends the 
+ * Leap Motion listener class. 
+ */
 public class LeapListener extends Listener {
 	
 	private Group handGroup;
@@ -18,6 +22,11 @@ public class LeapListener extends Listener {
 	private Menu app;
     //private DecimalFormat df = new DecimalFormat("###.##");
     
+    /**
+     * Creates a new instance of a leap listener.
+     * @param hands The hash map to store handFX objects.
+     * @param app The application associated with this listener. 
+     */
 	public LeapListener(HashMap<Integer, HandFX> hands, Menu app) {
 		this.hands = hands;
 		this.app = app;
@@ -25,14 +34,26 @@ public class LeapListener extends Listener {
 		app.get3D().getChildren().add(handGroup);
 	}
 	
+    /**
+     * Called when this listener is added to a controller.
+     * @param controller The leap motion controller to check. 
+     */
 	public void onConnect(Controller controller) {
 		System.out.println("connected leap");
 	}
 	
+    /**
+     * Called when this listener is disconnected from a controller.
+     * @param controller The leap motion controller to check. 
+     */
 	public void onExit(Controller controller) {
 		System.out.println("disconnected leap");
 	}
     
+    /**
+     * Called when a new frame of tracking data is available.
+     * @param controller The leap motion controller to poll. 
+     */	
 	public void onFrame(Controller controller) {
 		Frame frame = controller.frame();
     	//long time1 = System.nanoTime();

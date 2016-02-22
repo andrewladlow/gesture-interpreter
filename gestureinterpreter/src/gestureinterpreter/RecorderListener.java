@@ -15,6 +15,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import com.leapmotion.leap.Vector;
 import com.leapmotion.leap.Bone.Type;
 
+/**
+ * Class handling recording of new gestures, extends the 
+ * Leap Motion listener class. 
+ */
 public class RecorderListener extends Listener {
 	private final Object lock;
 	private BooleanProperty gestureDone = new SimpleBooleanProperty();
@@ -30,29 +34,52 @@ public class RecorderListener extends Listener {
     private long timeRecognized = 0;
     private State state;
 	
+    /**
+     * Handles the listener's state - either
+     * 'idle' or 'recording'. 
+     */
     private enum State {
     	IDLE, RECORDING;
     }
-    
+
+    /**
+     * Creates a new instance of a recorder listener.
+     * @param c The character this listener is recording.
+     * @param lock The shared lock between this listener and the gui. 
+     */
     public RecorderListener(char c, Object lock) {
     	this.lock = lock;
     	gesture = new Gesture(c);
     	state = State.IDLE;
     }
     
+    /**
+     * Returns the gestureDone boolean property.
+     */
     public BooleanProperty gestureDoneProperty() {
     	return gestureDone;
     }
 
+    /**
+     * Called when this listener is added to a controller.
+     * @param controller The leap motion controller to check. 
+     */
     public void onConnect(Controller controller) {
     	System.out.println("connected trainer");
     }
-    
+
+    /**
+     * Called when this listener is disconnected from a controller.
+     * @param controller The leap motion controller to check. 
+     */
     public void onExit(Controller controller) {
     	System.out.println("disconnected trainer");
     }
 	
-	
+    /**
+     * Called when a new frame of tracking data is available.
+     * @param controller The leap motion controller to poll. 
+     */	
 	public void onFrame(Controller controller) {
 		Frame frame = controller.frame();
 		if (!frame.hands().isEmpty()) {					
@@ -90,6 +117,12 @@ public class RecorderListener extends Listener {
 		}
 	}
 	
+    /**
+     * Returns a boolean signifying whether a given frame should be recorded or not.
+     * @param frame The frame to check.
+     * @param minVelocity The minimum velocity which a hand must move at to return true.
+     * @param maxVelocity The maximum velocity a hand must remain under to trigger a pose. 
+     */
     public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {     
     	validPoseFrame = false;
         for (Hand hand : frame.hands()) {	
@@ -133,6 +166,10 @@ public class RecorderListener extends Listener {
     }
     
     
+    /**
+     * Stores points from a given frame to the current gesture's array.
+     * @param frame The current frame to check. 
+     */
     public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
     		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));
@@ -149,13 +186,26 @@ public class RecorderListener extends Listener {
     	}
     }
     
+    /**
+     * Saves a given gesture to disk.
+     * @param gesture The gesture to save. 
+     */
     public void saveGesture(Gesture gesture) {
     	try {
     		// find the last created gestureSet folder
     	   	File topDir = new File(".");
         	File[] files = topDir.listFiles(fileName -> fileName.getName().startsWith("gestureSet"));  	
-        	String lastDir = files[files.length-1].getName();
-        	int setDirCount = Integer.parseInt(lastDir.replaceAll("\\D", ""));
+    		String lastDir = files[files.length-1].getName();
+    		int setDirCount = 0;
+        	// if there are no previous gesture sets, create first folder
+        	if (files.length == 0) {
+            	File newSetDir = new File("gestureSet1");
+            	newSetDir.mkdir();
+        	}
+        	// else find last folder number
+        	else {
+        		setDirCount = Integer.parseInt(lastDir.replaceAll("\\D", ""));
+        	}
         	
         	// if the gesture set is full (all 26 letters present) we need to create a new set folder
         	// otherwise we use the last created folder

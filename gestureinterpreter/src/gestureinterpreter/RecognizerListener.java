@@ -17,6 +17,10 @@ import javafx.application.Platform;
 import com.leapmotion.leap.Vector;
 import com.leapmotion.leap.Bone.Type;
 
+/**
+ * Class handling recognition of gestures, extends the 
+ * Leap Motion listener class. 
+ */
 public class RecognizerListener extends Listener {
 	private Gesture gesture;	
     private int gestureFrameCount = 0;  
@@ -33,10 +37,18 @@ public class RecognizerListener extends Listener {
     private PDollarRecognizer pdRec;  
     private RecognizerGUI recGUI; 
 
+    /**
+     * Handles the listener's state - either
+     * 'idle' or 'recording'. 
+     */
     private enum State {
     	IDLE, RECORDING;
     }
     
+    /**
+     * Creates a new instance of a recognizer listener.
+     * @param recGUI The gui this listener is associated with. 
+     */
     public RecognizerListener(RecognizerGUI recGUI) {
     	pdRec = new PDollarRecognizer();
     	this.recGUI = recGUI;
@@ -45,7 +57,11 @@ public class RecognizerListener extends Listener {
 		loadFiles(new File("."));
     }
     
-	// load files recursively to account for each gesture sample set in different folders
+    /**
+     * Loads gesture files recursively to account for
+     * each gesture sample set in different folders
+     * @param filePath The path to load.
+     */
 	public void loadFiles(File filePath) {
     	try {
     	   	File[] files = filePath.listFiles();
@@ -69,6 +85,10 @@ public class RecognizerListener extends Listener {
     	}
 	}
 	
+    /**
+     * Loads gesture from a given file name.
+     * @param fileName The file containing the gesture.
+     */
 	public Gesture loadGesture(File fileName) {
 		Gesture gesture = null;
 		try {
@@ -85,14 +105,26 @@ public class RecognizerListener extends Listener {
 		return gesture;
 	}
     
+    /**
+     * Called when this listener is added to a controller.
+     * @param controller The leap motion controller to check. 
+     */
     public void onConnect(Controller controller) {
     	System.out.println("connected recognizer");
     }
     
+    /**
+     * Called when this listener is disconnected from a controller.
+     * @param controller The leap motion controller to check. 
+     */
     public void onExit(Controller controller) {
     	System.out.println("disconnected recognizer");
     }
 	
+    /**
+     * Called when a new frame of tracking data is available.
+     * @param controller The leap motion controller to poll. 
+     */	
 	public void onFrame(Controller controller) {
 		Frame frame = controller.frame();
 		if (!frame.hands().isEmpty()) {					
@@ -135,6 +167,12 @@ public class RecognizerListener extends Listener {
 		} 
 	}
 
+    /**
+     * Returns a boolean signifying whether a given frame should be recorded or not.
+     * @param frame The frame to check.
+     * @param minVelocity The minimum velocity which a hand must move at to return true.
+     * @param maxVelocity The maximum velocity a hand must remain under to trigger a pose. 
+     */
     public Boolean validFrame(Frame frame, int minVelocity, int maxVelocity) {     
     	validPoseFrame = false;
         for (Hand hand : frame.hands()) {	
@@ -177,6 +215,10 @@ public class RecognizerListener extends Listener {
         return false;
     }
    
+    /**
+     * Stores points from a given frame to the current gesture's array.
+     * @param frame The current frame to check. 
+     */
     public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
     		gesture.addPoint(new Point(hand.stabilizedPalmPosition()));   		

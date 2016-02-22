@@ -14,7 +14,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
-
+/**
+ * Class handling the GUI of the recognizing
+ * section of the application.
+ */
 public class RecognizerGUI {
 	private RecognizerListener recognizerListener;
 	private ObjectProperty<RecognizerResults> gestureRecognition = new SimpleObjectProperty<RecognizerResults>();
@@ -34,10 +37,17 @@ public class RecognizerGUI {
 		return gestureRecognition;
 	}
 
+	/**
+	 * Private constructor, called via getInstance(). 
+	 */
 	private RecognizerGUI() {
 		executor = Executors.newCachedThreadPool();
 	}
 
+	/**
+	 * Singleton only allows a single instance of this
+	 * class to be created. 
+	 */
 	public static RecognizerGUI getInstance() {
 		if (instance == null) {
 			instance = new RecognizerGUI();
@@ -45,6 +55,11 @@ public class RecognizerGUI {
 		return instance;
 	}
 
+	/**
+	 * Renders the GUI. 
+	 * @param app The application menu.
+	 * @param controller The associated Leap Motion controller.
+	 */
 	public void init(Menu app, Controller controller) {		
 		if (!alreadyActivated) {
 			recognizerListener = new RecognizerListener(this);
@@ -83,6 +98,7 @@ public class RecognizerGUI {
 			StackPane.setMargin(scoreLabel, new Insets(10,10,0,0));
 			scoreLabel.setTranslateY(30);
 			
+			// event listener triggered when a gesture match is completed
 			gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
 				resultLabel.textProperty().set("Closest match: " + newVal.getName() + "\nMatch score: " + newVal.getScore() + "%");
 				TextHelper.textFadeOut(2000, resultLabel);
@@ -101,7 +117,7 @@ public class RecognizerGUI {
 		controller.addListener(recognizerListener);
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
 		app.getLeapButtons().clear();
-		
+		// begin on new thread so as to not block rendering of hand movement
 		executor.execute(() -> {
 			for (int i = 60; i >= 0; i--) {
 				int time = i;
@@ -116,6 +132,7 @@ public class RecognizerGUI {
 				}		
 			}
 			controller.removeListener(recognizerListener);
+			// when timer expires, show final score screen
 			Platform.runLater(() -> {
 				app.get2D().getChildren().removeAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
 				Label finalScoreLabel = new Label();

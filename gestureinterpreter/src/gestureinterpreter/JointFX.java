@@ -8,12 +8,21 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
+/**
+ * Class handling the joints of a human hand,
+ * and the bones connecting them together.
+ */
 public class JointFX {
 	private Sphere fromSphere;
 	private Sphere toSphere;
 	private Cylinder bone;
 	private Rotate rotation;
 
+	/**
+	 * Links the two given joint positions together.
+	 * @param fromJoint The first joint position.
+	 * @param toJoint The second joint position. 
+	 */
 	public JointFX(Sphere fromJoint, Sphere toJoint) {
 		fromSphere = fromJoint;
 		toSphere = toJoint;
@@ -22,7 +31,10 @@ public class JointFX {
 		bone.getTransforms().add(rotation);
 	}
 
-	
+	/**
+	 * Updates the position and rotation of a bone
+	 * between it's two joints. 
+	 */
 	public void update() {
 		// distance between the two joints
 		float dx = (float) (toSphere.getTranslateX() - fromSphere.getTranslateX());
@@ -44,6 +56,10 @@ public class JointFX {
 		rotation.setAngle(new Point3D(dx, dy, dz).angle(new Point3D(0, -1, 0)));
 	}
 
+	/**
+	 * Returns the bone associated with this object. 
+	 * @return Bone cylinder. 
+	 */
 	public Cylinder getBone() {
 		return bone;
 	}

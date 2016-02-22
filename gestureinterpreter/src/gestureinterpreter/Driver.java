@@ -5,6 +5,10 @@ package gestureinterpreter;
  */
 public class Driver {
 	
+	/**
+	 * Starts the application.
+	 * @param args None required. 
+	 */
     public static void main(String[] args) {
     	Menu.launch(Menu.class, args);
     }

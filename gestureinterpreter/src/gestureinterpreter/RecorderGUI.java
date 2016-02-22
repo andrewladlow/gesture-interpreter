@@ -14,7 +14,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-
+/**
+ * Class handling the GUI of the recording
+ * section of the application.
+ */
 public class RecorderGUI {
 	private Object lock;
 	private ExecutorService executor;
@@ -24,6 +27,9 @@ public class RecorderGUI {
 	private Rectangle gestureImgRect;	
 	private static RecorderGUI instance;
 
+	/**
+	 * Private constructor, called via getInstance(). 
+	 */
 	private RecorderGUI() {
 		lock = new Object();
 		// dynamic thread created as required and destroyed on 60sec timeout
@@ -31,6 +37,10 @@ public class RecorderGUI {
 		executor = Executors.newCachedThreadPool();
 	}
 
+	/**
+	 * Singleton only allows a single instance of this
+	 * class to be created. 
+	 */
 	public static RecorderGUI getInstance() {
 		if (instance == null) {
 			instance = new RecorderGUI();
@@ -38,6 +48,11 @@ public class RecorderGUI {
 		return instance;
 	}
 
+	/**
+	 * Renders the GUI. 
+	 * @param app The application menu.
+	 * @param controller The associated Leap Motion controller.
+	 */
 	public void init(Menu app, Controller controller) {	
 		if (!alreadyActivated) {
 			titleLabel = new Label();
@@ -65,6 +80,7 @@ public class RecorderGUI {
 		}	
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
 		System.out.println("RECORDER ACTIVE");
+		// begin on new thread so as to not block rendering of hand movement
 		executor.execute(() -> {		
 			for (char c = 'A'; c <= 'Z'; c++) {
 				char tempChar = c;

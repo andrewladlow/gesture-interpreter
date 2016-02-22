@@ -25,6 +25,9 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
+/**
+ * The main class of the application, initiated by driver class. 
+ */
 public class Menu extends Application {
 	
 	public static final float APPWIDTH = 1280;
@@ -46,6 +49,13 @@ public class Menu extends Application {
 	public LeapButton recognizerButton;
 	public LeapButton recorderButton;
 	
+	/**
+	 * The main entry point for all JavaFX applications. 
+	 * The start method is called after the init method has returned, 
+	 * and after the system is ready for the application to begin running.
+	 * @param primaryStage The primary stage for this application, onto 
+	 * which the application scene can be set.
+	 */	
     public void start(Stage primaryStage) {
     	File tempFile = new File(".");
     	File[] files = tempFile.listFiles(fileName -> fileName.getName().startsWith("gestureSet"));
@@ -123,6 +133,11 @@ public class Menu extends Application {
         stage.show();
     }
     
+    /**
+     * Handles the transition of the application's state.
+     * A state represents the application window's content.
+     * @param sceneName The name of the new scene to transition to. 
+     */
     public void swapScene(String sceneName) {
     	
     	Platform.runLater(() -> {
@@ -152,14 +167,26 @@ public class Menu extends Application {
     	});
     }
     
+    /**
+     * Returns the object holding all 2D content.
+     * @return The 2D stackPane.
+     */
     public StackPane get2D() {
     	return root2D;
     }
     
+    /**
+     * Returns the object holding all 3D content.
+     * @return The 3D group.
+     */
     public Group get3D() {
     	return root3D;
     }
-    
+  
+    /**
+     * Returns an array of all active leap button objects.
+     * @return Leap button array. 
+     */
     public List<LeapButton> getLeapButtons() {
     	return leapButtons;
     }

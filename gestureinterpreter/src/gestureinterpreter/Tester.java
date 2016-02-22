@@ -7,11 +7,18 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Class used to test the accuracy of recognition,
+ * as well as the average time taken to complete. 
+ */
 public class Tester {
 	private ArrayList<Gesture> storedGestures;
 	private int matchCount;
 	private double totalTimeTaken;
 	
+	/**
+	 * Begins the test.  
+	 */
 	public void test() {
     	storedGestures = new ArrayList<Gesture>();
     	matchCount = 0;
@@ -52,13 +59,18 @@ public class Tester {
 
 	}
 	
-	// load files recursively to account for each gesture sample set in different folders
+    /**
+     * Loads gesture files recursively to account for
+     * each gesture sample set in different folders
+     * @param filePath The path to load.
+     */
 	public void loadFiles(File filePath) {
     	try {
     	   	File[] files = filePath.listFiles();
     	   	System.out.println(filePath.getAbsolutePath());
 			for (File file : files) {
 				//System.out.println(file.getName());
+				// folders are explicitly called to allow for ease of inclusion or exclusion of folders
 				if (file.getName().startsWith("gestureSet1")
 				   || file.getName().startsWith("gestureSet2")
 				   || file.getName().startsWith("gestureSet3")
@@ -90,6 +102,10 @@ public class Tester {
     	}
 	}
 
+    /**
+     * Loads gesture from a given file name.
+     * @param fileName The file containing the gesture.
+     */
 	public Gesture loadGesture(File fileName) {
 		Gesture gesture = null;
 		try {
@@ -106,6 +122,9 @@ public class Tester {
 		return gesture;
 	}
 	
+	/**
+	 * Starts the testing procedure. 
+	 */
 	public static void main(String[] args) {
 		Tester t = new Tester();
 		t.test();
