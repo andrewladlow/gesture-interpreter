@@ -58,14 +58,6 @@ public class Menu extends Application {
 	 * which the application scene can be set.
 	 */
     public void start(Stage primaryStage) {
-    	File tempFile = new File(".");
-    	File[] files = tempFile.listFiles(fileName -> fileName.getName().startsWith("gestureSet"));
-
-    	String lastFile = files[files.length-1].getName();
-    	int result = Integer.parseInt(lastFile.replaceAll("\\D", ""));
-    	System.out.println(result+1);
-
-
     	stage = primaryStage;
         root2D = new StackPane();
         root2D.setPrefSize(APPWIDTH, APPHEIGHT);

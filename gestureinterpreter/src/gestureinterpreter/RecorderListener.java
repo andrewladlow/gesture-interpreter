@@ -195,7 +195,6 @@ public class RecorderListener extends Listener {
     		// find the last created gestureSet folder
     	   	File topDir = new File(".");
         	File[] files = topDir.listFiles(fileName -> fileName.getName().startsWith("gestureSet"));  	
-    		String lastDir = files[files.length-1].getName();
     		int setDirCount = 0;
         	// if there are no previous gesture sets, create first folder
         	if (files.length == 0) {
@@ -204,6 +203,7 @@ public class RecorderListener extends Listener {
         	}
         	// else find last folder number
         	else {
+        		String lastDir = files[files.length-1].getName();
         		setDirCount = Integer.parseInt(lastDir.replaceAll("\\D", ""));
         	}
         	
