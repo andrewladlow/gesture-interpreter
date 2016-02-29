@@ -195,7 +195,7 @@ public class RecorderListener extends Listener {
     		// find the last created gestureSet folder
     	   	File topDir = new File(".");
         	File[] files = topDir.listFiles(fileName -> fileName.getName().startsWith("gestureSet"));  	
-    		int setDirCount = 0;
+    		int setDirCount = 1;
         	// if there are no previous gesture sets, create first folder
         	if (files.length == 0) {
             	File newSetDir = new File("gestureSet1");

@@ -79,10 +79,7 @@ public class LeapListener extends Listener {
 			}
 			// refresh frame if there are less hands in this frame than in the last one
 			if (frame.hands().count() < controller.frame(1).hands().count()) {
-				for (Hand leapHand : frame.hands()) {
-					// first remove from storage hashmap
-					hands.remove(leapHand.id());
-				}
+				hands.clear();
 				handGroup.getChildren().clear();
 			}
 		});
