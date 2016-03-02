@@ -1,0 +1,3 @@
+The project code was created using the Eclipse IDE with Java JRE 8. The use of Eclipse is recommended in order to quickly import and run the project without having to relink the required Leap Motion library or set up a new project. Leap Motion libraries for Windows x64 and OSX are included in the /lib/ directory. Instructions are provided in the link below to import these libraries in other IDEs, if necessary. 
+
+https://developer.leapmotion.com/documentation/java/devguide/Project_Setup.html 
