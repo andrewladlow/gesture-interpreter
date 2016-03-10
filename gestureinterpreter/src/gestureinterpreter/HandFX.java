@@ -1,21 +1,20 @@
 package gestureinterpreter;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
+import javafx.scene.Group;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
+import javafx.scene.shape.Sphere;
+import javafx.scene.shape.Cylinder;
+import javafx.scene.paint.Color;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
-import javafx.scene.Group;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Transform;
-import javafx.scene.transform.Translate;
 
-import com.leapmotion.leap.Bone.Type;
-import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Hand;
+import com.leapmotion.leap.Finger;
+import com.leapmotion.leap.Bone.Type;
 import com.leapmotion.leap.Pointable.Zone;
 import com.leapmotion.leap.Vector;
 
@@ -53,11 +52,12 @@ public class HandFX extends Group {
 			metacarpals.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
 		}
 		
-		// create bone shapes for each finger, extra bone to connect hand metacarpals
+		// create bone shapes for each finger
+		// include extra bones for knuckles and bones to connect hand metacarpals
 		for (int i = 0; i < 21; i++) {
 			bones.add(i, ShapeCreator.createCylinder(3, Color.LIGHTGREY, Color.WHITE));
-			bones.get(i).getTransforms().add(rotate);
 			bones.get(i).getTransforms().add(translate);
+			bones.get(i).getTransforms().add(rotate);
 		}
 
 		// add all shapes to the single HandFX object instance
@@ -128,7 +128,7 @@ public class HandFX extends Group {
 			updateBone(intermediates.get(i), distals.get(i), i+5);
 			updateBone(proximals.get(i), intermediates.get(i), i+10);
 		}
-		// update positions of other bones (knuckles, base)
+		// update positions of other bones (knuckles, index and pinky metacarpals to proximals + metacarpals to metacarpals)
 		updateBone(proximals.get(1), proximals.get(2), 15);
 		updateBone(proximals.get(2), proximals.get(3), 16);
 		updateBone(proximals.get(3), proximals.get(4), 17);
