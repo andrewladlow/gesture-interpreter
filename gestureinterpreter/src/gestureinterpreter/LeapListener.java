@@ -77,8 +77,8 @@ public class LeapListener extends Listener {
 					}
 				}
 			}
-			// refresh frame if there are less hands in this frame than in the last one
-			if (frame.hands().count() < controller.frame(1).hands().count()) {
+			// refresh frame if there are less hands in this frame than in the last one, or more than 2 hands in render group
+			if (frame.hands().count() < controller.frame(1).hands().count() || handGroup.getChildren().size() > 2) {
 				hands.clear();
 				handGroup.getChildren().clear();
 			}

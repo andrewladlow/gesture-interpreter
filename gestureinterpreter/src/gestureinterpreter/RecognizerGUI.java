@@ -26,6 +26,7 @@ public class RecognizerGUI {
 	private Label curWordLabel;
 	private Label scoreLabel;
 	private Label timerLabel;
+	private Label finalScoreLabel;
 	private String curLetter;
 	private int curScore;
 	private boolean alreadyActivated = false;	
@@ -85,6 +86,8 @@ public class RecognizerGUI {
 			scoreLabel = new Label();
 			scoreLabel.setText("Score: " + curScore);
 			scoreLabel.setFont(Font.font("Times New Roman", 24));
+			
+			finalScoreLabel = new Label();
 					
 			StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
 			StackPane.setMargin(titleLabel, new Insets(10,0,0,10));
@@ -119,7 +122,7 @@ public class RecognizerGUI {
 		app.getLeapButtons().clear();
 		// begin on new thread so as to not block rendering of hand movement
 		executor.execute(() -> {
-			for (int i = 60; i >= 0; i--) {
+			for (int i = 6000; i >= 0; i--) {
 				int time = i;
 				Platform.runLater(() -> {
 					timerLabel.textProperty().set("Time left: " + time + "s");
@@ -135,16 +138,16 @@ public class RecognizerGUI {
 			// when timer expires, show final score screen
 			Platform.runLater(() -> {
 				app.get2D().getChildren().removeAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
-				Label finalScoreLabel = new Label();
 				finalScoreLabel.setText("Final score: " + curScore);
 				finalScoreLabel.setFont(Font.font("Times New Roman", 40));
-				StackPane.setAlignment(resultLabel, Pos.CENTER);
+				StackPane.setAlignment(finalScoreLabel, Pos.CENTER);
 				app.get2D().getChildren().add(finalScoreLabel);
 			});
 			try {
 				Thread.sleep(5000);
 				curScore = 0;
 				scoreLabel.setText("Score: " + curScore);
+				app.get2D().getChildren().remove(finalScoreLabel);
 			}
 			catch (Exception e) {
 				e.printStackTrace();

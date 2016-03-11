@@ -129,7 +129,7 @@ public class RecognizerListener extends Listener {
 		Frame frame = controller.frame();
 		if (!frame.hands().isEmpty()) {					
 			// enforce delay between recognitions
-			//if (System.currentTimeMillis() - timeRecognized > 250) {	        
+			if (System.currentTimeMillis() - timeRecognized > 200) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            	          
 		            if (state == State.IDLE) {
 		            	gestureFrameCount = 0;
@@ -163,7 +163,7 @@ public class RecognizerListener extends Listener {
 		            }		            
 	                validPose = false;
 		        }
-			//}
+			}
 		} 
 	}
 
