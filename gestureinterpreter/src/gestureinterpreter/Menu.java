@@ -134,7 +134,7 @@ public class Menu extends Application {
     public void swapScene(String sceneName) {
 
     	Platform.runLater(() -> {
-    		// clear all except hand visuals
+    		// clear all buttons on 3D pane, clear all 2D pane
     		root3D.getChildren().removeIf((obj)->(obj.getClass().equals(LeapButton.class)));
     		root2D.getChildren().clear();
     		root2D.getChildren().add(subScene);

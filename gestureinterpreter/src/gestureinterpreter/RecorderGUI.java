@@ -97,8 +97,8 @@ public class RecorderGUI {
 						});
 						Thread.sleep(1000);			
 					}
+					TextHelper.textFadeIn(50, resultLabel);
 					Platform.runLater(() -> {
-						TextHelper.textFadeIn(1, resultLabel);
 						resultLabel.textProperty().set("Now recording " + tempChar + "...");
 					});
 					System.out.println(c);
