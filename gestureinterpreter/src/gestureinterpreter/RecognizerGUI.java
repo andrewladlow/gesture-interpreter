@@ -122,7 +122,7 @@ public class RecognizerGUI {
 		app.getLeapButtons().clear();
 		// begin on new thread so as to not block rendering of hand movement
 		executor.execute(() -> {
-			for (int i = 6000; i >= 0; i--) {
+			for (int i = 5; i >= 0; i--) {
 				int time = i;
 				Platform.runLater(() -> {
 					timerLabel.textProperty().set("Time left: " + time + "s");
@@ -147,7 +147,6 @@ public class RecognizerGUI {
 				Thread.sleep(5000);
 				curScore = 0;
 				scoreLabel.setText("Score: " + curScore);
-				app.get2D().getChildren().remove(finalScoreLabel);
 			}
 			catch (Exception e) {
 				e.printStackTrace();

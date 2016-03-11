@@ -93,8 +93,8 @@ public class HandFX extends Group {
 			}
 		}
 		if (touchFlag) {
-			touchFlag = false;
 			app.swapScene(text);
+			touchFlag = false;
 		}	
 	}
 

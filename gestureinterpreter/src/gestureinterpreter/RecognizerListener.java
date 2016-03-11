@@ -128,8 +128,8 @@ public class RecognizerListener extends Listener {
 	public void onFrame(Controller controller) {
 		Frame frame = controller.frame();
 		if (!frame.hands().isEmpty()) {					
-			// enforce delay between recognitions
-			if (System.currentTimeMillis() - timeRecognized > 200) {	        
+			// enforce small delay between recognitions to avoid recognition spam
+			if (System.currentTimeMillis() - timeRecognized > 100) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            	          
 		            if (state == State.IDLE) {
 		            	gestureFrameCount = 0;
@@ -217,7 +217,7 @@ public class RecognizerListener extends Listener {
    
     /**
      * Stores points from a given frame to the current gesture's array.
-     * @param frame The current frame to check. 
+     * @param frame The current frame to add gesture points from.
      */
     public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {
