@@ -168,7 +168,7 @@ public class RecorderListener extends Listener {
     
     /**
      * Stores points from a given frame to the current gesture's array.
-     * @param frame The current frame to check. 
+     * @param frame The current frame to add gesture points from.
      */
     public void storePoint(Frame frame) {  	
     	for (Hand hand : frame.hands()) {

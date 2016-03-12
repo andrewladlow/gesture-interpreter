@@ -84,6 +84,7 @@ public class RecorderGUI {
 		executor.execute(() -> {		
 			for (char c = 'A'; c <= 'Z'; c++) {
 				char tempChar = c;
+				// load example image for each gesture and add to render
 				Image gestureImg = new Image("file:images/" + Character.toLowerCase(tempChar) + ".png");
 				Platform.runLater(() -> {
 					gestureImgRect.setFill(new ImagePattern(gestureImg));
@@ -97,11 +98,12 @@ public class RecorderGUI {
 						});
 						Thread.sleep(1000);			
 					}
+					TextHelper.textFadeIn(50, resultLabel);
 					Platform.runLater(() -> {
-						TextHelper.textFadeIn(1, resultLabel);
 						resultLabel.textProperty().set("Now recording " + tempChar + "...");
 					});
 					System.out.println(c);
+					// create new trainer instance to record a provided gesture
 					RecorderListener tempRecorderListener = new RecorderListener(c, lock);
 					controller.addListener(tempRecorderListener);			
 					// wait on this thread until recording is finished
