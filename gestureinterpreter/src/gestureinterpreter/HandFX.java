@@ -146,20 +146,20 @@ public class HandFX extends Group {
 	 */	
 	public void updateBone(Sphere toPos, Sphere fromPos, int boneID) {
 		// distance between the two joints
-		double dx = toPos.getTranslateX() - fromPos.getTranslateX();
-		double dy = toPos.getTranslateY() - fromPos.getTranslateY();
-		double dz = toPos.getTranslateZ() - fromPos.getTranslateZ();
+		double distX = toPos.getTranslateX() - fromPos.getTranslateX();
+		double distY = toPos.getTranslateY() - fromPos.getTranslateY();
+		double distZ = toPos.getTranslateZ() - fromPos.getTranslateZ();
 		
 		Cylinder bone = bones.get(boneID);
 		
 		// set bone length to fit between both joints
-		double boneLength = Math.sqrt((dx * dx) + (dy * dy) + (dz * dz));
+		double boneLength = Math.sqrt((distX * distX) + (distY * distY) + (distZ * distZ));
 		bone.setHeight(boneLength);
 		
 		// set bone rotation to align it correctly between both joints
 		Rotate rotate = new Rotate();
 		rotate.setPivotY(boneLength / 2);		
-		Vector distance = new Vector((float) dx, (float) dy, (float) dz);
+		Vector distance = new Vector((float) distX, (float) distY, (float) distZ);
 		double angle = distance.angleTo(Vector.down());
         Vector cross = distance.cross(Vector.up());       
         rotate.setAngle(Math.toDegrees(angle));
