@@ -62,9 +62,7 @@ public class RecognizerGUI {
 	 * @param controller The associated Leap Motion controller.
 	 */
 	public void init(Menu app, Controller controller) {		
-		if (!alreadyActivated) {
-			recognizerListener = new RecognizerListener(this);
-	
+		if (!alreadyActivated) {	
 			titleLabel = new Label();
 			titleLabel.textProperty().set("Gesture Recognizer");
 			titleLabel.setFont(Font.font("Times New Roman", 24));
@@ -117,6 +115,7 @@ public class RecognizerGUI {
 			alreadyActivated = true;
 		}
 		
+		recognizerListener = new RecognizerListener(this);
 		controller.addListener(recognizerListener);
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
 		app.getLeapButtons().clear();
