@@ -182,6 +182,12 @@ public class RecorderListener extends Listener {
     			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint()));
     			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint()));
     			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint()));
+    			// testing alternate features
+/*    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint().minus(hand.palmPosition())));*/
+
     		}
     	}
     }
@@ -205,14 +211,14 @@ public class RecorderListener extends Listener {
         	else {
         		String lastDir = files[files.length-1].getName();
         		setDirCount = Integer.parseInt(lastDir.replaceAll("\\D", ""));
-        	}
-        	
-        	// if the gesture set is full (all 26 letters present) we need to create a new set folder
-        	// otherwise we use the last created folder
-        	if (files[files.length-1].list().length == 26) {
-            	setDirCount++;
-            	File newSetDir = new File("gestureSet" + setDirCount);
-            	newSetDir.mkdir();
+        		
+            	// if the gesture set is full (all 26 letters present) we need to create a new set folder
+            	// otherwise we use the last created folder
+            	if (files[files.length-1].list().length == 26) {
+                	setDirCount++;
+                	File newSetDir = new File("gestureSet" + setDirCount);
+                	newSetDir.mkdir();
+            	}
         	}
         	      	
     		System.out.println("saving " + gesture.getName());

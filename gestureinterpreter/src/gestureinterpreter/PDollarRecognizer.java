@@ -94,6 +94,9 @@ public class PDollarRecognizer {
 	    // For each point-cloud template
 	    for (Gesture storedGesture : storedGestures) {
 	    	
+	    	//System.out.println("TEST 1: " + storedGesture.getName());
+	    	//System.out.println("TEST 2: " + storedGesture.getType());
+	    	
 	    	// Skip if gestures are not of same type ("pose" and "gesture")
 	    	if (!currentGesture.getType().equals(storedGesture.getType())) {
 	    		//System.out.println(storedGesture.getType() + ": " + storedGesture.getName());

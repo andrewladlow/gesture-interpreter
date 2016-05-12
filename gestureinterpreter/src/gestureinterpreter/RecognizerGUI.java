@@ -32,6 +32,7 @@ public class RecognizerGUI {
 	private boolean alreadyActivated = false;	
 	private static RecognizerGUI instance;
 	private ExecutorService executor;
+	private int timeAllowance = 6000;
 	
 
 	public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
@@ -78,7 +79,7 @@ public class RecognizerGUI {
 			curWordLabel.setFont(Font.font("Times New Roman", 32));
 			
 			timerLabel = new Label();
-			timerLabel.setText("Time left: 60s");
+			timerLabel.setText("Time left: " + timeAllowance + "s ");
 			timerLabel.setFont(Font.font("Times New Roman", 24));	
 			
 			scoreLabel = new Label();
@@ -121,7 +122,7 @@ public class RecognizerGUI {
 		app.getLeapButtons().clear();
 		// begin on new thread so as to not block rendering of hand movement
 		executor.execute(() -> {
-			for (int i = 60; i >= 0; i--) {
+			for (int i = timeAllowance; i >= 0; i--) {
 				int time = i;
 				Platform.runLater(() -> {
 					timerLabel.textProperty().set("Time left: " + time + "s");

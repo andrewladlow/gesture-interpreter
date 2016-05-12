@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -35,6 +36,7 @@ public class Tester {
         
 		for (File testGesture : testGestures) {
 			curGesture = loadGesture(testGesture);
+			System.out.println("TEST 3: " + curGesture.getType());
 			//System.out.println(curGesture.getPointArray().get(0).getX());
 			//ArrayList<Point> test = curGesture.getPointArray();
 			//test.remove(0);
@@ -67,7 +69,7 @@ public class Tester {
 	public void loadFiles(File filePath) {
     	try {
     	   	File[] files = filePath.listFiles();
-    	   	System.out.println(filePath.getAbsolutePath());
+    	   	//System.out.println(filePath.getAbsolutePath());
 			for (File file : files) {
 				//System.out.println(file.getName());
 				// folders are explicitly called to allow for ease of inclusion or exclusion of folders

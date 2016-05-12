@@ -79,10 +79,10 @@ public class RecorderGUI {
 			alreadyActivated = true;
 		}	
 		app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
-		System.out.println("RECORDER ACTIVE");
+		System.out.println("Recorder active");
 		// begin on new thread so as to not block rendering of hand movement
 		executor.execute(() -> {		
-			for (char c = 'A'; c <= 'Z'; c++) {
+			for (char c = 'X'; c <= 'Z'; c++) {
 				char tempChar = c;
 				// load example image for each gesture and add to render
 				Image gestureImg = new Image("file:images/" + Character.toLowerCase(tempChar) + ".png");

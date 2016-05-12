@@ -3,6 +3,7 @@ package gestureinterpreter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.leapmotion.leap.Controller;
 
@@ -41,7 +42,7 @@ public class Menu extends Application {
     private Controller controller;
     private List<LeapButton> leapButtons;
 
-	private HashMap<Integer, HandFX> hands;
+	private Map<Integer, HandFX> hands;
 
 	private Label titleLabel;
 
@@ -134,6 +135,7 @@ public class Menu extends Application {
 
     	Platform.runLater(() -> {
     		// clear all buttons on 3D pane, clear all 2D pane
+			leapButtons.clear();
     		root3D.getChildren().removeIf((obj)->(obj.getClass().equals(LeapButton.class)));
     		root2D.getChildren().clear();
     		root2D.getChildren().add(subScene);
@@ -151,7 +153,6 @@ public class Menu extends Application {
 	    		controller.addListener(leapListener);
 	            root2D.getChildren().addAll(titleLabel);
 	            root3D.getChildren().addAll(recognizerButton, recorderButton);
-				leapButtons.clear();
 				leapButtons.add(recognizerButton);
 				leapButtons.add(recorderButton);
 				break;

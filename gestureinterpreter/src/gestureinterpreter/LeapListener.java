@@ -2,6 +2,7 @@ package gestureinterpreter;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Frame;
@@ -18,17 +19,17 @@ import javafx.scene.Group;
 public class LeapListener extends Listener {
 	
 	private Group handGroup;
-	private HashMap<Integer, HandFX> hands;
+	private Map<Integer, HandFX> hands;
 	private Menu app;
     //private DecimalFormat df = new DecimalFormat("###.##");
     
     /**
      * Creates a new instance of a leap listener.
-     * @param hands The hash map to store handFX objects.
+     * @param hands2 The hash map to store handFX objects.
      * @param app The application associated with this listener. 
      */
-	public LeapListener(HashMap<Integer, HandFX> hands, Menu app) {
-		this.hands = hands;
+	public LeapListener(Map<Integer, HandFX> hands2, Menu app) {
+		this.hands = hands2;
 		this.app = app;
 		handGroup = new Group();
 		app.get3D().getChildren().add(handGroup);

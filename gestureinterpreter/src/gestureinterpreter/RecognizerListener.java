@@ -129,7 +129,7 @@ public class RecognizerListener extends Listener {
 		Frame frame = controller.frame();
 		if (!frame.hands().isEmpty()) {					
 			// enforce small delay between recognitions to reduce recognition spam
-			if (System.currentTimeMillis() - timeRecognized > 250) {	        
+			if (System.currentTimeMillis() - timeRecognized > 200) {	        
 		        if (validFrame(frame, minGestureVelocity, maxPoseVelocity)) {	            	          
 		            if (state == State.IDLE) {
 		            	gestureFrameCount = 0;
@@ -231,6 +231,12 @@ public class RecognizerListener extends Listener {
     			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint()));
     			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint()));
     			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint()));
+    			// testing alternate features
+/*    			gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).nextJoint().minus(hand.palmPosition())));
+    			gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).nextJoint().minus(hand.palmPosition())));*/
+
     		}
     	}
     } 
