@@ -141,21 +141,21 @@ public class Menu extends Application {
     		root2D.getChildren().add(subScene);
 
     		switch (sceneName) {
-    		case "Recognition":
-		    	RecognizerGUI recogGUI = RecognizerGUI.getInstance();
-		    	recogGUI.init(this, controller);
-		    	break;
-    		case "Calibration":
-	    		RecorderGUI recordGUI = RecorderGUI.getInstance();
-		    	recordGUI.init(this, controller);
-		    	break;
-    		case "Menu":
-	    		controller.addListener(leapListener);
-	            root2D.getChildren().addAll(titleLabel);
-	            root3D.getChildren().addAll(recognizerButton, recorderButton);
-				leapButtons.add(recognizerButton);
-				leapButtons.add(recorderButton);
-				break;
+	    		case "Recognition":
+			    	RecognizerGUI recogGUI = RecognizerGUI.getInstance();
+			    	recogGUI.init(this, controller);
+			    	break;
+	    		case "Calibration":
+		    		RecorderGUI recordGUI = RecorderGUI.getInstance();
+			    	recordGUI.init(this, controller);
+			    	break;
+	    		case "Menu":
+		    		controller.addListener(leapListener);
+		            root2D.getChildren().addAll(titleLabel);
+		            root3D.getChildren().addAll(recognizerButton, recorderButton);
+					leapButtons.add(recognizerButton);
+					leapButtons.add(recorderButton);
+					break;
     		}
     	});
     }
