@@ -14,147 +14,153 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
+
 /**
- * Class handling the GUI of the recognizing
- * section of the application.
+ * Class handling the GUI of the recognizing section of the application.
  */
 public class RecognizerGUI {
-	private RecognizerListener recognizerListener;
-	private ObjectProperty<RecognizerResults> gestureRecognition = new SimpleObjectProperty<RecognizerResults>();
-	private Label titleLabel;
-	private Label resultLabel;
-	private Label curWordLabel;
-	private Label scoreLabel;
-	private Label timerLabel;
-	private Label finalScoreLabel;
-	private String curLetter;
-	private int curScore;
-	private boolean alreadyActivated = false;	
-	private static RecognizerGUI instance;
-	private ExecutorService executor;
-	private int timeAllowance = 6000;
-	
+    private RecognizerListener recognizerListener;
+    private ObjectProperty<RecognizerResults> gestureRecognition = new SimpleObjectProperty<RecognizerResults>();
+    private Label titleLabel;
+    private Label resultLabel;
+    private Label curWordLabel;
+    private Label scoreLabel;
+    private Label timerLabel;
+    private Label finalScoreLabel;
+    private String curLetter;
+    private int curScore;
+    private boolean alreadyActivated;
+    private static RecognizerGUI instance;
+    private ExecutorService executor = Executors.newCachedThreadPool();
+    private final int TIME_ALLOWED = 6000;
 
-	public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
-		return gestureRecognition;
-	}
+    private RecognizerGUI() {}
+    
+    /**
+     * Singleton only allows a single instance of this class to be created.
+     */
+    public static RecognizerGUI getInstance() {
+        if (instance == null) {
+            instance = new RecognizerGUI();
+        }
+        return instance;
+    }
+    
+    public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
+        return gestureRecognition;
+    }
 
-	/**
-	 * Private constructor, called via getInstance(). 
-	 */
-	private RecognizerGUI() {
-		executor = Executors.newCachedThreadPool();
-	}
+    private void createLabels() {
+        titleLabel = new Label();
+        titleLabel.textProperty().set("Gesture Recognizer");
+        titleLabel.setFont(Font.font("Times New Roman", 24));
 
-	/**
-	 * Singleton only allows a single instance of this
-	 * class to be created. 
-	 */
-	public static RecognizerGUI getInstance() {
-		if (instance == null) {
-			instance = new RecognizerGUI();
-		}
-		return instance;
-	}
+        resultLabel = new Label();
+        // resultLabel.textProperty().bind(gestureRecognition);
+        resultLabel.setFont(Font.font("Times New Roman", 24));
 
-	/**
-	 * Renders the GUI. 
-	 * @param app The application menu.
-	 * @param controller The associated Leap Motion controller.
-	 */
-	public void init(Menu app, Controller controller) {		
-		if (!alreadyActivated) {	
-			titleLabel = new Label();
-			titleLabel.textProperty().set("Gesture Recognizer");
-			titleLabel.setFont(Font.font("Times New Roman", 24));
-	
-			resultLabel = new Label();
-			// resultLabel.textProperty().bind(gestureRecognition);
-			resultLabel.setFont(Font.font("Times New Roman", 24));
-	
-			Random rand = new Random();
-			curLetter = Character.toString((char)(rand.nextInt(26) + 'A'));
-			curWordLabel = new Label();
-			curWordLabel.setText("Make the gesture for: " + curLetter);
-			curWordLabel.setFont(Font.font("Times New Roman", 32));
-			
-			timerLabel = new Label();
-			timerLabel.setText("Time left: " + timeAllowance + "s ");
-			timerLabel.setFont(Font.font("Times New Roman", 24));	
-			
-			scoreLabel = new Label();
-			scoreLabel.setText("Score: " + curScore);
-			scoreLabel.setFont(Font.font("Times New Roman", 24));
-			
-			finalScoreLabel = new Label();
-					
-			StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
-			StackPane.setMargin(titleLabel, new Insets(10,0,0,10));
-			StackPane.setAlignment(curWordLabel, Pos.TOP_CENTER);
-			StackPane.setMargin(curWordLabel, new Insets(10,0,0,0));
-			StackPane.setAlignment(resultLabel, Pos.CENTER);
-			resultLabel.setTranslateY(-200);
-			StackPane.setAlignment(timerLabel, Pos.TOP_RIGHT);
-			StackPane.setMargin(timerLabel, new Insets(10,10,0,0));
-			StackPane.setAlignment(scoreLabel, Pos.TOP_RIGHT);
-			StackPane.setMargin(scoreLabel, new Insets(10,10,0,0));
-			scoreLabel.setTranslateY(30);
-			
-			// event listener triggered when a gesture match is completed
-			gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
-				resultLabel.textProperty().set("Closest match: " + newVal.getName() + "\nMatch score: " + newVal.getScore() + "%");
-				TextHelper.textFadeOut(2000, resultLabel);
-				if (newVal.getName().equals(curLetter)) {
-					curScore += 10;
-					scoreLabel.setText("Score: " + curScore);
-					curLetter = Character.toString((char)(rand.nextInt(26) + 'A'));
-					TextHelper.textFadeIn(1000, curWordLabel);
-					curWordLabel.setText("Make the gesture for: " + curLetter);
-				}
-			});
-		
-			alreadyActivated = true;
-		}
-		
-		recognizerListener = new RecognizerListener(this);
-		controller.addListener(recognizerListener);
-		app.get2D().getChildren().addAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
-		app.getLeapButtons().clear();
-		// begin on new thread so as to not block rendering of hand movement
-		executor.execute(() -> {
-			for (int i = timeAllowance; i >= 0; i--) {
-				int time = i;
-				Platform.runLater(() -> {
-					timerLabel.textProperty().set("Time left: " + time + "s");
-				});
-				try {
-					Thread.sleep(1000);
-				} 
-				catch (Exception e) {
-					e.printStackTrace();
-				}		
-			}
-			controller.removeListener(recognizerListener);
-			// when timer expires, show final score screen
-			Platform.runLater(() -> {
-				app.get2D().getChildren().removeAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
-				finalScoreLabel.setText("Final score: " + curScore);
-				finalScoreLabel.setFont(Font.font("Times New Roman", 40));
-				StackPane.setAlignment(finalScoreLabel, Pos.CENTER);
-				app.get2D().getChildren().add(finalScoreLabel);
-			});
-			try {
-				Thread.sleep(5000);
-				curScore = 0;
-				scoreLabel.setText("Score: " + curScore);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-			Platform.runLater(() -> {
-				app.get2D().getChildren().remove(finalScoreLabel);
-			});
-			app.swapScene("Menu");
-		});
-	}
+        Random rand = new Random();
+        curLetter = Character.toString((char) (rand.nextInt(26) + 'A'));
+        curWordLabel = new Label();
+        curWordLabel.setText("Make the gesture for: " + curLetter);
+        curWordLabel.setFont(Font.font("Times New Roman", 32));
+
+        timerLabel = new Label();
+        timerLabel.setText("Time left: " + TIME_ALLOWED + "s ");
+        timerLabel.setFont(Font.font("Times New Roman", 24));
+
+        scoreLabel = new Label();
+        scoreLabel.setText("Score: " + curScore);
+        scoreLabel.setFont(Font.font("Times New Roman", 24));
+
+        finalScoreLabel = new Label();
+    }
+    
+    private void alignLabels() {
+        StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
+        StackPane.setMargin(titleLabel, new Insets(10, 0, 0, 10));
+        StackPane.setAlignment(curWordLabel, Pos.TOP_CENTER);
+        StackPane.setMargin(curWordLabel, new Insets(10, 0, 0, 0));
+        StackPane.setAlignment(resultLabel, Pos.CENTER);
+        resultLabel.setTranslateY(-200);
+        StackPane.setAlignment(timerLabel, Pos.TOP_RIGHT);
+        StackPane.setMargin(timerLabel, new Insets(10, 10, 0, 0));
+        StackPane.setAlignment(scoreLabel, Pos.TOP_RIGHT);
+        StackPane.setMargin(scoreLabel, new Insets(10, 10, 0, 0));
+        scoreLabel.setTranslateY(30);
+    }
+    
+    private void createRecognitionListener() {
+        // event listener triggered when a gesture match is completed
+        gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
+            resultLabel.textProperty().set("Closest match: " + newVal.getName() + "\nMatch score: " + newVal.getScore() + "%");
+            TextHelper.textFadeOut(2000, resultLabel);
+            if (newVal.getName().equals(curLetter)) {
+                curScore += 10;
+                scoreLabel.setText("Score: " + curScore);
+                Random rand = new Random();
+                curLetter = Character.toString((char) (rand.nextInt(26) + 'A'));
+                TextHelper.textFadeIn(1000, curWordLabel);
+                curWordLabel.setText("Make the gesture for: " + curLetter);
+            }
+        });
+
+    }
+    
+    private void beginRecognition(Controller controller, Menu app) {
+        // begin on new thread so as to not block rendering of hand movement
+        executor.execute(() -> {
+            for (int i = TIME_ALLOWED; i >= 0; i--) {
+                int time = i;
+                Platform.runLater(() -> {
+                    timerLabel.textProperty().set("Time left: " + time + "s");
+                });
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            controller.removeListener(recognizerListener);
+            // when timer expires, show final score screen
+            Platform.runLater(() -> {
+                app.get2D().getChildren().removeAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
+                finalScoreLabel.setText("Final score: " + curScore);
+                finalScoreLabel.setFont(Font.font("Times New Roman", 40));
+                StackPane.setAlignment(finalScoreLabel, Pos.CENTER);
+                app.get2D().getChildren().add(finalScoreLabel);
+            });
+            try {
+                Thread.sleep(5000);
+                curScore = 0;
+                scoreLabel.setText("Score: " + curScore);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Platform.runLater(() -> {
+                app.get2D().getChildren().remove(finalScoreLabel);
+            });
+            app.swapScene("Menu");
+        });
+    }
+    
+    /**
+     * Renders the GUI.
+     * 
+     * @param controller The associated Leap Motion controller.
+     * @param app The application menu.
+     */
+    public void init(Controller controller, Menu app) {
+        if (!alreadyActivated) {
+            createLabels();
+            alignLabels();
+            createRecognitionListener();
+            alreadyActivated = true;
+        }
+
+        recognizerListener = new RecognizerListener(this);
+        controller.addListener(recognizerListener);
+        app.get2D().getChildren().addAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
+        beginRecognition(controller, app);
+    }
 }
