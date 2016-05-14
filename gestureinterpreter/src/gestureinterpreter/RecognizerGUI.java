@@ -29,13 +29,14 @@ public class RecognizerGUI {
     private Label finalScoreLabel;
     private String curLetter;
     private int curScore;
+    private final int TIME_ALLOWED = 6000;
     private boolean alreadyActivated;
     private static RecognizerGUI instance;
-    private ExecutorService executor = Executors.newCachedThreadPool();
-    private final int TIME_ALLOWED = 6000;
+    private ExecutorService executor = Executors.newFixedThreadPool(1);
 
-    private RecognizerGUI() {}
-    
+    private RecognizerGUI() {
+    }
+
     /**
      * Singleton only allows a single instance of this class to be created.
      */
@@ -45,11 +46,14 @@ public class RecognizerGUI {
         }
         return instance;
     }
-    
+
     public ObjectProperty<RecognizerResults> gestureRecognitionProperty() {
         return gestureRecognition;
     }
 
+    /**
+     * Creates the 2D text labels for the recognition screen. 
+     */
     private void createLabels() {
         titleLabel = new Label();
         titleLabel.textProperty().set("Gesture Recognizer");
@@ -75,7 +79,10 @@ public class RecognizerGUI {
 
         finalScoreLabel = new Label();
     }
-    
+
+    /**
+     * Aligns the 2D text labels on the recognizer page. 
+     */
     private void alignLabels() {
         StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
         StackPane.setMargin(titleLabel, new Insets(10, 0, 0, 10));
@@ -90,6 +97,11 @@ public class RecognizerGUI {
         scoreLabel.setTranslateY(30);
     }
     
+    /**
+     * Adds an event listener for the gestureRecognitionProperty.
+     * Triggered by an instance of RecognizerListener. Represents the
+     * confirmation of a performed gesture. 
+     */
     private void createRecognitionListener() {
         // event listener triggered when a gesture match is completed
         gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
@@ -104,10 +116,15 @@ public class RecognizerGUI {
                 curWordLabel.setText("Make the gesture for: " + curLetter);
             }
         });
-
     }
-    
-    private void beginRecognition(Controller controller, Menu app) {
+
+    /**
+     * Starts the recognition timer, resulting in a 'final score' screen
+     * when the timer has reached 0. 
+     * @param app The application menu. 
+     * @param controller The Leap Motion controller. 
+     */
+    private void beginRecognition(Menu app, Controller controller) {
         // begin on new thread so as to not block rendering of hand movement
         executor.execute(() -> {
             for (int i = TIME_ALLOWED; i >= 0; i--) {
@@ -143,24 +160,24 @@ public class RecognizerGUI {
             app.swapScene("Menu");
         });
     }
-    
+
     /**
      * Renders the GUI.
      * 
      * @param controller The associated Leap Motion controller.
      * @param app The application menu.
      */
-    public void init(Controller controller, Menu app) {
+    public void init(Menu app, Controller controller) {
         if (!alreadyActivated) {
             createLabels();
             alignLabels();
             createRecognitionListener();
             alreadyActivated = true;
         }
+        app.get2D().getChildren().addAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
 
         recognizerListener = new RecognizerListener(this);
         controller.addListener(recognizerListener);
-        app.get2D().getChildren().addAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
-        beginRecognition(controller, app);
+        beginRecognition(app, controller);
     }
 }

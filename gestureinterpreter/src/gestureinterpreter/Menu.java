@@ -30,9 +30,8 @@ import javafx.stage.Stage;
  */
 public class Menu extends Application {
 
-    public static final float APPWIDTH = 1280;
-    public static final float APPHEIGHT = 720;
-
+    public static final float APP_WIDTH = 1280;
+    public static final float APP_HEIGHT = 720;
     private Stage stage;
     private Scene scene;
     private SubScene subScene;
@@ -41,89 +40,21 @@ public class Menu extends Application {
     private LeapListener leapListener;
     private Controller controller;
     private List<LeapButton> leapButtons;
-
     private Map<Integer, HandFX> hands;
+    private Label titleLabel;   
+    private LeapButton recognizerButton;
+    private LeapButton recorderButton;
+    
+    public StackPane get2D() {
+        return root2D;
+    }
 
-    private Label titleLabel;
+    public Group get3D() {
+        return root3D;
+    }
 
-    public LeapButton recognizerButton;
-    public LeapButton recorderButton;
-
-    /**
-     * The main entry point for all JavaFX applications. The start method is
-     * called after the init method has returned, and after the system is ready
-     * for the application to begin running.
-     * 
-     * @param primaryStage The primary stage for this application, onto which
-     * the application scene can be set.
-     */
-    public void start(Stage primaryStage) {
-        stage = primaryStage;
-        root2D = new StackPane();
-        root2D.setPrefSize(APPWIDTH, APPHEIGHT);
-
-        root3D = new Group();
-        root3D.setDepthTest(DepthTest.ENABLE);
-
-        hands = new HashMap<Integer, HandFX>();
-        leapListener = new LeapListener(hands, this);
-        controller = new Controller();
-        controller.addListener(leapListener);
-
-        scene = new Scene(root2D, APPWIDTH, APPHEIGHT, false, SceneAntialiasing.BALANCED);
-        subScene = new SubScene(root3D, APPWIDTH, APPHEIGHT, true, SceneAntialiasing.BALANCED);
-
-        // scene.setCursor(Cursor.NONE);
-        root2D.getChildren().addAll(subScene);
-
-        titleLabel = new Label();
-        titleLabel.textProperty().set("Menu");
-        titleLabel.setFont(Font.font("Times New Roman", 24));
-        root2D.getChildren().addAll(titleLabel);
-
-        StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
-        StackPane.setMargin(titleLabel, new Insets(10, 0, 0, 10));
-
-        final PerspectiveCamera camera = new PerspectiveCamera(true);
-        Translate cameraTranslation = new Translate(0, -200, -500);
-        Rotate cameraRotation = new Rotate(0, 0, 0);
-        camera.getTransforms().addAll(cameraTranslation, cameraRotation);
-        camera.setFieldOfView(50);
-        camera.setFarClip(750);
-        camera.setNearClip(1);
-        subScene.setCamera(camera);
-
-        recognizerButton = new LeapButton(APPWIDTH, APPHEIGHT, Color.CRIMSON, Color.SILVER, "Recognition");
-        recognizerButton.setPosition(-170, -200, 110);
-        recognizerButton.setRotation(0, Rotate.Z_AXIS);
-
-        // System.out.println(recognizerButton.localToScene(recognizerButton.getBoundsInLocal()));
-
-        root3D.getChildren().add(recognizerButton);
-
-        recorderButton = new LeapButton(APPWIDTH, APPHEIGHT, Color.CRIMSON, Color.SILVER, "Calibration");
-        recorderButton.setPosition(170, -200, 110);
-        recorderButton.setRotation(0, Rotate.Z_AXIS);
-
-        // System.out.println(recorderButton.localToScene(recorderButton.getBoundsInLocal()));
-
-        root3D.getChildren().add(recorderButton);
-
-        leapButtons = new ArrayList<LeapButton>();
-        leapButtons.add(recognizerButton);
-        leapButtons.add(recorderButton);
-
-        stage.setTitle("Gesture Interpreter");
-
-        stage.setOnCloseRequest((event) -> {
-            Platform.runLater(() -> {
-                // force release of any held resources on exit
-                System.exit(0);
-            });
-        });
-
-        stage.setScene(scene);
-        stage.show();
+    public List<LeapButton> getLeapButtons() {
+        return leapButtons;
     }
 
     /**
@@ -160,32 +91,97 @@ public class Menu extends Application {
             }
         });
     }
-
+    
     /**
-     * Returns the object holding all 2D content.
-     * 
-     * @return The 2D stackPane.
+     * Creates the 2D text labels for the menu screen. 
      */
-    public StackPane get2D() {
-        return root2D;
+    private void createLabels() {
+        titleLabel = new Label();
+        titleLabel.textProperty().set("Menu");
+        titleLabel.setFont(Font.font("Times New Roman", 24));
+        StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
+        StackPane.setMargin(titleLabel, new Insets(10, 0, 0, 10));
+    }
+    
+    /**
+     * Creates the 'recognizer' and 'recorder' buttons 
+     * to be displayed on the application menu screen. 
+     */
+    private void createButtons() {
+        recognizerButton = new LeapButton(APP_WIDTH, APP_HEIGHT, Color.CRIMSON, Color.SILVER, "Recognition");
+        recognizerButton.setPosition(-170, -200, 110);
+        recognizerButton.setRotation(0, Rotate.Z_AXIS);
+        // System.out.println(recognizerButton.localToScene(recognizerButton.getBoundsInLocal()));
+        root3D.getChildren().add(recognizerButton);
+
+        recorderButton = new LeapButton(APP_WIDTH, APP_HEIGHT, Color.CRIMSON, Color.SILVER, "Calibration");
+        recorderButton.setPosition(170, -200, 110);
+        recorderButton.setRotation(0, Rotate.Z_AXIS);
+        // System.out.println(recorderButton.localToScene(recorderButton.getBoundsInLocal()));
+        root3D.getChildren().add(recorderButton);
+
+        leapButtons = new ArrayList<LeapButton>();
+        leapButtons.add(recognizerButton);
+        leapButtons.add(recorderButton);
     }
 
     /**
-     * Returns the object holding all 3D content.
-     * 
-     * @return The 3D group.
+     * {@inheritDoc}
      */
-    public Group get3D() {
-        return root3D;
+    public void init() {
+        createLabels();
+        createButtons();
+    }
+    /**
+     * The main entry point for all JavaFX applications. The start method is
+     * called after the init method has returned, and after the system is ready
+     * for the application to begin running.
+     * 
+     * @param primaryStage The primary stage for this application, onto which
+     * the application scene can be set.
+     */
+    public void start(Stage primaryStage) {
+        stage = primaryStage;
+        root2D = new StackPane();
+        root2D.setPrefSize(APP_WIDTH, APP_HEIGHT);
+
+        root3D = new Group();
+        root3D.setDepthTest(DepthTest.ENABLE);
+
+        hands = new HashMap<Integer, HandFX>();
+        leapListener = new LeapListener(hands, this);
+        controller = new Controller();
+        controller.addListener(leapListener);
+
+        scene = new Scene(root2D, APP_WIDTH, APP_HEIGHT, false, SceneAntialiasing.BALANCED);
+        subScene = new SubScene(root3D, APP_WIDTH, APP_HEIGHT, true, SceneAntialiasing.BALANCED);
+
+        root2D.getChildren().addAll(subScene);
+        root2D.getChildren().addAll(titleLabel);
+
+
+        final PerspectiveCamera camera = new PerspectiveCamera(true);
+        Translate cameraTranslation = new Translate(0, -200, -500);
+        Rotate cameraRotation = new Rotate(0, 0, 0);
+        camera.getTransforms().addAll(cameraTranslation, cameraRotation);
+        camera.setFieldOfView(50);
+        camera.setFarClip(750);
+        camera.setNearClip(1);
+        subScene.setCamera(camera);
+
+
+        stage.setTitle("Gesture Interpreter");
+
+        stage.setOnCloseRequest((event) -> {
+            Platform.runLater(() -> {
+                // force release of any held resources on exit
+                System.exit(0);
+            });
+        });
+
+        stage.setScene(scene);
+        stage.show();
     }
 
-    /**
-     * Returns an array of all active leap button objects.
-     * 
-     * @return Leap button array.
-     */
-    public List<LeapButton> getLeapButtons() {
-        return leapButtons;
-    }
 
 }
