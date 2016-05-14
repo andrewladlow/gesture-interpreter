@@ -10,7 +10,7 @@ import com.leapmotion.leap.Bone.Type;
 /**
  * Abstract listener class handling gesture storing & recognition. 
  */
-abstract class GestureListener extends Listener {
+abstract class AbstractGestureListener extends Listener {
     private int gestureFrameCount = 0;
     private final int MIN_GESTURE_FRAMES = 10;
     private final int MIN_GESTURE_VELOCITY = 300;

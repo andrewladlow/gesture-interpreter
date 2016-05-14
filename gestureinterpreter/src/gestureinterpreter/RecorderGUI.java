@@ -19,22 +19,15 @@ import javafx.scene.text.Font;
  * Class handling the GUI of the recording section of the application.
  */
 public class RecorderGUI {
-    private Object lock;
-    private ExecutorService executor;
+    private Object lock = new Object();
+    private ExecutorService executor = Executors.newFixedThreadPool(1);
     private Boolean alreadyActivated = false;
     private Label titleLabel;
     private Label resultLabel;
     private Rectangle gestureImgRect;
     private static RecorderGUI instance;
 
-    /**
-     * Private constructor, called via getInstance().
-     */
     private RecorderGUI() {
-        lock = new Object();
-        // dynamic thread created as required and destroyed on 60sec timeout
-        // will therefore not hold idle threads if not being used
-        executor = Executors.newCachedThreadPool();
     }
 
     /**
@@ -46,43 +39,48 @@ public class RecorderGUI {
         }
         return instance;
     }
+    
+    /**
+     * Creates all nodes for the recorder screen. 
+     */
+    private void createNodes() {
+        titleLabel = new Label();
+        titleLabel.textProperty().set("Gesture Recorder");
+        titleLabel.setFont(Font.font("Times New Roman", 24));
+
+        resultLabel = new Label();
+        resultLabel.setFont(Font.font("Times New Roman", 24));
+
+        gestureImgRect = new Rectangle();
+        gestureImgRect.setWidth(300);
+        gestureImgRect.setHeight(260);
+        gestureImgRect.setStroke(Color.BLACK);
+        gestureImgRect.setScaleX(0.625);
+        gestureImgRect.setScaleY(0.625);
+    }
+    
+    /**
+     * Aligns all nodes on the recorder screen. 
+     */
+    private void alignNodes() {
+        StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
+        StackPane.setMargin(titleLabel, new Insets(10, 0, 0, 10));
+        StackPane.setAlignment(resultLabel, Pos.TOP_CENTER);
+        StackPane.setMargin(resultLabel, new Insets(10, 0, 0, 0));
+        StackPane.setAlignment(gestureImgRect, Pos.TOP_CENTER);
+        StackPane.setMargin(gestureImgRect, new Insets(10, 0, 0, 0));
+    }
 
     /**
-     * Renders the GUI.
-     * 
-     * @param app The application menu.
-     * @param controller The associated Leap Motion controller.
+     * Starts the recording process, training each gesture candidate
+     * before returning to the main menu. 
+     * @param app The application menu. 
+     * @param controller The Leap Motion controller. 
      */
-    public void init(Menu app, Controller controller) {
-        if (!alreadyActivated) {
-            titleLabel = new Label();
-            titleLabel.textProperty().set("Gesture Recorder");
-            titleLabel.setFont(Font.font("Times New Roman", 24));
-
-            resultLabel = new Label();
-            resultLabel.setFont(Font.font("Times New Roman", 24));
-
-            gestureImgRect = new Rectangle();
-            gestureImgRect.setWidth(300);
-            gestureImgRect.setHeight(260);
-            gestureImgRect.setStroke(Color.BLACK);
-            gestureImgRect.setScaleX(0.625);
-            gestureImgRect.setScaleY(0.625);
-
-            StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
-            StackPane.setMargin(titleLabel, new Insets(10, 0, 0, 10));
-            StackPane.setAlignment(resultLabel, Pos.TOP_CENTER);
-            StackPane.setMargin(resultLabel, new Insets(10, 0, 0, 0));
-            StackPane.setAlignment(gestureImgRect, Pos.TOP_CENTER);
-            StackPane.setMargin(gestureImgRect, new Insets(10, 0, 0, 0));
-
-            alreadyActivated = true;
-        }
-        app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
-        System.out.println("Recorder active");
+    private void beginRecording(Menu app, Controller controller) {
         // begin on new thread so as to not block rendering of hand movement
         executor.execute(() -> {
-            for (char c = 'X'; c <= 'Z'; c++) {
+            for (char c = 'A'; c <= 'Z'; c++) {
                 char tempChar = c;
                 // load example image for each gesture and add to render
                 Image gestureImg = new Image("file:images/" + Character.toLowerCase(tempChar) + ".png");
@@ -127,5 +125,23 @@ public class RecorderGUI {
             // return once all gestures have been recorded
             app.swapScene("Menu");
         });
+    }
+    
+    /**
+     * Renders the GUI.
+     * 
+     * @param app The application menu.
+     * @param controller The associated Leap Motion controller.
+     */
+    public void init(Menu app, Controller controller) {
+        if (!alreadyActivated) {
+            createNodes();
+            alignNodes();
+            alreadyActivated = true;
+        }
+        app.get2D().getChildren().addAll(titleLabel, resultLabel, gestureImgRect);
+        
+        System.out.println("Recorder active");
+        beginRecording(app, controller);
     }
 }

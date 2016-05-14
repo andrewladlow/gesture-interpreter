@@ -93,6 +93,37 @@ public class Menu extends Application {
     }
     
     /**
+     * Creates the objects required for scene composition. 
+     */
+    private void createLayout() {
+        root2D = new StackPane();
+        root2D.setPrefSize(APP_WIDTH, APP_HEIGHT);
+
+        root3D = new Group();
+        root3D.setDepthTest(DepthTest.ENABLE);
+
+        hands = new HashMap<Integer, HandFX>();
+        leapListener = new LeapListener(hands, this);
+        controller = new Controller();
+        controller.addListener(leapListener);
+
+        scene = new Scene(root2D, APP_WIDTH, APP_HEIGHT, false, SceneAntialiasing.BALANCED);
+        subScene = new SubScene(root3D, APP_WIDTH, APP_HEIGHT, true, SceneAntialiasing.BALANCED);
+
+        root2D.getChildren().addAll(subScene);
+        root2D.getChildren().addAll(titleLabel);
+        
+        final PerspectiveCamera camera = new PerspectiveCamera(true);
+        Translate cameraTranslation = new Translate(0, -200, -500);
+        Rotate cameraRotation = new Rotate(0, 0, 0);
+        camera.getTransforms().addAll(cameraTranslation, cameraRotation);
+        camera.setFieldOfView(50);
+        camera.setFarClip(750);
+        camera.setNearClip(1);
+        subScene.setCamera(camera);
+    }
+    
+    /**
      * Creates the 2D text labels for the menu screen. 
      */
     private void createLabels() {
@@ -126,13 +157,6 @@ public class Menu extends Application {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public void init() {
-        createLabels();
-        createButtons();
-    }
-    /**
      * The main entry point for all JavaFX applications. The start method is
      * called after the init method has returned, and after the system is ready
      * for the application to begin running.
@@ -142,36 +166,12 @@ public class Menu extends Application {
      */
     public void start(Stage primaryStage) {
         stage = primaryStage;
-        root2D = new StackPane();
-        root2D.setPrefSize(APP_WIDTH, APP_HEIGHT);
 
-        root3D = new Group();
-        root3D.setDepthTest(DepthTest.ENABLE);
-
-        hands = new HashMap<Integer, HandFX>();
-        leapListener = new LeapListener(hands, this);
-        controller = new Controller();
-        controller.addListener(leapListener);
-
-        scene = new Scene(root2D, APP_WIDTH, APP_HEIGHT, false, SceneAntialiasing.BALANCED);
-        subScene = new SubScene(root3D, APP_WIDTH, APP_HEIGHT, true, SceneAntialiasing.BALANCED);
-
-        root2D.getChildren().addAll(subScene);
-        root2D.getChildren().addAll(titleLabel);
-
-
-        final PerspectiveCamera camera = new PerspectiveCamera(true);
-        Translate cameraTranslation = new Translate(0, -200, -500);
-        Rotate cameraRotation = new Rotate(0, 0, 0);
-        camera.getTransforms().addAll(cameraTranslation, cameraRotation);
-        camera.setFieldOfView(50);
-        camera.setFarClip(750);
-        camera.setNearClip(1);
-        subScene.setCamera(camera);
-
+        createLabels();
+        createLayout();
+        createButtons();
 
         stage.setTitle("Gesture Interpreter");
-
         stage.setOnCloseRequest((event) -> {
             Platform.runLater(() -> {
                 // force release of any held resources on exit

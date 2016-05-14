@@ -16,7 +16,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @see RecorderEvent
  */
-public class RecorderListener extends GestureListener {
+public class RecorderListener extends AbstractGestureListener {
     
     private Gesture gesture;
     private final Object lock;  
@@ -51,7 +51,7 @@ public class RecorderListener extends GestureListener {
      * @param controller The leap motion controller to check.
      */
     public void onConnect(Controller controller) {
-        System.out.println("connected trainer");
+        System.out.println("Connected recorder");
     }
 
     /**
@@ -60,7 +60,7 @@ public class RecorderListener extends GestureListener {
      * @param controller The leap motion controller to check.
      */
     public void onExit(Controller controller) {
-        System.out.println("disconnected trainer");
+        System.out.println("Disconnected recorder");
     }
 
     /**

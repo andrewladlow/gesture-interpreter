@@ -29,7 +29,7 @@ public class RecognizerGUI {
     private Label finalScoreLabel;
     private String curLetter;
     private int curScore;
-    private final int TIME_ALLOWED = 6000;
+    private final int TIME_ALLOWED = 60;
     private boolean alreadyActivated;
     private static RecognizerGUI instance;
     private ExecutorService executor = Executors.newFixedThreadPool(1);
@@ -52,9 +52,9 @@ public class RecognizerGUI {
     }
 
     /**
-     * Creates the 2D text labels for the recognition screen. 
+     * Creates all nodes for the recognition screen. 
      */
-    private void createLabels() {
+    private void createNodes() {
         titleLabel = new Label();
         titleLabel.textProperty().set("Gesture Recognizer");
         titleLabel.setFont(Font.font("Times New Roman", 24));
@@ -81,9 +81,9 @@ public class RecognizerGUI {
     }
 
     /**
-     * Aligns the 2D text labels on the recognizer page. 
+     * Aligns all nodes on the recognizer page. 
      */
-    private void alignLabels() {
+    private void alignNodes() {
         StackPane.setAlignment(titleLabel, Pos.TOP_LEFT);
         StackPane.setMargin(titleLabel, new Insets(10, 0, 0, 10));
         StackPane.setAlignment(curWordLabel, Pos.TOP_CENTER);
@@ -102,7 +102,7 @@ public class RecognizerGUI {
      * Triggered by an instance of RecognizerListener. Represents the
      * confirmation of a performed gesture. 
      */
-    private void createRecognitionListener() {
+    private void createListener() {
         // event listener triggered when a gesture match is completed
         gestureRecognitionProperty().addListener((gestureRecognition, oldVal, newVal) -> {
             resultLabel.textProperty().set("Closest match: " + newVal.getName() + "\nMatch score: " + newVal.getScore() + "%");
@@ -138,8 +138,8 @@ public class RecognizerGUI {
                     e.printStackTrace();
                 }
             }
-            controller.removeListener(recognizerListener);
             // when timer expires, show final score screen
+            controller.removeListener(recognizerListener);
             Platform.runLater(() -> {
                 app.get2D().getChildren().removeAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
                 finalScoreLabel.setText("Final score: " + curScore);
@@ -147,6 +147,7 @@ public class RecognizerGUI {
                 StackPane.setAlignment(finalScoreLabel, Pos.CENTER);
                 app.get2D().getChildren().add(finalScoreLabel);
             });
+            // wait 5 seconds then return to menu
             try {
                 Thread.sleep(5000);
                 curScore = 0;
@@ -169,15 +170,16 @@ public class RecognizerGUI {
      */
     public void init(Menu app, Controller controller) {
         if (!alreadyActivated) {
-            createLabels();
-            alignLabels();
-            createRecognitionListener();
+            createNodes();
+            alignNodes();
+            createListener();
             alreadyActivated = true;
         }
         app.get2D().getChildren().addAll(titleLabel, resultLabel, curWordLabel, scoreLabel, timerLabel);
 
         recognizerListener = new RecognizerListener(this);
         controller.addListener(recognizerListener);
+        System.out.println("Recognizer active");
         beginRecognition(app, controller);
     }
 }
