@@ -38,7 +38,7 @@ public class HandFX extends Group {
      */
     public HandFX(Menu app) {
         this.app = app;
-        palm = ShapeCreator.createSphere(10, Color.GREY, Color.SILVER);
+        palm = ShapeHelper.createSphere(10, Color.GREY, Color.SILVER);
 
         // create empty bone transforms
         Rotate rotate = new Rotate();
@@ -46,17 +46,17 @@ public class HandFX extends Group {
 
         // create joint (bone start / end point) shapes
         for (int i = 0; i < 5; i++) {
-            fingerTips.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
-            distals.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
-            intermediates.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
-            proximals.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
-            metacarpals.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
+            fingerTips.add(i, ShapeHelper.createSphere(5, Color.GREY, Color.SILVER));
+            distals.add(i, ShapeHelper.createSphere(5, Color.GREY, Color.SILVER));
+            intermediates.add(i, ShapeHelper.createSphere(5, Color.GREY, Color.SILVER));
+            proximals.add(i, ShapeHelper.createSphere(5, Color.GREY, Color.SILVER));
+            metacarpals.add(i, ShapeHelper.createSphere(5, Color.GREY, Color.SILVER));
         }
 
         // create bone shapes for each finger,
         // include extra bones for knuckles and bones to connect hand metacarpals
         for (int i = 0; i < 21; i++) {
-            bones.add(i, ShapeCreator.createCylinder(3, Color.LIGHTGREY, Color.WHITE));
+            bones.add(i, ShapeHelper.createCylinder(3, Color.LIGHTGREY, Color.WHITE));
             bones.get(i).getTransforms().add(translate);
             bones.get(i).getTransforms().add(rotate);
         }
@@ -83,10 +83,10 @@ public class HandFX extends Group {
         Boolean touchFlag = false;
         String text = "";
         for (LeapButton button : app.getLeapButtons()) {
-            // check that there's both an intersect between finger and button,
-            // and touch emulation is triggered
             Bounds shapeBounds = shape.localToScene(shape.getBoundsInLocal());
             Bounds buttonBounds = button.localToScene(button.getBoundsInLocal());
+            // check that there's both an intersect between finger and button,
+            // and touch emulation is triggered
             if (!button.touchStatusProperty().getValue() 
                     && shapeBounds.intersects(buttonBounds) 
                     && finger.touchZone() == Zone.ZONE_TOUCHING) {
@@ -111,23 +111,23 @@ public class HandFX extends Group {
      * @param hand The LeapMotion hand to take position data from.
      */
     public void update(Hand hand) {
-        LeapToFX.move(palm, hand.palmPosition());
+        LeapToFXHelper.move(palm, hand.palmPosition());
 
         Finger finger;
         // update positions of all finger joints
         for (int i = 0; i < hand.fingers().count(); i++) {
             finger = hand.fingers().get(i);
-            LeapToFX.move(fingerTips.get(i), finger.tipPosition());
+            LeapToFXHelper.move(fingerTips.get(i), finger.tipPosition());
             // check for button presses on finger tips
             checkIntersect(hand.fingers().frontmost(), fingerTips.get(i), app);
-            LeapToFX.move(distals.get(i), finger.bone(Type.TYPE_DISTAL).prevJoint());
-            LeapToFX.move(intermediates.get(i), finger.bone(Type.TYPE_INTERMEDIATE).prevJoint());
-            LeapToFX.move(proximals.get(i), finger.bone(Type.TYPE_PROXIMAL).prevJoint());
+            LeapToFXHelper.move(distals.get(i), finger.bone(Type.TYPE_DISTAL).prevJoint());
+            LeapToFXHelper.move(intermediates.get(i), finger.bone(Type.TYPE_INTERMEDIATE).prevJoint());
+            LeapToFXHelper.move(proximals.get(i), finger.bone(Type.TYPE_PROXIMAL).prevJoint());
             // hide 3rd and 4th metacarpals off screen
             if (i == 2 || i == 3) {
-                LeapToFX.move(metacarpals.get(i), new Vector(0, -50, 0));
+                LeapToFXHelper.move(metacarpals.get(i), new Vector(0, -50, 0));
             } else {
-                LeapToFX.move(metacarpals.get(i), finger.bone(Type.TYPE_METACARPAL).prevJoint());
+                LeapToFXHelper.move(metacarpals.get(i), finger.bone(Type.TYPE_METACARPAL).prevJoint());
             }
 
             // update positions of all finger bones

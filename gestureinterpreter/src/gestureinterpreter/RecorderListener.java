@@ -17,9 +17,9 @@ import javafx.beans.property.SimpleBooleanProperty;
  * @see RecorderEvent
  */
 public class RecorderListener extends AbstractGestureListener {
+    private final Object lock;  
     
     private Gesture gesture;
-    private final Object lock;  
     private BooleanProperty gestureDone = new SimpleBooleanProperty();
 
     /**

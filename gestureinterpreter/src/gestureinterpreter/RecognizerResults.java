@@ -18,20 +18,10 @@ public class RecognizerResults {
         this.score = score;
     }
 
-    /**
-     * Returns the gesture name.
-     * 
-     * @return Gesture name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Returns the gesture's score.
-     * 
-     * @return Gesture score.
-     */
     public double getScore() {
         return score;
     }

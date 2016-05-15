@@ -85,7 +85,7 @@ public class RecognizerListener extends AbstractGestureListener {
                         long time2 = System.nanoTime();
                         // convert ns to ms, rounded to 2 decimal places
                         DecimalFormat df = new DecimalFormat("###.##");
-                        System.out.println("Time taken: " + df.format(Math.round(time2 - time1) / 1e6) + " ms");
+                        //System.out.println("Time taken: " + df.format(Math.round(time2 - time1) / 1e6) + " ms");
                         setTimeRecognized(System.currentTimeMillis());
                         Platform.runLater(() -> {
                             recGUI.gestureRecognitionProperty().set(recResult);
@@ -112,7 +112,7 @@ public class RecognizerListener extends AbstractGestureListener {
                 } else if (file.getParentFile().getName().startsWith("gestureSet")) {
                     Gesture storedGesture = loadGesture(file);
 
-                    // apply preprocessing prior to memory storage (normalisation)
+                    // apply pre-processing prior to memory storage (normalisation)
                     storedGesture.setPointArray(PDollarRecognizer.Resample(storedGesture.getPointArray(), PDollarRecognizer.mNumPoints));
                     storedGesture.setPointArray(PDollarRecognizer.Scale(storedGesture.getPointArray()));
                     storedGesture.setPointArray(PDollarRecognizer.TranslateTo(storedGesture.getPointArray(), new Point(0.0, 0.0, 0.0)));
@@ -136,7 +136,6 @@ public class RecognizerListener extends AbstractGestureListener {
             FileInputStream inStream = new FileInputStream(fileName);
             ObjectInputStream ObjInStream = new ObjectInputStream(inStream);
             gesture = (Gesture) ObjInStream.readObject();
-
             ObjInStream.close();
             inStream.close();
         } catch (Exception e) {

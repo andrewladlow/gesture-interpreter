@@ -16,10 +16,10 @@ import javafx.scene.transform.Translate;
  * Custom 3D button class which supports Leap Motion interaction.
  */
 public class LeapButton extends Group {
+    private final Double OLD_DEPTH = 50.0;
 
     private Box box;
     private Text text;
-    private final Double oldDepth = 50.0;
     private BooleanProperty touchStatus = new SimpleBooleanProperty();
 
     /**
@@ -57,7 +57,7 @@ public class LeapButton extends Group {
      * @param specular The specular colour of this button.
      */
     private void createBox(double appWidth, double appHeight, Color diffuse, Color specular) {
-        box = ShapeCreator.createBox(200.0, 65.0, 50.0, diffuse, specular);
+        box = ShapeHelper.createBox(200.0, 65.0, 50.0, diffuse, specular);
     }
 
     /**
@@ -123,7 +123,7 @@ public class LeapButton extends Group {
                 text.setTranslateZ(text.getTranslateZ() + 15);
                 System.out.println("Leap press event fired");
             } else if (!newVal && oldVal) {
-                box.setDepth(oldDepth);
+                box.setDepth(OLD_DEPTH);
                 text.setTranslateZ(text.getTranslateZ() - 15);
                 System.out.println("Leap release event fired");
             }

@@ -67,7 +67,6 @@ import java.lang.Double;
  * Class handling recognition of gestures.
  */
 public class PDollarRecognizer {
-
     static int mNumPoints = 32;
     static Point mPointOrig = new Point(0.0, 0.0, 0.0, 0);
 

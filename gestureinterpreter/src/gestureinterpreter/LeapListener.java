@@ -14,7 +14,6 @@ import javafx.scene.Group;
  * Class handling hand tracking, extends the Leap Motion listener class.
  */
 public class LeapListener extends Listener {
-
     private Group handGroup;
     private Map<Integer, HandFX> hands;
     private Menu app;
@@ -74,18 +73,15 @@ public class LeapListener extends Listener {
                     if (hand != null) {
                         hand.update(frame.hand(leapHand.id()));
                         // long time2 = System.nanoTime();
-                        // String timeTaken = df.format(Math.round(time2 -
-                        // time1) / 1e6);
-                        // System.out.println("Time taken: " + timeTaken + "
-                        // ms");
+                        // String timeTaken = df.format(Math.round(time2 - time1) / 1e6);
+                        // System.out.println("Time taken: " + timeTaken + " ms");
                     }
                 }
             }
-            // refresh frame if there are less hands in this frame than in the
-            // last one,
+            // refresh frame if there are less hands in this frame than in the last one,
             // or rendered hand count and current hand count differ
-            if (frame.hands().count() < controller.frame(1).hands().count() ||
-                            handGroup.getChildren().size() != frame.hands().count()) {
+            if (frame.hands().count() < controller.frame(1).hands().count() 
+                    || handGroup.getChildren().size() != frame.hands().count()) {
                 hands.clear();
                 handGroup.getChildren().clear();
             }

@@ -11,12 +11,13 @@ import com.leapmotion.leap.Bone.Type;
  * Abstract listener class handling gesture storing & recognition. 
  */
 abstract class AbstractGestureListener extends Listener {
-    private int gestureFrameCount = 0;
     private final int MIN_GESTURE_FRAMES = 10;
     private final int MIN_GESTURE_VELOCITY = 300;
-    private int poseFrameCount = 0;
     private final int MIN_POSE_FRAMES = 50;
     private final int MAX_POSE_VELOCITY = 30;
+    
+    private int gestureFrameCount = 0;
+    private int poseFrameCount = 0;
     private boolean validPoseFrame = false;
     private boolean validPose = false;
     private boolean recording = false;
@@ -169,18 +170,5 @@ abstract class AbstractGestureListener extends Listener {
             }
         }
     }
-    
-    // feature set c  
-/*    public void storePoint(Frame frame, Gesture gesture) { 
-         for (Hand hand : frame.hands()) { 
-             gesture.addPoint(new Point(hand.direction())); 
-             for (Finger finger : hand.fingers()) { 
-                 gesture.addPoint(new Point(finger.bone(Type.TYPE_METACARPAL).direction()));
-                 gesture.addPoint(new Point(finger.bone(Type.TYPE_PROXIMAL).direction()));
-                 gesture.addPoint(new Point(finger.bone(Type.TYPE_INTERMEDIATE).direction()));
-                 gesture.addPoint(new Point(finger.bone(Type.TYPE_DISTAL).direction()));
-             } 
-         }
-    }*/
     
 }

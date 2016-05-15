@@ -19,13 +19,14 @@ import javafx.scene.text.Font;
  * Class handling the GUI of the recording section of the application.
  */
 public class RecorderGUI {
+    private static RecorderGUI instance;
+    
     private Object lock = new Object();
     private ExecutorService executor = Executors.newFixedThreadPool(1);
     private Boolean alreadyActivated = false;
     private Label titleLabel;
     private Label resultLabel;
     private Rectangle gestureImgRect;
-    private static RecorderGUI instance;
 
     private RecorderGUI() {
     }

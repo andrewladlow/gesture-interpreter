@@ -9,8 +9,8 @@ import java.util.List;
  * which hold a 3D co-ordinate.
  */
 public class Gesture implements Serializable {
-
     private static final long serialVersionUID = 8793521708114985027L;
+    
     private String name;
     private String type;
     private List<Point> pointArray;

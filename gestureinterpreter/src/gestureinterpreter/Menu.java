@@ -29,9 +29,9 @@ import javafx.stage.Stage;
  * The main class of the application, initiated by driver class.
  */
 public class Menu extends Application {
-
     public static final float APP_WIDTH = 1280;
     public static final float APP_HEIGHT = 720;
+    
     private Stage stage;
     private Scene scene;
     private SubScene subScene;

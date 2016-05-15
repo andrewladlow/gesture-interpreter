@@ -19,6 +19,10 @@ import javafx.scene.text.Font;
  * Class handling the GUI of the recognizing section of the application.
  */
 public class RecognizerGUI {
+    private final int TIME_ALLOWED = 60;
+    
+    private static RecognizerGUI instance;
+    
     private RecognizerListener recognizerListener;
     private ObjectProperty<RecognizerResults> gestureRecognition = new SimpleObjectProperty<RecognizerResults>();
     private Label titleLabel;
@@ -29,9 +33,7 @@ public class RecognizerGUI {
     private Label finalScoreLabel;
     private String curLetter;
     private int curScore;
-    private final int TIME_ALLOWED = 60;
     private boolean alreadyActivated;
-    private static RecognizerGUI instance;
     private ExecutorService executor = Executors.newFixedThreadPool(1);
 
     private RecognizerGUI() {
