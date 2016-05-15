@@ -19,8 +19,7 @@ import com.leapmotion.leap.Pointable.Zone;
 import com.leapmotion.leap.Vector;
 
 /**
- * Class representing a skeletal model of a human hand, taking position values
- * from a LeapMotion sensor.
+ * Class representing a skeletal model of a human hand, taking position values from a LeapMotion sensor.
  */
 public class HandFX extends Group {
     private Menu app;
@@ -54,9 +53,8 @@ public class HandFX extends Group {
             metacarpals.add(i, ShapeCreator.createSphere(5, Color.GREY, Color.SILVER));
         }
 
-        // create bone shapes for each finger
-        // include extra bones for knuckles and bones to connect hand
-        // metacarpals
+        // create bone shapes for each finger,
+        // include extra bones for knuckles and bones to connect hand metacarpals
         for (int i = 0; i < 21; i++) {
             bones.add(i, ShapeCreator.createCylinder(3, Color.LIGHTGREY, Color.WHITE));
             bones.get(i).getTransforms().add(translate);
@@ -89,9 +87,13 @@ public class HandFX extends Group {
             // and touch emulation is triggered
             Bounds shapeBounds = shape.localToScene(shape.getBoundsInLocal());
             Bounds buttonBounds = button.localToScene(button.getBoundsInLocal());
-            if (!button.touchStatusProperty().getValue() && shapeBounds.intersects(buttonBounds) && finger.touchZone() == Zone.ZONE_TOUCHING) {
+            if (!button.touchStatusProperty().getValue() 
+                    && shapeBounds.intersects(buttonBounds) 
+                    && finger.touchZone() == Zone.ZONE_TOUCHING) {
                 button.touchStatusProperty().set(true);
-            } else if (button.touchStatusProperty().getValue() && !shapeBounds.intersects(buttonBounds) && finger.touchZone() != Zone.ZONE_TOUCHING) {
+            } else if (button.touchStatusProperty().getValue() 
+                    && !shapeBounds.intersects(buttonBounds) 
+                    && finger.touchZone() != Zone.ZONE_TOUCHING) {
                 touchFlag = true;
                 button.touchStatusProperty().set(false);
                 text = button.getText();
@@ -104,8 +106,7 @@ public class HandFX extends Group {
     }
 
     /**
-     * Updates position of this hand, using the raw data for this hand from
-     * LeapMotion.
+     * Updates position of this hand, using the raw data for this hand from LeapMotion.
      * 
      * @param hand The LeapMotion hand to take position data from.
      */
@@ -174,8 +175,8 @@ public class HandFX extends Group {
 
         // apply translation and rotation to bone
         bone.getTransforms().set(0, new Translate(fromPos.getTranslateX(),
-                        fromPos.getTranslateY() - boneLength / 2,
-                        fromPos.getTranslateZ()));
+                                                  fromPos.getTranslateY() - boneLength / 2,
+                                                  fromPos.getTranslateZ()));
         bone.getTransforms().set(1, rotate);
     }
 }

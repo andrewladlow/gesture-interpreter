@@ -112,9 +112,7 @@ public class PDollarRecognizer {
         // System.out.println("\nClosest match: " + foundGesture.getName() + "\nScore: " + score);
 
         // Translates score to value in range 0-100 (percentage of similarity)
-        double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 
-                                              100), 
-                                     0);
+        double finalScore = Math.max(Math.min(Math.round(100 - (100 * (score - 4.0) / 3.5)), 100), 0);
         // double finalScore = score;
 
         return new RecognizerResults(foundGesture.getName(), finalScore);
