@@ -5,13 +5,14 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class used to test the accuracy of recognition, as well as the average time
  * taken to complete.
  */
 public class Tester {
-    private ArrayList<Gesture> storedGestures;
+    private List<Gesture> storedGestures;
     private int matchCount;
     private double totalTimeTaken;
 
@@ -34,11 +35,6 @@ public class Tester {
 
         for (File testGesture : testGestures) {
             curGesture = loadGesture(testGesture);
-/*            System.out.println("TEST 3: " + curGesture.getType());
-            System.out.println(curGesture.getPointArray().get(0).getX());
-            ArrayList<Point> test = curGesture.getPointArray();
-            test.remove(0);
-            test.remove(3);*/
             System.out.println("--------------------------------");
             System.out.println("Testing gesture: " + curGesture.getName());
             long time1 = System.nanoTime();
@@ -68,27 +64,22 @@ public class Tester {
     public void loadFiles(File filePath) {
         try {
             File[] files = filePath.listFiles();
-            // System.out.println(filePath.getAbsolutePath());
             for (File file : files) {
-                // System.out.println(file.getName());
-                // folders are explicitly called to allow for ease of inclusion
-                // or exclusion of folders
+                // folders are explicitly called to allow for ease of inclusion / exclusion of folders
                 if (file.getName().startsWith("gestureSet1")
-                        || file.getName().startsWith("gestureSet2")
-                        || file.getName().startsWith("gestureSet3")
+                        //|| file.getName().startsWith("gestureSet2")
+                        //|| file.getName().startsWith("gestureSet3")
                         || file.getName().startsWith("gestureSet4")
                         || file.getName().startsWith("gestureSet5")
-                        || file.getName().startsWith("gestureSet6")
-                        || file.getName().startsWith("gestureSet7")
-                        || file.getName().startsWith("gestureSet8")
-                        || file.getName().startsWith("gestureSet9")) {
-                    // ) {
+                        //|| file.getName().startsWith("gestureSet6")
+                        //|| file.getName().startsWith("gestureSet7")
+                        //|| file.getName().startsWith("gestureSet8")
+                        //|| file.getName().startsWith("gestureSet9")) {
+                     ) {
                     loadFiles(file);
                 } else if (file.getParentFile().getName().startsWith("gestureSet")) {
                     Gesture storedGesture = loadGesture(file);
                     ArrayList<Point> test = storedGesture.getPointArray();
-                    // test.remove(0);
-                    // test.remove(3);
                     storedGesture.setPointArray(test);
                     storedGesture.setPointArray(PDollarRecognizer.Resample(storedGesture.getPointArray(), PDollarRecognizer.mNumPoints));
                     storedGesture.setPointArray(PDollarRecognizer.Scale(storedGesture.getPointArray()));
