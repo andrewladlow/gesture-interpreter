@@ -67,10 +67,10 @@ public class Tester {
             for (File file : files) {
                 // folders are explicitly called to allow for ease of inclusion / exclusion of folders
                 if (file.getName().startsWith("gestureSet1")
-                        //|| file.getName().startsWith("gestureSet2")
-                        //|| file.getName().startsWith("gestureSet3")
-                        || file.getName().startsWith("gestureSet4")
-                        || file.getName().startsWith("gestureSet5")
+                        || file.getName().startsWith("gestureSet2")
+                        || file.getName().startsWith("gestureSet3")
+                        //|| file.getName().startsWith("gestureSet4")
+                        //|| file.getName().startsWith("gestureSet5")
                         //|| file.getName().startsWith("gestureSet6")
                         //|| file.getName().startsWith("gestureSet7")
                         //|| file.getName().startsWith("gestureSet8")
